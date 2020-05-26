@@ -4,68 +4,54 @@ const Lang = imports.lang;
 const Util = imports.misc.util;
 const PanelMenu = imports.ui.panelMenu;
 const Mainloop = imports.mainloop;
-const Panel = imports.ui.panel;
 const Clutter = imports.gi.Clutter;
+const Panel = imports.ui.panel;
 const Cairo = imports.cairo;
- 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const Convenience = Me.imports.convenience;
 
-const UPDATE_INTERVAL = 100;
-
-const LINE_WIDTH = 1.5;
- 
-const MARGIN = 1;
- 
-const EyePosition = {
-    CENTER: 0,
-    RIGHT: 1,
-    LEFT: 2
-}
-
-const EyeMode ={
-	BULB: 0,
-	LIDS: 1
-}
+let settings = null;
+let eye;
 
 const Eye = new Lang.Class({
     Name: 'Eye',
 	Extends: PanelMenu.Button,
 	
-	_init: function(eye_mode, position_in_panel, index_in_panel)
+	_init: function(settings)
 	{
 		PanelMenu.Button.prototype._init.call(this, "");
 
-	    this.area = new St.DrawingArea();
-	 
-		this.area.set_width(Panel.PANEL_ICON_SIZE*2 - 2 * MARGIN);
-		this.area.set_height(Panel.PANEL_ICON_SIZE - 2 * MARGIN);
-	     
-	    this.actor.set_width(Panel.PANEL_ICON_SIZE*2.5);
-	    this.actor.add_actor(this.area);
+		this.eye_mode = settings.get_string('eye-mode');
+		this.eye_position = settings.get_string('eye-position');
+		this.position_weight = settings.get_int('position-weight');
+		this.line_width = settings.get_double('line-width');
+		this.margin = settings.get_double('margin');
+		this.update_interval = 100;
 		
-		this.position_in_panel = position_in_panel;
-		this.eye_mode = eye_mode;
+		this.area = new St.DrawingArea();
+	 
+		this.setMargin();
 
-		let children = null;
-		let box = null;
-		switch (this.position_in_panel)
-		{
-			case EyePosition.LEFT:
-				box = Main.panel._leftBox;
-				break;
-			case EyePosition.CENTER:
-				box = Main.panel._centerBox;
-				break;
-			case EyePosition.RIGHT:
-				box = Main.panel._rightBox;
-				break;
-		}
+		this.actor.add_actor(this.area);
+	},
+
+	setTrayArea() {
+		Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.position_weight, this.eye_position);
+	},
+
+	setMargin: function() 
+	{
+		this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.margin));
+		this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.margin));
+		this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.margin));
 	},
 
 	setActive: function(enabled)
 	{
 		if (enabled) {
 			this._repaint_handler = this.area.connect("repaint", Lang.bind(this, this._draw));
-			this._update_handler = Mainloop.timeout_add(UPDATE_INTERVAL, Lang.bind(this, this._on_timeout));
+			this._update_handler = Mainloop.timeout_add(this.update_interval, Lang.bind(this, this._on_timeout));
 
 			this.area.queue_repaint();
 		} else {
@@ -99,15 +85,17 @@ const Eye = new Lang.Class({
 		let iris_rad;
 		let pupil_rad;
 		let max_rad;
-		if(this.eye_mode == EyeMode.BULB)
+
+		if(this.eye_mode == "bulb")
 		{
 			eye_rad = (area_height)/2.3;
 			iris_rad = eye_rad*0.6;
 			pupil_rad = iris_rad*0.4;
 			
-			max_rad = eye_rad*Math.cos( Math.asin((iris_rad)/eye_rad) )-LINE_WIDTH;
+			max_rad = eye_rad*Math.cos( Math.asin((iris_rad)/eye_rad) )-this.line_width;
 		}
-		if(this.eye_mode == EyeMode.LIDS)
+
+		if(this.eye_mode == "lids")
 		{
 			eye_rad = (area_height)/2;
 			iris_rad = eye_rad*0.5;
@@ -127,19 +115,18 @@ const Eye = new Lang.Class({
 		let cr = area.get_context();
 		let theme_node = this.area.get_theme_node();
 		Clutter.cairo_set_source_color(cr, theme_node.get_foreground_color());
-		
-		
+				
 		cr.translate(area_width*0.5, area_height*0.5);
+				
+		cr.setLineWidth(this.line_width);
 		
-		
-		cr.setLineWidth(LINE_WIDTH);
-		
-		if(this.eye_mode == EyeMode.BULB)
+		if(this.eye_mode == "bulb")
 		{
 			cr.arc(0,0, eye_rad, 0,2*Math.PI);
 			cr.stroke();
 		}
-		if(this.eye_mode == EyeMode.LIDS)
+
+		if(this.eye_mode == "lids")
 		{
 			let x_def = iris_rad*Math.cos(mouse_ang)*(Math.sin(eye_ang));
 			let y_def = iris_rad*Math.sin(mouse_ang)*(Math.sin(eye_ang));
@@ -171,7 +158,7 @@ const Eye = new Lang.Class({
 		
 		
 		cr.rotate(mouse_ang);		
-		cr.setLineWidth(LINE_WIDTH/iris_rad);
+		cr.setLineWidth(this.line_width/iris_rad);
 		
 		cr.translate( iris_r*Math.sin(eye_ang), 0);
 		cr.scale(iris_rad*Math.cos(eye_ang), iris_rad);
@@ -197,7 +184,12 @@ const Eye = new Lang.Class({
 		let obj = this.area;
 		do
 		{
-			[tx, ty] = obj.get_position();
+			try {
+				[tx, ty] = obj.get_position();
+			} catch {
+				tx = 0;
+				ty = 0;
+			}
 			area_x += tx;
 			area_y += ty;
 			obj = obj.get_parent();
@@ -208,17 +200,65 @@ const Eye = new Lang.Class({
 	},
 });
 
-var eye;
+function setEyeMode(icon) {
+	let value = settings.get_string('eye-mode');
+
+	if (eye) {
+		eye.eye_mode = value;
+	}
+}
+
+function setEyePosition(icon) {
+	let value = settings.get_string('eye-position');
+
+	if (eye) {
+		eye.eye_position = value;
+		eye.setTrayArea();
+	}	
+}
+
+function setPositionWeight(icon) {
+	let value = settings.get_int('position-weight');
+
+	if (eye) {
+		eye.position_weight = value;
+		eye.setTrayArea();
+	}	
+}
+
+function setLineWidth(icon) {
+	let value = settings.get_double('line-width');
+
+	if (eye) {
+		eye.line_width = value;
+	}		
+}
+
+function setMargin(icon) {
+	let value = settings.get_double('margin');
+
+	if (eye) {
+		eye.margin = value;
+		eye.setMargin();
+	}		
+}
 
 function init() {
+	Convenience.initTranslations(); 
 }
 
 function enable()
 {
-	eye = new Eye(EyeMode.LIDS, EyePosition.RIGHT, 0);
-	eye.setActive(true);
+    settings = Convenience.getSettings();
+    settings.connect('changed::eye-mode', Lang.bind(this, setEyeMode));
+    settings.connect('changed::eye-position', Lang.bind(this, setEyePosition));
+    settings.connect('changed::position-weight', Lang.bind(this, setPositionWeight));
+    settings.connect('changed::line-width', Lang.bind(this, setLineWidth));
+    settings.connect('changed::margin', Lang.bind(this, setMargin));
 
-    Main.panel.addToStatusArea('eye', eye);
+	eye = new Eye(settings);
+	eye.setActive(true);
+	eye.setTrayArea();
 }
 
 function disable()

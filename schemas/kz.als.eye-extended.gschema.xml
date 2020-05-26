@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="EyeExtended">
+  <schema id="kz.als.eye-extended" path="/kz/als/eye-extended/">
+    <key name="eye-mode" type="s">
+      <default>"lids"</default>
+      <summary>Eye mode</summary>
+      <description>Supported value "lids" and "bulb"</description>
+    </key>        
+    <key name="eye-position" type="s">
+      <default>"center"</default>
+      <summary>Eye position</summary>
+      <description>Supported value "left", "center" and "right"</description>
+    </key>
+    <key name="position-weight" type="i">
+      <default>0</default>
+      <summary>Position weight</summary>
+    </key>
+    <key name="line-width" type="d">
+      <default>1.5</default>
+      <summary>Line width</summary>
+    </key>
+    <key name="margin" type="d">
+      <default>1.5</default>
+      <summary>Margin</summary>
+    </key>
+  </schema>
+</schemalist>
