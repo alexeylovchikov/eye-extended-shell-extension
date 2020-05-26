@@ -1,0 +1,9 @@
+{
+  "uuid": "eye-extended@als.kz", 
+  "shell-version": [
+    "3.36.0"
+  ], 
+  "url": "https://github.com/alexeylovchikov/eye-extended-shell-extension", 
+  "name": "Eye, Extended"
+  "description": "Adds an eye to the indicator bar that follows your cursor", 
+}
