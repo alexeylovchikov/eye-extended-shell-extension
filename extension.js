@@ -58,6 +58,12 @@ const Eye = new Lang.Class({
 			);
 
 			this.area.queue_repaint();
+
+			this.mouse_pointer = new St.Icon({
+				reactive : false,
+				can_focus : false,
+				track_hover : false
+			});
 		} else {
 		    if(this._repaint_handler) { this.area.disconnect(this._repaint_handler); }
 
@@ -68,6 +74,9 @@ const Eye = new Lang.Class({
 			if(this._mouse_circle_update_handler) { 
 				Mainloop.source_remove(this._mouse_circle_update_handler);
 			}
+
+			this.mouse_pointer.destroy();
+			this.mouse_pointer = null;
 		}
 	}, 
 
@@ -97,19 +106,12 @@ const Eye = new Lang.Class({
 	setMouseCircleActive: function(enabled)
 	{
 		if (enabled) {
-			this.mouse_pointer = new St.Icon({
-				reactive : false,
-				can_focus : false,
-				track_hover : false
-			});
 			this.setMouseCirclePropertyUpdate();
 			this.mouse_pointer.show();
-
 			Main.uiGroup.add_child(this.mouse_pointer);			
 		} else {
+			this.mouse_pointer.hide();
 			Main.uiGroup.remove_child(this.mouse_pointer);
-			this.mouse_pointer.destroy();
-			this.mouse_pointer = null;
 		}
 	},
 

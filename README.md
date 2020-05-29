@@ -18,13 +18,3 @@ Documentation for anyone stumbling across this repo:
 3. Then you'll want to activate the plugin either by using the Gnome Tweak Tool or by execing `gnome-shell-extension-prefs` and using that UI.
 
 ---
-
-## Commands
-
-Compile shemas
-glib-compile-schemas ./schemas
-
-Generate pot language file
-xgettext --output=locale/ru/LC_MESSAGES/EyeExtended.pot *.js
-msgmerge ./locale/ru/LC_MESSAGES/EyeExtended_copy.pot ./locale/ru/LC_MESSAGES/EyeExtended.po -o ./locale/ru/LC_MESSAGES/EyeExtended.po
-msgfmt -o ./locale/ru/LC_MESSAGES/EyeExtended.mo ./locale/ru/LC_MESSAGES/EyeExtended.po
