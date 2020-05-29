@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 13:43+0600\n"
+"POT-Creation-Date: 2020-05-29 14:25+0600\n"
 "PO-Revision-Date: 2020-05-29 13:39+0600\n"
 "Last-Translator: Alexey <alexey@lovchikoval>\n"
 "Language-Team: Russian\n"
@@ -17,6 +17,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Eye properties"
+msgstr "Параметры глаза"
 
 msgid "Eye mode"
 msgstr "Режим отображения глаза"
@@ -47,6 +50,12 @@ msgstr "Ширина линии глаза"
 
 msgid "Eye margin"
 msgstr "Отступ"
+
+msgid "Mouse circle properties"
+msgstr "Параметры индикатора мыши"
+
+msgid "To activate, click on the eye"
+msgstr "Для активации нажмите на глаз"
 
 msgid "Mouse circle mode"
 msgstr "Режим отображения индикатора мыши"

@@ -23,20 +23,19 @@ schemas_build: ## Build schemas
 	@glib-compile-schemas schemas/
 
 locale_build: ## Build locale
-	@xgettext --no-location --force-po -o locale/EyeExtended.pot *.js &&\
+	@xgettext --no-location -o locale/EyeExtended.pot *.js &&\
 	msgmerge --no-location --previous --silent --lang=ru locale/ru/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/ru/LC_MESSAGES/EyeExtended.po &&\
 	msgfmt locale/ru/LC_MESSAGES/EyeExtended.po -o locale/ru/LC_MESSAGES/EyeExtended.mo
 
 locale_create: ## Create new locale
 	@read -p "Enter locale: " vlocale; \
 	mkdir -p locale/$$vlocale/LC_MESSAGES/ &&\
-	xgettext --no-location --force-po -o locale/EyeExtended.pot *.js &&\
+	xgettext --no-location -o locale/EyeExtended.pot *.js &&\
 	msginit -l $$vlocale -i locale/EyeExtended.pot -o locale/$$vlocale/LC_MESSAGES/EyeExtended.po
 
 install: ## Install extansion
 	@rm -rf ~/.local/share/gnome-shell/extensions/eye-extended@als.kz &&\
 	mkdir -p ~/.local/share/gnome-shell/extensions/eye-extended@als.kz &&\
-	cp -R . ~/.local/share/gnome-shell/extensions/eye-extended@als.kz &&\
-	echo "Done"
+	cp -R . ~/.local/share/gnome-shell/extensions/eye-extended@als.kz
 
 # lg - Extansion lg manager, run ALT+F2

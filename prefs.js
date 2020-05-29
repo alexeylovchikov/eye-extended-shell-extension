@@ -30,6 +30,15 @@ const EyeExtendedSettings = new GObject.Class({
         let label = null
         let widget = null;
         let value = null;
+
+        // Mouse circle properties
+        // =======================
+        label = new Gtk.Label({
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        label.set_markup('<b>' + _('Eye properties') + '</b>');
+        this.attach(label, 0, ++r, 1, 1);
       
         // Eye mode
         label = new Gtk.Label({
@@ -111,6 +120,22 @@ const EyeExtendedSettings = new GObject.Class({
          }));
         this.attach(label, 0, ++r, 1, 1);
         this.attach(widget, 1, r, 1, 1);          
+
+        // Mouse circle properties
+        // =======================
+        label = new Gtk.Label({
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        label.set_markup('<b>' + _('Mouse circle properties') + '</b>');
+        this.attach(label, 0, ++r, 1, 1);
+
+        label = new Gtk.Label({
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        label.set_markup('<i>' + _('To activate, click on the eye') + '</i>');
+        this.attach(label, 0, ++r, 1, 1);
 
         // Mouse circle mode
         label = new Gtk.Label({

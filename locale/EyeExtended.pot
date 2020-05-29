@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 13:43+0600\n"
+"POT-Creation-Date: 2020-05-29 14:26+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+msgid "Eye properties"
+msgstr ""
 
 msgid "Eye mode"
 msgstr ""
@@ -45,6 +48,12 @@ msgid "Eye line width"
 msgstr ""
 
 msgid "Eye margin"
+msgstr ""
+
+msgid "Mouse circle properties"
+msgstr ""
+
+msgid "To activate, click on the eye"
 msgstr ""
 
 msgid "Mouse circle mode"
