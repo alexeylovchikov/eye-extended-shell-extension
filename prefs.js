@@ -58,59 +58,113 @@ const EyeExtendedSettings = new GObject.Class({
         this.attach(label, 0, ++r, 1, 1);
         this.attach(widget, 1, r, 1, 1);
 
-        // Position weight
+        // Eye position weight
         label = new Gtk.Label({
-            label: _('Position weight'),
+            label: _('Eye position weight'),
             hexpand: true,
             halign: Gtk.Align.START
         });
         widget = new Gtk.SpinButton({halign: Gtk.Align.END});
         widget.set_sensitive(true);
         widget.set_range(-255, 255);
-        widget.set_value(this._settings.get_int('position-weight'));
+        widget.set_value(this._settings.get_int('eye-position-weight'));
         widget.set_increments(1, 2);
         widget.connect('value-changed', Lang.bind(this, function(w){
              value = w.get_value_as_int();
-             this._settings.set_int('position-weight', value);
+             this._settings.set_int('eye-position-weight', value);
         }));
         this.attach(label, 0, ++r, 1, 1);
         this.attach(widget, 1, r, 1, 1);
 
-        // Line width
+        // Eye line width
         label = new Gtk.Label({
-            label: _('Line width'),
+            label: _('Eye line width'),
             hexpand: true,
             halign: Gtk.Align.START
         });
         widget = new Gtk.SpinButton({halign:Gtk.Align.END, digits:1});
         widget.set_sensitive(true);
         widget.set_range(0.0, 5.0);
-        widget.set_value(this._settings.get_double('line-width'));
+        widget.set_value(this._settings.get_double('eye-line-width'));
         widget.set_increments(0.1, 0.2);
         widget.connect('value-changed', Lang.bind(this, function(w){
             value = w.get_value();
-            this._settings.set_double('line-width', value);
+            this._settings.set_double('eye-line-width', value);
          }));
         this.attach(label, 0, ++r, 1, 1);
         this.attach(widget, 1, r, 1, 1);        
 
-        // Margin
+        // Eye margin
         label = new Gtk.Label({
-            label: _('Margin'),
+            label: _('Eye margin'),
             hexpand: true,
             halign: Gtk.Align.START
         });
         widget = new Gtk.SpinButton({halign:Gtk.Align.END, digits:1});
         widget.set_sensitive(true);
         widget.set_range(0.0, 5.0);
-        widget.set_value(this._settings.get_double('margin'));
+        widget.set_value(this._settings.get_double('eye-margin'));
         widget.set_increments(0.1, 0.2);
         widget.connect('value-changed', Lang.bind(this, function(w){
             value = w.get_value();
-            this._settings.set_double('margin', value);
+            this._settings.set_double('eye-margin', value);
          }));
         this.attach(label, 0, ++r, 1, 1);
         this.attach(widget, 1, r, 1, 1);          
+
+        // Mouse circle mode
+        label = new Gtk.Label({
+            label: _('Mouse circle mode'),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
+        widget.set_sensitive(true);
+        widget.set_range(1, 18);
+        widget.set_value(this._settings.get_int('mouse-circle-mode'));
+        widget.set_increments(1, 2);
+        widget.connect('value-changed', Lang.bind(this, function(w){
+             value = w.get_value_as_int();
+             this._settings.set_int('mouse-circle-mode', value);
+        }));
+        this.attach(label, 0, ++r, 1, 1);
+        this.attach(widget, 1, r, 1, 1);
+
+        // Mouse circle size
+        label = new Gtk.Label({
+            label: _('Mouse circle size'),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
+        widget.set_sensitive(true);
+        widget.set_range(1, 500);
+        widget.set_value(this._settings.get_int('mouse-circle-size'));
+        widget.set_increments(10, 20);
+        widget.connect('value-changed', Lang.bind(this, function(w){
+             value = w.get_value_as_int();
+             this._settings.set_int('mouse-circle-size', value);
+        }));
+        this.attach(label, 0, ++r, 1, 1);
+        this.attach(widget, 1, r, 1, 1);
+
+        // Mouse circle opacity
+        label = new Gtk.Label({
+            label: _('Mouse circle opacity'),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
+        widget.set_sensitive(true);
+        widget.set_range(1, 255);
+        widget.set_value(this._settings.get_int('mouse-circle-opacity'));
+        widget.set_increments(10, 20);
+        widget.connect('value-changed', Lang.bind(this, function(w){
+             value = w.get_value_as_int();
+             this._settings.set_int('mouse-circle-opacity', value);
+        }));
+        this.attach(label, 0, ++r, 1, 1);
+        this.attach(widget, 1, r, 1, 1);
 
         //this._changedPermitted = true;
     },

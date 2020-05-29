@@ -7,21 +7,33 @@
       <description>Supported value "lids" and "bulb"</description>
     </key>        
     <key name="eye-position" type="s">
-      <default>"center"</default>
+      <default>"left"</default>
       <summary>Eye position</summary>
       <description>Supported value "left", "center" and "right"</description>
     </key>
-    <key name="position-weight" type="i">
+    <key name="eye-position-weight" type="i">
       <default>0</default>
-      <summary>Position weight</summary>
+      <summary>Eye position weight</summary>
     </key>
-    <key name="line-width" type="d">
+    <key name="eye-line-width" type="d">
       <default>1.5</default>
-      <summary>Line width</summary>
+      <summary>Eye line width</summary>
     </key>
-    <key name="margin" type="d">
+    <key name="eye-margin" type="d">
       <default>1.5</default>
-      <summary>Margin</summary>
+      <summary>Eye margin</summary>
+    </key>
+    <key name="mouse-circle-mode" type="i">
+      <default>1</default>
+      <summary>Mouse circle mode</summary>
+    </key>
+    <key name="mouse-circle-size" type="i">
+      <default>60</default>
+      <summary>Mouse circle size</summary>
+    </key>
+    <key name="mouse-circle-opacity" type="i">
+      <default>200</default>
+      <summary>Mouse circle opacity</summary>
     </key>
   </schema>
 </schemalist>

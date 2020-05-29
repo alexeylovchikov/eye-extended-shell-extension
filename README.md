@@ -1,6 +1,6 @@
 ## Eye Extended Extension
 
-![](img/img.png) 
+![](img/vpn.png) 
 
 This is Fork at https://extensions.gnome.org/extension/213/eye/
 
