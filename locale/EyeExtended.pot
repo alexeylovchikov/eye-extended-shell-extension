@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 14:26+0600\n"
+"POT-Creation-Date: 2020-05-30 12:28+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,6 +50,9 @@ msgstr ""
 msgid "Eye margin"
 msgstr ""
 
+msgid "Eye repaint interval"
+msgstr ""
+
 msgid "Mouse circle properties"
 msgstr ""
 
@@ -63,4 +66,7 @@ msgid "Mouse circle size"
 msgstr ""
 
 msgid "Mouse circle opacity"
+msgstr ""
+
+msgid "Mouse circle repaint interval"
 msgstr ""

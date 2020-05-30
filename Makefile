@@ -23,9 +23,13 @@ schemas_build: ## Build schemas
 	@glib-compile-schemas schemas/
 
 locale_build: ## Build locale
+	@msgfmt locale/ru/LC_MESSAGES/EyeExtended.po -o locale/ru/LC_MESSAGES/EyeExtended.mo &&\
+	msgfmt locale/en/LC_MESSAGES/EyeExtended.po -o locale/en/LC_MESSAGES/EyeExtended.mo
+
+locale_update: ## Update locale
 	@xgettext --no-location -o locale/EyeExtended.pot *.js &&\
 	msgmerge --no-location --previous --silent --lang=ru locale/ru/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/ru/LC_MESSAGES/EyeExtended.po &&\
-	msgfmt locale/ru/LC_MESSAGES/EyeExtended.po -o locale/ru/LC_MESSAGES/EyeExtended.mo
+	msgmerge --no-location --previous --silent --lang=en locale/en/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/en/LC_MESSAGES/EyeExtended.po
 
 locale_create: ## Create new locale
 	@read -p "Enter locale: " vlocale; \

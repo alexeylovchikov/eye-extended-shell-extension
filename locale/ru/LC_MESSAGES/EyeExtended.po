@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 14:25+0600\n"
+"POT-Creation-Date: 2020-05-30 12:28+0600\n"
 "PO-Revision-Date: 2020-05-29 13:39+0600\n"
 "Last-Translator: Alexey <alexey@lovchikoval>\n"
 "Language-Team: Russian\n"
@@ -51,6 +51,9 @@ msgstr "Ширина линии глаза"
 msgid "Eye margin"
 msgstr "Отступ"
 
+msgid "Eye repaint interval"
+msgstr "Интервал прорисовки глаза"
+
 msgid "Mouse circle properties"
 msgstr "Параметры индикатора мыши"
 
@@ -65,3 +68,6 @@ msgstr "Размер индикатора миши"
 
 msgid "Mouse circle opacity"
 msgstr "Прозрачность индикатора миши"
+
+msgid "Mouse circle repaint interval"
+msgstr "Интервал прорисовки индикатора мыши"
