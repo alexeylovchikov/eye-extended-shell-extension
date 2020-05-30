@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="EyeExtended">
   <schema id="kz.als.eye-extended" path="/kz/als/eye-extended/">
+   
     <key name="eye-mode" type="s">
       <default>"lids"</default>
       <summary>Eye mode</summary>
@@ -23,6 +24,11 @@
       <default>1.5</default>
       <summary>Eye margin</summary>
     </key>
+    <key name="eye-repaint-interval" type="i">
+      <default>100</default>
+      <summary>Eye repaint interval</summary>
+    </key>
+
     <key name="mouse-circle-mode" type="i">
       <default>1</default>
       <summary>Mouse circle mode</summary>
@@ -35,5 +41,10 @@
       <default>200</default>
       <summary>Mouse circle opacity</summary>
     </key>
+    <key name="mouse-circle-repaint-interval" type="i">
+      <default>10</default>
+      <summary>Mouse circle repaint interval</summary>
+    </key>
+    
   </schema>
 </schemalist>

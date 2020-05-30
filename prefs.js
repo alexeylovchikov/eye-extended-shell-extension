@@ -19,179 +19,122 @@ const EyeExtendedSettings = new GObject.Class({
 
     _init: function(params) {
 
-        let r = -1;
-
         this.parent(params);
         this.margin = 24;
         this.spacing = 30;
         this.row_spacing = 4;
         this._settings = Convenience.getSettings();
-
-        let label = null
-        let widget = null;
-        let value = null;
-
-        // Mouse circle properties
-        // =======================
-        label = new Gtk.Label({
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        label.set_markup('<b>' + _('Eye properties') + '</b>');
-        this.attach(label, 0, ++r, 1, 1);
-      
-        // Eye mode
-        label = new Gtk.Label({
-            label: _('Eye mode'),
-            hexpand: true,
-            halign: Gtk.Align.START
-          });
-        widget = new Gtk.ComboBoxText();
-        widget.append("bulb", _("Bulb"));
-        widget.append("lids", _("Lids"));
-        this._settings.bind('eye-mode', widget, 'active-id', Gio.SettingsBindFlags.DEFAULT);
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);     
         
-        // Eye Position 
-        label = new Gtk.Label({
-            label: _('Eye position'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.ComboBoxText();
-        widget.append("center", _("Center"));
-        widget.append("right", _("Right"));
-        widget.append("left", _("Left"));
-        this._settings.bind('eye-position', widget, 'active-id', Gio.SettingsBindFlags.DEFAULT);
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);
+        this.row_pos = -1;
 
-        // Eye position weight
-        label = new Gtk.Label({
-            label: _('Eye position weight'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
-        widget.set_sensitive(true);
-        widget.set_range(-255, 255);
-        widget.set_value(this._settings.get_int('eye-position-weight'));
-        widget.set_increments(1, 2);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-             value = w.get_value_as_int();
-             this._settings.set_int('eye-position-weight', value);
-        }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);
+        // Eye properties
+        // =======================
+        this._createLable(_('Eye properties'), ['b']);
 
-        // Eye line width
-        label = new Gtk.Label({
-            label: _('Eye line width'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign:Gtk.Align.END, digits:1});
-        widget.set_sensitive(true);
-        widget.set_range(0.0, 5.0);
-        widget.set_value(this._settings.get_double('eye-line-width'));
-        widget.set_increments(0.1, 0.2);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-            value = w.get_value();
-            this._settings.set_double('eye-line-width', value);
-         }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);        
+        this._createList(_('Eye mode'), 'eye-mode', [
+            ["bulb", _("Bulb")], 
+            ["lids", _("Lids")]
+        ]);
 
-        // Eye margin
-        label = new Gtk.Label({
-            label: _('Eye margin'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign:Gtk.Align.END, digits:1});
-        widget.set_sensitive(true);
-        widget.set_range(0.0, 5.0);
-        widget.set_value(this._settings.get_double('eye-margin'));
-        widget.set_increments(0.1, 0.2);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-            value = w.get_value();
-            this._settings.set_double('eye-margin', value);
-         }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);          
+        this._createList(_('Eye position'), 'eye-position', [
+            ["center", _("Center")], 
+            ["right", _("Right")], 
+            ["left", _("Left")]
+        ]);
 
+        this._createInt(_('Eye position weight'), 'eye-position-weight', [-255, 255], [1, 2]);
+        this._createDouble(_('Eye line width'), 'eye-line-width', [0.0, 5.0], [0.1, 0.2]);
+        this._createDouble(_('Eye margin'), 'eye-margin', [0.0, 5.0], [0.1, 0.2]);
+        this._createInt(_('Eye repaint interval'), 'eye-repaint-interval', [1, 1000], [10, 20]);
+    
         // Mouse circle properties
         // =======================
-        label = new Gtk.Label({
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        label.set_markup('<b>' + _('Mouse circle properties') + '</b>');
-        this.attach(label, 0, ++r, 1, 1);
+        this._createLable(_('Mouse circle properties'), ['b']);
+        this._createLable(_('To activate, click on the eye'), ['b', 'i']);
 
-        label = new Gtk.Label({
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        label.set_markup('<i>' + _('To activate, click on the eye') + '</i>');
-        this.attach(label, 0, ++r, 1, 1);
-
-        // Mouse circle mode
-        label = new Gtk.Label({
-            label: _('Mouse circle mode'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
-        widget.set_sensitive(true);
-        widget.set_range(1, 18);
-        widget.set_value(this._settings.get_int('mouse-circle-mode'));
-        widget.set_increments(1, 2);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-             value = w.get_value_as_int();
-             this._settings.set_int('mouse-circle-mode', value);
-        }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);
-
-        // Mouse circle size
-        label = new Gtk.Label({
-            label: _('Mouse circle size'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
-        widget.set_sensitive(true);
-        widget.set_range(1, 500);
-        widget.set_value(this._settings.get_int('mouse-circle-size'));
-        widget.set_increments(10, 20);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-             value = w.get_value_as_int();
-             this._settings.set_int('mouse-circle-size', value);
-        }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);
-
-        // Mouse circle opacity
-        label = new Gtk.Label({
-            label: _('Mouse circle opacity'),
-            hexpand: true,
-            halign: Gtk.Align.START
-        });
-        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
-        widget.set_sensitive(true);
-        widget.set_range(1, 255);
-        widget.set_value(this._settings.get_int('mouse-circle-opacity'));
-        widget.set_increments(10, 20);
-        widget.connect('value-changed', Lang.bind(this, function(w){
-             value = w.get_value_as_int();
-             this._settings.set_int('mouse-circle-opacity', value);
-        }));
-        this.attach(label, 0, ++r, 1, 1);
-        this.attach(widget, 1, r, 1, 1);
+        this._createInt(_('Mouse circle mode'), 'mouse-circle-mode', [1, 18], [1, 2]);
+        this._createInt(_('Mouse circle size'), 'mouse-circle-size', [1, 500], [10, 20]);
+        this._createInt(_('Mouse circle opacity'), 'mouse-circle-opacity', [1, 255], [10, 20]);
+        this._createInt(_('Mouse circle repaint interval'), 'mouse-circle-repaint-interval', [1, 1000], [10, 20]);
 
         //this._changedPermitted = true;
+    },
+
+    _createLable(text, style) {
+        let label = null;
+        this.row_pos = this.row_pos + 1;
+        label = new Gtk.Label({
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        style.forEach(element => text = "<" + element + ">" + text + "</" + element + ">");
+        label.set_markup(text);
+        this.attach(label, 0, this.row_pos, 1, 1);
+    },
+
+    _createList(text, property_name, list) 
+    {
+        let label = null;
+        let widget = null;
+        this.row_pos = this.row_pos + 1;
+        label = new Gtk.Label({
+            label: text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.ComboBoxText();
+        list.forEach(element => widget.append(element[0], element[1]));
+        this._settings.bind(property_name, widget, 'active-id', Gio.SettingsBindFlags.DEFAULT);
+        this.attach(label, 0, this.row_pos, 1, 1);
+        this.attach(widget, 1, this.row_pos, 1, 1);        
+    },
+
+    _createInt(text, property_name, range, increments)
+    {
+        let label = null;
+        let widget = null;
+        let value = null;
+        this.row_pos = this.row_pos + 1;
+        label = new Gtk.Label({
+            label: text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.SpinButton({halign: Gtk.Align.END});
+        widget.set_sensitive(true);
+        widget.set_range(range[0], range[1]);
+        widget.set_value(this._settings.get_int(property_name));
+        widget.set_increments(increments[0], increments[1]);
+        widget.connect('value-changed', Lang.bind(this, function(w){
+             value = w.get_value_as_int();
+             this._settings.set_int(property_name, value);
+        }));
+        this.attach(label, 0, this.row_pos, 1, 1);
+        this.attach(widget, 1, this.row_pos, 1, 1);
+    },
+
+    _createDouble(text, property_name, range, increments)
+    {
+        let label = null;
+        let widget = null;
+        let value = null;
+        this.row_pos = this.row_pos + 1;
+        label = new Gtk.Label({
+            label: text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.SpinButton({halign:Gtk.Align.END, digits:1});
+        widget.set_sensitive(true);
+        widget.set_range(range[0], range[1]);
+        widget.set_value(this._settings.get_double(property_name));
+        widget.set_increments(increments[0], increments[1]);
+        widget.connect('value-changed', Lang.bind(this, function(w){
+            value = w.get_value();
+            this._settings.set_double(property_name, value);
+         }));
+        this.attach(label, 0, ++this.row_pos, 1, 1);
+        this.attach(widget, 1, this.row_pos, 1, 1);       
     },
 
 });
