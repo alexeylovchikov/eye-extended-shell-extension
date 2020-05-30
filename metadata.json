@@ -1,12 +1,11 @@
 {
   "uuid": "eye-extended@als.kz", 
-  "name": "TopIcons Plus",
+  "name": "Eye and Mouse Extended",
   "settings-schema": "kz.als.eye-extended",
   "gettext-domain": "EyeExtended",
   "shell-version": [
     "3.36.0"
   ], 
   "url": "https://github.com/alexeylovchikov/eye-extended-shell-extension", 
-  "name": "Eye Extended",
-  "description": "Adds an eye to the indicator bar that follows your cursor"
+  "description": "Adds an eye to the indicator bar that follows your cursor \nYou can also display the mouse indicator, perhaps it will help you with the problem of displaying the mouse cursor in Skype"
 }

@@ -1,4 +1,4 @@
-## Eye Extended Extension
+## Eye and Mouse Extended Extension
 
 ![](img/vpn.png) 
 
@@ -16,5 +16,3 @@ Documentation for anyone stumbling across this repo:
 2. `./install.sh`
 
 3. Then you'll want to activate the plugin either by using the Gnome Tweak Tool or by execing `gnome-shell-extension-prefs` and using that UI.
-
----
