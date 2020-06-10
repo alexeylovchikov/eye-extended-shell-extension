@@ -24,12 +24,14 @@ schemas_build: ## Build schemas
 
 locale_build: ## Build locale
 	@msgfmt locale/ru/LC_MESSAGES/EyeExtended.po -o locale/ru/LC_MESSAGES/EyeExtended.mo &&\
-	msgfmt locale/en/LC_MESSAGES/EyeExtended.po -o locale/en/LC_MESSAGES/EyeExtended.mo
+	msgfmt locale/en/LC_MESSAGES/EyeExtended.po -o locale/en/LC_MESSAGES/EyeExtended.mo &&\
+	msgfmt locale/de/LC_MESSAGES/EyeExtended.po -o locale/de/LC_MESSAGES/EyeExtended.mo
 
 locale_update: ## Update locale
 	@xgettext --no-location -o locale/EyeExtended.pot *.js &&\
 	msgmerge --no-location --previous --silent --lang=ru locale/ru/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/ru/LC_MESSAGES/EyeExtended.po &&\
-	msgmerge --no-location --previous --silent --lang=en locale/en/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/en/LC_MESSAGES/EyeExtended.po
+	msgmerge --no-location --previous --silent --lang=en locale/en/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/en/LC_MESSAGES/EyeExtended.po &&\
+	msgmerge --no-location --previous --silent --lang=de locale/de/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/de/LC_MESSAGES/EyeExtended.po
 
 locale_create: ## Create new locale
 	@read -p "Enter locale: " vlocale; \
