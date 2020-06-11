@@ -185,6 +185,7 @@ const Eye = new Lang.Class({
             );
 
             this.setMouseCirclePropertyUpdate();
+            this._on_mouse_circle_timeout();
             Main.uiGroup.add_child(this.mouse_pointer);
 
             this._mouseListener.register('mouse');
