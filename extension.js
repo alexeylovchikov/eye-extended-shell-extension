@@ -213,9 +213,16 @@ const Eye = new Lang.Class({
         return true;
     },
 
-    _on_eye_click: function() {
-        this.mouse_circle_show = !this.mouse_circle_show;
-        this.setMouseCircleActive(this.mouse_circle_show);
+    _on_eye_click: function(actor, event) {
+        let button = event.get_button();
+
+        if (button == 1 /* Left button */) {
+            this.mouse_circle_show = !this.mouse_circle_show;
+            this.setMouseCircleActive(this.mouse_circle_show);
+        }
+
+        if (button == 2 /* Right button */) {
+        }
     },
 
     _draw: function(area)
