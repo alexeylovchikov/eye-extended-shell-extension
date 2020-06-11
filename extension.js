@@ -11,6 +11,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const Gio = imports.gi.Gio;
+const Atspi = imports.gi.Atspi;
+const Tweener = imports.ui.tweener;
 
 let settings = null;
 let eye = null;
@@ -41,6 +43,54 @@ const Eye = new Lang.Class({
         this.area = new St.DrawingArea();
         this.actor.add_actor(this.area);
         this.actor.connect('button-press-event', this._on_eye_click.bind(this));
+
+        Atspi.init();
+
+        this._mouseListener = Atspi.EventListener.new(Lang.bind(this, function(event) {
+            switch (event.type) {
+                case 'mouse:abs':
+                    break;
+                case 'mouse:button:1p':
+                    let [mouse_x, mouse_y, mask] = global.get_pointer();
+
+                    let actor_size = this.mouse_circle_size;
+                    let actor_scale = actor_size > 20 ? 1.5 : 3;
+
+                    let actor = new St.Icon({
+                        reactive : false,
+                        can_focus : false,
+                        track_hover : false,
+                        gicon : Gio.icon_new_for_string(`${Me.path}//img/circle/${this.mouse_circle_mode}.svg`),
+                        icon_size : actor_size,
+                        opacity : this.mouse_circle_opacity
+                    });
+
+                    Main.uiGroup.add_child(actor);
+
+                    actor.set_position(
+                        mouse_x - (actor_size / 2),
+                        mouse_y - (actor_size / 2)
+                    );
+
+                    Tweener.addTween(actor, {
+                        x: mouse_x - (actor_size * actor_scale / 2),
+                        y: mouse_y - (actor_size * actor_scale / 2),
+                        scale_x: actor_scale,
+                        scale_y: actor_scale,
+                        opacity: 0,
+                        time: 0.5,
+                        transition: 'easeOutQuad',
+                        onComplete: function () {
+                            Main.uiGroup.remove_child(actor);
+                            actor.destroy;
+                        }
+                    });
+
+                    break;
+                case 'mouse:button:1r':
+                    break;
+            }
+        }));
 
         this.setActive(true);
     },
@@ -135,8 +185,13 @@ const Eye = new Lang.Class({
             );
 
             this.setMouseCirclePropertyUpdate();
-            this.mouse_pointer.show();
             Main.uiGroup.add_child(this.mouse_pointer);
+
+            this._mouseListener.register('mouse');
+
+            this.mouse_pointer.show();
+        } else {
+            this._mouseListener.deregister('mouse');
         }
     },
 
