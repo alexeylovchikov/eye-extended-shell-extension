@@ -1,6 +1,6 @@
 ## Eye and Mouse Extended Extension
 
-![](img/vpn.png) 
+![](eye-extended@als.kz/img/img.png) 
 
 This is Fork at https://extensions.gnome.org/extension/213/eye/
 
