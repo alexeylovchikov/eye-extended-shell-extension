@@ -20,28 +20,27 @@ debug_log: ## Debug log
 	@journalctl -f -o cat /usr/bin/gnome-shell
 
 schemas_build: ## Build schemas
-	@glib-compile-schemas schemas/
+	@glib-compile-schemas eye-extended@als.kz/schemas/
 
 locale_build: ## Build locale
-	@msgfmt locale/ru/LC_MESSAGES/EyeExtended.po -o locale/ru/LC_MESSAGES/EyeExtended.mo &&\
-	msgfmt locale/en/LC_MESSAGES/EyeExtended.po -o locale/en/LC_MESSAGES/EyeExtended.mo &&\
-	msgfmt locale/de/LC_MESSAGES/EyeExtended.po -o locale/de/LC_MESSAGES/EyeExtended.mo
+	@msgfmt eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.po -o eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.mo &&\
+	msgfmt eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.po -o eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.mo &&\
+	msgfmt eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po -o eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.mo
 
 locale_update: ## Update locale
-	@xgettext --no-location -o locale/EyeExtended.pot *.js &&\
-	msgmerge --no-location --previous --silent --lang=ru locale/ru/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/ru/LC_MESSAGES/EyeExtended.po &&\
-	msgmerge --no-location --previous --silent --lang=en locale/en/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/en/LC_MESSAGES/EyeExtended.po &&\
-	msgmerge --no-location --previous --silent --lang=de locale/de/LC_MESSAGES/EyeExtended.po locale/EyeExtended.pot -o locale/de/LC_MESSAGES/EyeExtended.po
+	@xgettext --no-location -o eye-extended@als.kz/locale/EyeExtended.pot *.js &&\
+	msgmerge --no-location --previous --silent --lang=ru eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.po &&\
+	msgmerge --no-location --previous --silent --lang=en eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.po &&\
+	msgmerge --no-location --previous --silent --lang=de eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po
 
 locale_create: ## Create new locale
 	@read -p "Enter locale: " vlocale; \
-	mkdir -p locale/$$vlocale/LC_MESSAGES/ &&\
-	xgettext --no-location -o locale/EyeExtended.pot *.js &&\
-	msginit -l $$vlocale -i locale/EyeExtended.pot -o locale/$$vlocale/LC_MESSAGES/EyeExtended.po
+	mkdir -p eye-extended@als.kz/locale/$$veye-extended@als.kz/locale/LC_MESSAGES/ &&\
+	xgettext --no-location -o eye-extended@als.kz/locale/EyeExtended.pot *.js &&\
+	msginit -l $$vlocale -i eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/$$veye-extended@als.kz/locale/LC_MESSAGES/EyeExtended.po
 
 install: ## Install extansion
 	@rm -rf ~/.local/share/gnome-shell/extensions/eye-extended@als.kz &&\
-	mkdir -p ~/.local/share/gnome-shell/extensions/eye-extended@als.kz &&\
-	cp -R . ~/.local/share/gnome-shell/extensions/eye-extended@als.kz
+	cp -R eye-extended@als.kz/ ~/.local/share/gnome-shell/extensions
 
 # lg - Extansion lg manager, run ALT+F2
