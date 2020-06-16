@@ -156,10 +156,7 @@ const Eye = new Lang.Class({
     setMouseCirclePropertyUpdate: function()
     {
         if (this.mouse_pointer) {
-            if (this.mouse_pointer) {
-                this.mouse_pointer.gicon = Gio.icon_new_for_string(
-                    `${Me.path}//img/circle/${this.mouse_circle_mode}.svg`);
-            }
+            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
             this.mouse_pointer.icon_size = this.mouse_circle_size;
             this.mouse_pointer.opacity = this.mouse_circle_opacity;
         }
