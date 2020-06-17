@@ -17,7 +17,7 @@ help:
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 debug_log: ## Debug log
-	@journalctl -f -o cat /usr/bin/gnome-shell
+	@journalctl -f -o cat /usr/bin/gnome-shell | grep eye:
 
 schemas_build: ## Build schemas
 	@glib-compile-schemas eye-extended@als.kz/schemas/

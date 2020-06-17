@@ -11,11 +11,16 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
 const Tweener = imports.ui.tweener;
 
 let settings = null;
 let eye = null;
+
+function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 const Eye = new Lang.Class({
     Name: 'Eye',
@@ -44,50 +49,19 @@ const Eye = new Lang.Class({
         this.actor.add_actor(this.area);
         this.actor.connect('button-press-event', this._on_eye_click.bind(this));
 
+        this.icons_dir = GLib.build_filenamev([GLib.get_user_cache_dir(), Me.metadata['gettext-domain'], 'icons']);
+        if (GLib.mkdir_with_parents(this.icons_dir, 0o777) < 0)
+            throw new Error('Failed to create icon cache dir');
+
         Atspi.init();
 
         this._mouseListener = Atspi.EventListener.new(Lang.bind(this, function(event) {
             switch (event.type) {
-                case 'mouse:abs':
-                    break;
                 case 'mouse:button:1p':
-                    let [mouse_x, mouse_y, mask] = global.get_pointer();
-
-                    let actor_size = this.mouse_circle_size;
-                    let actor_scale = actor_size > 20 ? 1.5 : 3;
-
-                    let actor = new St.Icon({
-                        reactive : false,
-                        can_focus : false,
-                        track_hover : false,
-                        gicon : Gio.icon_new_for_string(`${Me.path}//img/circle/${this.mouse_circle_mode}.svg`),
-                        icon_size : actor_size,
-                        opacity : this.mouse_circle_opacity
-                    });
-
-                    Main.uiGroup.add_child(actor);
-
-                    actor.set_position(
-                        mouse_x - (actor_size / 2),
-                        mouse_y - (actor_size / 2)
-                    );
-
-                    Tweener.addTween(actor, {
-                        x: mouse_x - (actor_size * actor_scale / 2),
-                        y: mouse_y - (actor_size * actor_scale / 2),
-                        scale_x: actor_scale,
-                        scale_y: actor_scale,
-                        opacity: 0,
-                        time: 0.5,
-                        transition: 'easeOutQuad',
-                        onComplete: function () {
-                            Main.uiGroup.remove_child(actor);
-                            actor.destroy;
-                        }
-                    });
-
+                    this._click_animation('left');
                     break;
-                case 'mouse:button:1r':
+                case 'mouse:button:3p':
+                    this._click_animation('right');
                     break;
             }
         }));
@@ -99,6 +73,45 @@ const Eye = new Lang.Class({
         this.setActive(false);
         this.area.destroy();
         this.parent();
+    },
+
+    _click_animation: function(click_type) {
+        let [mouse_x, mouse_y, mask] = global.get_pointer();
+        let actor_scale = this.mouse_circle_size > 20 ? 1.5 : 3;
+
+        this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.icons_dir}/${click_type}_click.svg`);
+
+        let actor = new St.Icon({
+            reactive : false,
+            can_focus : false,
+            track_hover : false,
+            gicon : Gio.icon_new_for_string(`${this.icons_dir}/${click_type}_click.svg`),
+            icon_size : this.mouse_circle_size,
+            opacity : this.mouse_circle_opacity
+        });
+
+        Main.uiGroup.add_child(actor);
+
+        actor.set_position(
+            mouse_x - (this.mouse_circle_size / 2),
+            mouse_y - (this.mouse_circle_size / 2)
+        );
+
+        let self = this;
+        Tweener.addTween(actor, {
+            x: mouse_x - (this.mouse_circle_size * actor_scale / 2),
+            y: mouse_y - (this.mouse_circle_size * actor_scale / 2),
+            scale_x: actor_scale,
+            scale_y: actor_scale,
+            opacity: 0,
+            time: 0.5,
+            transition: 'easeOutQuad',
+            onComplete: function () {
+                Main.uiGroup.remove_child(actor);
+                actor.destroy;
+                self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.icons_dir}/default.svg`);
+            }
+        });
     },
 
     setActive: function(enabled)
@@ -152,14 +165,43 @@ const Eye = new Lang.Class({
         this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
         this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
     },
+    
+    _mouseCircleReload: function()
+    {
+
+    },
 
     setMouseCirclePropertyUpdate: function()
     {
         if (this.mouse_pointer) {
-            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
-            this.mouse_pointer.icon_size = this.mouse_circle_size;
-            this.mouse_pointer.opacity = this.mouse_circle_opacity;
+            this._createCachedIcon('default', 'red');
+            this._createCachedIcon('left_click', 'green');
+            this._createCachedIcon('right_click', 'blue');
+
+            sleep(500).then(() => {
+                this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.icons_dir}/default.svg`);
+                this.mouse_pointer.icon_size = this.mouse_circle_size;
+                this.mouse_pointer.opacity = this.mouse_circle_opacity;
+            })
         }
+    },
+
+    _createCachedIcon(name, color)
+    {
+        // Load content
+        let source = Gio.File.new_for_path(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
+        let [l_success, contents] = source.load_contents(null);
+        contents = imports.byteArray.toString(contents);
+
+        // Replace to new color
+        contents = contents.replace('fill="#000000"', `fill="${color}"`);
+
+        // Save content to cache dir
+        let dest = Gio.File.new_for_path(`${this.icons_dir}/${name}.svg`);
+        if (!dest.query_exists(null)) {
+            dest.create(Gio.FileCreateFlags.NONE, null);
+        }
+        let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
     },
 
     setMouseCircleActive: function(enabled)
