@@ -11,20 +11,37 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
 const Tweener = imports.ui.tweener;
 
 let settings = null;
 let eye = null;
 
+function logex(text) {
+    log(`eye: ${text}`);
+}
+
 const Eye = new Lang.Class({
     Name: 'Eye',
     Extends: PanelMenu.Button,
 
-    _init: function(settings)
+    _initDataDir: function() {
+        let data_dir = `${GLib.get_user_data_dir()}/${Me.metadata['gettext-domain']}`;
+
+        if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
+            throw new Error('Failed to create cache dir');
+
+        logex(data_dir);
+        return data_dir;
+    },
+
+    _init: function(settings, data_dir)
     {
+        // Load superclass method
         PanelMenu.Button.prototype._init.call(this, "");
 
+        // Load parameters for Eye
         this.eye_mode = settings.get_string('eye-mode');
         this.eye_position = settings.get_string('eye-position');
         this.eye_position_weight = settings.get_int('eye-position-weight');
@@ -32,70 +49,31 @@ const Eye = new Lang.Class({
         this.eye_margin = settings.get_double('eye-margin');
         this.eye_repaint_interval = settings.get_int('eye-repaint-interval');
 
+        // Load parameters for Mouse circle
         this.mouse_circle_mode = settings.get_int('mouse-circle-mode');
         this.mouse_circle_size = settings.get_int('mouse-circle-size');
         this.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
         this.mouse_circle_repaint_interval = settings.get_int('mouse-circle-repaint-interval');
+        this.mouse_circle_color = settings.get_string('mouse-circle-color');
+        this.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
+        this.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
 
         this.mouse_circle_show = false;
         this.mouse_pointer = null;
+        this.data_dir = this._initDataDir();
 
         this.area = new St.DrawingArea();
         this.actor.add_actor(this.area);
-        this.actor.connect('button-press-event', this._on_eye_click.bind(this));
+        this.actor.connect('button-press-event', this._eyeClick.bind(this));
 
         Atspi.init();
-
-        this._mouseListener = Atspi.EventListener.new(Lang.bind(this, function(event) {
-            switch (event.type) {
-                case 'mouse:abs':
-                    break;
-                case 'mouse:button:1p':
-                    let [mouse_x, mouse_y, mask] = global.get_pointer();
-
-                    let actor_size = this.mouse_circle_size;
-                    let actor_scale = actor_size > 20 ? 1.5 : 3;
-
-                    let actor = new St.Icon({
-                        reactive : false,
-                        can_focus : false,
-                        track_hover : false,
-                        gicon : Gio.icon_new_for_string(`${Me.path}//img/circle/${this.mouse_circle_mode}.svg`),
-                        icon_size : actor_size,
-                        opacity : this.mouse_circle_opacity
-                    });
-
-                    Main.uiGroup.add_child(actor);
-
-                    actor.set_position(
-                        mouse_x - (actor_size / 2),
-                        mouse_y - (actor_size / 2)
-                    );
-
-                    Tweener.addTween(actor, {
-                        x: mouse_x - (actor_size * actor_scale / 2),
-                        y: mouse_y - (actor_size * actor_scale / 2),
-                        scale_x: actor_scale,
-                        scale_y: actor_scale,
-                        opacity: 0,
-                        time: 0.5,
-                        transition: 'easeOutQuad',
-                        onComplete: function () {
-                            Main.uiGroup.remove_child(actor);
-                            actor.destroy;
-                        }
-                    });
-
-                    break;
-                case 'mouse:button:1r':
-                    break;
-            }
-        }));
+        this._mouseListener = Atspi.EventListener.new(Lang.bind(this, this._mouseCircleClick));
 
         this.setActive(true);
     },
 
     destroy() {
+        this.setMouseCircleActive(false);
         this.setActive(false);
         this.area.destroy();
         this.parent();
@@ -120,80 +98,38 @@ const Eye = new Lang.Class({
             this._mouse_circle_update_handler = null;
         }
 
-        if (this.mouse_pointer) {
-            this.mouse_pointer.destroy();
-            this.mouse_pointer = null;
-        }
-
         if (enabled) {
-            this._repaint_handler = this.area.connect("repaint", Lang.bind(this, this._draw));
+            this._repaint_handler = this.area.connect("repaint", Lang.bind(this, this._eyeDraw));
 
             this._eye_update_handler = Mainloop.timeout_add(
-                this.eye_repaint_interval, Lang.bind(this, this._on_eye_timeout)
+                this.eye_repaint_interval, Lang.bind(this, this._eyeTimeout)
             );
 
             this.area.queue_repaint();
-
-            this.mouse_pointer = new St.Icon({
-                reactive : false,
-                can_focus : false,
-                track_hover : false
-            });
         }
     },
 
-    setEyePropertyUpdate: function()
+    // MOUSE CIRCLE
+
+    _mouseCircleCreateDataIcon(name, color)
     {
-        Main.panel.addToStatusArea(
-            'EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position
-        );
+        // Load content
+        let source = Gio.File.new_for_path(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
+        let [l_success, contents] = source.load_contents(null);
+        contents = imports.byteArray.toString(contents);
 
-        this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
-        this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
-        this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
+        // Replace to new color
+        contents = contents.replace('fill="#000000"', `fill="${color}"`);
+
+        // Save content to cache dir
+        let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_circle_mode}_${name}_${color}.svg`);
+        if (!dest.query_exists(null)) {
+            dest.create(Gio.FileCreateFlags.NONE, null);
+        }
+        let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
     },
 
-    setMouseCirclePropertyUpdate: function()
-    {
-        if (this.mouse_pointer) {
-            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
-            this.mouse_pointer.icon_size = this.mouse_circle_size;
-            this.mouse_pointer.opacity = this.mouse_circle_opacity;
-        }
-    },
-
-    setMouseCircleActive: function(enabled)
-    {
-        if (enabled == null) {
-            enabled = this.mouse_circle_show;
-        }
-
-        this.mouse_pointer.hide();
-        Main.uiGroup.remove_child(this.mouse_pointer);
-
-        if(this._mouse_circle_update_handler) {
-            Mainloop.source_remove(this._mouse_circle_update_handler);
-            this._mouse_circle_update_handler = null;
-        }
-
-        if (enabled) {
-            this._mouse_circle_update_handler = Mainloop.timeout_add(
-                this.mouse_circle_repaint_interval, Lang.bind(this, this._on_mouse_circle_timeout)
-            );
-
-            this.setMouseCirclePropertyUpdate();
-            this._on_mouse_circle_timeout();
-            Main.uiGroup.add_child(this.mouse_pointer);
-
-            this._mouseListener.register('mouse');
-
-            this.mouse_pointer.show();
-        } else {
-            this._mouseListener.deregister('mouse');
-        }
-    },
-
-    _on_mouse_circle_timeout: function()
+    _mouseCircleTimeout: function()
     {
         if (this.mouse_pointer) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
@@ -205,13 +141,118 @@ const Eye = new Lang.Class({
         return true;
     },
 
-    _on_eye_timeout: function()
+    _mouseCircleClick: function(event) {
+
+        let clickAnimation = function(self, click_type, color) {
+            let [mouse_x, mouse_y, mask] = global.get_pointer();
+            let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
+
+            self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
+
+            let actor = new St.Icon({
+                x: mouse_x - (self.mouse_circle_size / 2),
+                y: mouse_y - (self.mouse_circle_size / 2),
+                reactive : false,
+                can_focus : false,
+                track_hover : false,
+                icon_size : self.mouse_circle_size,
+                opacity : self.mouse_circle_opacity,
+                gicon : Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`)
+            });
+
+            Main.uiGroup.add_child(actor);
+
+            Tweener.addTween(actor, {
+                x: mouse_x - (self.mouse_circle_size * actor_scale / 2),
+                y: mouse_y - (self.mouse_circle_size * actor_scale / 2),
+                scale_x: actor_scale,
+                scale_y: actor_scale,
+                opacity: 0,
+                time: 0.5,
+                transition: 'easeOutQuad',
+                onComplete: function () {
+                    Main.uiGroup.remove_child(actor);
+                    actor.destroy;
+                    actor = null;
+
+                    self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
+                }
+            });
+        };
+
+        switch (event.type) {
+            case 'mouse:button:1p':
+                clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
+                break;
+            case 'mouse:button:3p':
+                clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
+                break;
+        }
+    },
+
+    setMouseCirclePropertyUpdate: function()
+    {
+        this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
+        this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
+        this._mouseCircleCreateDataIcon('right_click', this.mouse_circle_right_click_color);
+
+        if (this.mouse_pointer) {
+            this.mouse_pointer.icon_size = this.mouse_circle_size;
+            this.mouse_pointer.opacity = this.mouse_circle_opacity;
+            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
+        }
+    },
+
+    setMouseCircleActive: function(enabled)
+    {
+        if (enabled == null) {
+            enabled = this.mouse_circle_show;
+        }
+
+        if (this.mouse_pointer) {
+            Main.uiGroup.remove_child(this.mouse_pointer);
+            this.mouse_pointer.destroy();
+            this.mouse_pointer = null;
+        }
+
+        if (enabled) {
+            this._mouse_circle_update_handler = Mainloop.timeout_add(
+                this.mouse_circle_repaint_interval, Lang.bind(this, this._mouseCircleTimeout)
+            );
+
+            this.mouse_pointer = new St.Icon({
+                reactive : false,
+                can_focus : false,
+                track_hover : false,
+                icon_size: this.mouse_circle_size,
+                opacity: this.mouse_circle_opacity,
+                gicon: Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`)
+            });
+            Main.uiGroup.add_child(this.mouse_pointer);
+
+            this.setMouseCirclePropertyUpdate();
+            this._mouseCircleTimeout();
+
+            this._mouseListener.register('mouse');
+        } else {
+            if(this._mouse_circle_update_handler) {
+                Mainloop.source_remove(this._mouse_circle_update_handler);
+                this._mouse_circle_update_handler = null;
+            }
+
+            this._mouseListener.deregister('mouse');
+        }
+    },
+
+    // EYE
+
+    _eyeTimeout: function()
     {
         this.area.queue_repaint();
         return true;
     },
 
-    _on_eye_click: function(actor, event) {
+    _eyeClick: function(actor, event) {
         let button = event.get_button();
 
         if (button == 1 /* Left button */) {
@@ -223,10 +264,33 @@ const Eye = new Lang.Class({
         }
     },
 
-    _draw: function(area)
+    _eyeDraw: function(area)
     {
+        let get_pos = function(self)
+        {
+            let area_x = 0;
+            let area_y = 0;
+
+            let obj = self.area;
+            do
+            {
+                try {
+                    [tx, ty] = obj.get_position();
+                } catch {
+                    tx = 0;
+                    ty = 0;
+                }
+                area_x += tx;
+                area_y += ty;
+                obj = obj.get_parent();
+            }
+            while(obj);
+
+            return [area_x, area_y];
+        };
+        
         let [area_width, area_height] = area.get_surface_size();
-        let [area_x, area_y] = this._get_pos();
+        let [area_x, area_y] = get_pos(this);
         area_x += area_width / 2;
         area_y += area_height / 2;
 
@@ -316,7 +380,6 @@ const Eye = new Lang.Class({
             cr.clip();
         }
 
-
         cr.rotate(mouse_ang);
         cr.setLineWidth(this.eye_line_width / iris_rad);
 
@@ -336,27 +399,12 @@ const Eye = new Lang.Class({
         cr.restore();
     },
 
-    _get_pos: function()
+    setEyePropertyUpdate: function()
     {
-        let area_x = 0;
-        let area_y = 0;
-
-        let obj = this.area;
-        do
-        {
-            try {
-                [tx, ty] = obj.get_position();
-            } catch {
-                tx = 0;
-                ty = 0;
-            }
-            area_x += tx;
-            area_y += ty;
-            obj = obj.get_parent();
-        }
-        while(obj);
-
-        return [area_x, area_y];
+        Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position);
+        this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
+        this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
+        this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
     },
 });
 
@@ -372,6 +420,9 @@ function setEyePropertyUpdate(icon) {
         eye.mouse_circle_mode = settings.get_int('mouse-circle-mode');
         eye.mouse_circle_size = settings.get_int('mouse-circle-size');
         eye.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
+        eye.mouse_circle_color = settings.get_string('mouse-circle-color');
+        eye.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
+        eye.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
         eye.setMouseCirclePropertyUpdate();
     }
 }
@@ -409,6 +460,9 @@ function enable()
     settings.connect('changed::mouse-circle-size', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-opacity', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-repaint-interval', Lang.bind(this, setMouseCircleRepaintInterval));
+    settings.connect('changed::mouse-circle-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-left-click-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-right-click-color', Lang.bind(this, setEyePropertyUpdate));
 
     eye = new Eye(settings);
 }
