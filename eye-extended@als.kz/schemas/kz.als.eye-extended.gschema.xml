@@ -45,6 +45,19 @@
       <default>10</default>
       <summary>Mouse circle repaint interval</summary>
     </key>
-    
+
+    <key name="mouse-circle-color" type="s">
+      <default>"#ffc107"</default>
+      <summary>Mouse circle color</summary>
+    </key>
+    <key name="mouse-circle-left-click-color" type="s">
+      <default>"#ffc107"</default>
+      <summary>Mouse circle left click color</summary>
+    </key>
+    <key name="mouse-circle-right-click-color" type="s">
+      <default>"#ffc107"</default>
+      <summary>Mouse circle right click color</summary>
+    </key>
+
   </schema>
 </schemalist>

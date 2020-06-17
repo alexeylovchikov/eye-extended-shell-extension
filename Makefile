@@ -28,7 +28,7 @@ locale_build: ## Build locale
 	msgfmt eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po -o eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.mo
 
 locale_update: ## Update locale
-	@xgettext --no-location -o eye-extended@als.kz/locale/EyeExtended.pot *.js &&\
+	@xgettext --no-location -o eye-extended@als.kz/locale/EyeExtended.pot eye-extended@als.kz/*.js &&\
 	msgmerge --no-location --previous --silent --lang=ru eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/ru/LC_MESSAGES/EyeExtended.po &&\
 	msgmerge --no-location --previous --silent --lang=en eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/en/LC_MESSAGES/EyeExtended.po &&\
 	msgmerge --no-location --previous --silent --lang=de eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po eye-extended@als.kz/locale/EyeExtended.pot -o eye-extended@als.kz/locale/de/LC_MESSAGES/EyeExtended.po

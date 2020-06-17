@@ -1,7 +1,8 @@
 const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
+const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
+const Gdk = imports.gi.Gdk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -57,7 +58,33 @@ const EyeExtendedSettings = new GObject.Class({
         this._createInt(_('Mouse circle opacity'), 'mouse-circle-opacity', [1, 255], [10, 20]);
         this._createInt(_('Mouse circle repaint interval'), 'mouse-circle-repaint-interval', [1, 1000], [10, 20]);
 
+        this._createColor(_('Mouse circle color'), 'mouse-circle-color');
+        this._createColor(_('Mouse circle left click color'), 'mouse-circle-left-click-color');
+        this._createColor(_('Mouse circle right click color'), 'mouse-circle-right-click-color');
+
         //this._changedPermitted = true;
+    },
+
+    _createColor(text, property_name)
+    {
+        let label = null;
+        let widget = null;
+        let color = null;
+        this.row_pos = this.row_pos + 1;
+        label = new Gtk.Label({
+            label: text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        widget = new Gtk.ColorButton({halign: Gtk.Align.END});
+        widget.set_color(Gdk.Color.parse(this._settings.get_string(property_name)).pop());
+        widget.connect('color-set', (button) => {
+            color = button.get_color().to_string();
+            color = color[0] + color[1] + color[2] + color[5] + color[6] + color[9] + color[10];
+            this._settings.set_string(property_name, color);
+        });
+        this.attach(label, 0, this.row_pos, 1, 1);
+        this.attach(widget, 1, this.row_pos, 1, 1);
     },
 
     _createLable(text, style) {

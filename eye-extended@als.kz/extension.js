@@ -54,6 +54,9 @@ const Eye = new Lang.Class({
         this.mouse_circle_size = settings.get_int('mouse-circle-size');
         this.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
         this.mouse_circle_repaint_interval = settings.get_int('mouse-circle-repaint-interval');
+        this.mouse_circle_color = settings.get_string('mouse-circle-color');
+        this.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
+        this.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
 
         this.mouse_circle_show = false;
         this.mouse_pointer = null;
@@ -119,7 +122,7 @@ const Eye = new Lang.Class({
         contents = contents.replace('fill="#000000"', `fill="${color}"`);
 
         // Save content to cache dir
-        let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_circle_mode}_${name}.svg`);
+        let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_circle_mode}_${name}_${color}.svg`);
         if (!dest.query_exists(null)) {
             dest.create(Gio.FileCreateFlags.NONE, null);
         }
@@ -140,11 +143,11 @@ const Eye = new Lang.Class({
 
     _mouseCircleClick: function(event) {
 
-        let clickAnimation = function(self, click_type) {
+        let clickAnimation = function(self, click_type, color) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
             let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
 
-            self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_click.svg`);
+            self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
 
             let actor = new St.Icon({
                 x: mouse_x - (self.mouse_circle_size / 2),
@@ -154,7 +157,7 @@ const Eye = new Lang.Class({
                 track_hover : false,
                 icon_size : self.mouse_circle_size,
                 opacity : self.mouse_circle_opacity,
-                gicon : Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_click.svg`)
+                gicon : Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`)
             });
 
             Main.uiGroup.add_child(actor);
@@ -172,31 +175,31 @@ const Eye = new Lang.Class({
                     actor.destroy;
                     actor = null;
 
-                    self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default.svg`);
+                    self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
                 }
             });
         };
 
         switch (event.type) {
             case 'mouse:button:1p':
-                clickAnimation(this,'left');
+                clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
                 break;
             case 'mouse:button:3p':
-                clickAnimation(this,'right');
+                clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
                 break;
         }
     },
 
     setMouseCirclePropertyUpdate: function()
     {
-        this._mouseCircleCreateDataIcon('default', 'red');
-        this._mouseCircleCreateDataIcon('left_click', 'green');
-        this._mouseCircleCreateDataIcon('right_click', 'blue');
+        this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
+        this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
+        this._mouseCircleCreateDataIcon('right_click', this.mouse_circle_right_click_color);
 
         if (this.mouse_pointer) {
             this.mouse_pointer.icon_size = this.mouse_circle_size;
             this.mouse_pointer.opacity = this.mouse_circle_opacity;
-            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default.svg`);
+            this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
         }
     },
 
@@ -223,7 +226,7 @@ const Eye = new Lang.Class({
                 track_hover : false,
                 icon_size: this.mouse_circle_size,
                 opacity: this.mouse_circle_opacity,
-                gicon: Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default.svg`)
+                gicon: Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`)
             });
             Main.uiGroup.add_child(this.mouse_pointer);
 
@@ -417,6 +420,9 @@ function setEyePropertyUpdate(icon) {
         eye.mouse_circle_mode = settings.get_int('mouse-circle-mode');
         eye.mouse_circle_size = settings.get_int('mouse-circle-size');
         eye.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
+        eye.mouse_circle_color = settings.get_string('mouse-circle-color');
+        eye.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
+        eye.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
         eye.setMouseCirclePropertyUpdate();
     }
 }
@@ -454,6 +460,9 @@ function enable()
     settings.connect('changed::mouse-circle-size', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-opacity', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-repaint-interval', Lang.bind(this, setMouseCircleRepaintInterval));
+    settings.connect('changed::mouse-circle-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-left-click-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-right-click-color', Lang.bind(this, setEyePropertyUpdate));
 
     eye = new Eye(settings);
 }
