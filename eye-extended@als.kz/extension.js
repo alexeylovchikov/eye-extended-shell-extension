@@ -11,6 +11,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const Gio = imports.gi.Gio;
+const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
 const Tweener = imports.ui.tweener;
@@ -336,7 +337,8 @@ const Eye = new Lang.Class({
         let theme_node = this.area.get_theme_node();
 
         if (this.mouse_circle_show) {
-            Clutter.cairo_set_source_color(cr, Clutter.Color.new(255, 215, 0, 255));
+            let [ok, color] = Clutter.Color.from_string(this.mouse_circle_color);
+            Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
         } else {
             Clutter.cairo_set_source_color(cr, theme_node.get_foreground_color());
         }
