@@ -148,7 +148,9 @@ const Eye = new Lang.Class({
             let [mouse_x, mouse_y, mask] = global.get_pointer();
             let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
 
-            self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
+            if (self.mouse_pointer) {
+                self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
+            }
 
             let actor = new St.Icon({
                 x: mouse_x - (self.mouse_circle_size / 2),
@@ -176,7 +178,9 @@ const Eye = new Lang.Class({
                     actor.destroy;
                     actor = null;
 
-                    self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
+                    if (self.mouse_pointer) {
+                        self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
+                    }
                 }
             });
         };
@@ -275,11 +279,11 @@ const Eye = new Lang.Class({
             let obj = self.area;
             do
             {
+                let tx = 0;
+                let ty = 0;
                 try {
                     [tx, ty] = obj.get_position();
                 } catch {
-                    tx = 0;
-                    ty = 0;
                 }
                 area_x += tx;
                 area_y += ty;
