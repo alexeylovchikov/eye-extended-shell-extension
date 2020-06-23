@@ -403,6 +403,7 @@ const Eye = new Lang.Class({
 
         cr.save();
         cr.restore();
+        cr.$dispose();
     },
 
     setEyePropertyUpdate: function()
