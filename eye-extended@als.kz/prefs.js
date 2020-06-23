@@ -15,82 +15,22 @@ function init() {
 }
 
 const EyeExtendedSettings = new GObject.Class({
-    Name: 'EyeExtendedPrefs',
+    Name: 'EyeExtendedSettings',
     Extends: Gtk.Grid,
 
     _init: function(params) {
-
         this.parent(params);
         this.margin = 24;
         this.spacing = 28;
-        this.row_spacing = 4;
+        this.row_spacing = 6;
 
         this._settings = Convenience.getSettings();
-        
+
         this.row_pos = -1;
-
-        // Eye properties
-        // =======================
-        this._createLable(_('Eye properties'), ['b'], 0, true);
-
-        this._createLable(_('Eye mode'), [], 0, true);
-        this._createList('eye-mode', [
-            ["bulb", _("Bulb")], 
-            ["lids", _("Lids")]
-        ], 2);
-
-        this._createLable(_('Eye position'), [], 0, true);
-        this._createList('eye-position', [
-            ["center", _("Center")], 
-            ["right", _("Right")], 
-            ["left", _("Left")]
-        ], 2);
-
-        this._createLable(_('Eye position weight'), [], 0, true);
-        this._createInt('eye-position-weight', [-255, 255], [1, 2], 2);
-
-        this._createLable(_('Eye line width'), [], 0, true);
-        this._createDouble('eye-line-width', [0.0, 5.0], [0.1, 0.2], 2);
-
-        this._createLable(_('Eye margin'), [], 0, true);
-        this._createDouble('eye-margin', [0.0, 5.0], [0.1, 0.2], 2);
-
-        this._createLable(_('Eye repaint interval'), [], 0, true);
-        this._createInt('eye-repaint-interval', [1, 1000], [10, 20], 2);
-    
-        // Mouse circle properties
-        // =======================
-        this._createLable(_('Mouse circle properties'),['b'], 0, true);
-        this._createLable(_('To activate, click on the eye'),['b', 'i'], 0, true);
-
-        this._createLable(_('Mouse circle mode'), [], 0, true);
-        this._createInt('mouse-circle-mode', [1, 18], [1, 2], 2);
-
-        this._createLable(_('Mouse circle size'), [], 0, true);
-        this._createInt('mouse-circle-size', [1, 500], [10, 20], 2);
-
-        this._createLable(_('Mouse circle opacity'), [], 0, true);
-        this._createInt('mouse-circle-opacity', [1, 255], [10, 20], 2);
-
-        this._createLable(_('Mouse circle repaint interval'), [], 0, true);
-        this._createInt('mouse-circle-repaint-interval', [1, 1000], [10, 20], 2);
-
-        this._createLable(_('Mouse circle color'), [], 0, true);
-        this._createSwitch('mouse-circle-enable', 2);
-        this._createColor('mouse-circle-color', 2);
-
-        this._createLable(_('Mouse circle left click color'), [], 0, true);
-        this._createSwitch('mouse-circle-left-click-enable', 2);
-        this._createColor('mouse-circle-left-click-color', 2);
-
-        this._createLable(_('Mouse circle right click color'), [], 0, true);
-        this._createSwitch('mouse-circle-right-click-enable', 2);
-        this._createColor('mouse-circle-right-click-color', 2);
-
-        //this._changedPermitted = true;
     },
 
-    _createLable(text, style=[], col=0, next_row=false) {
+    _createLable(text, style=[], col=0, next_row=false)
+    {
         let label = null;
         label = new Gtk.Label({
             hexpand: true,
@@ -175,9 +115,10 @@ const EyeExtendedSettings = new GObject.Class({
         this.attach(widget, col, this.row_pos, 1, 1);
     },
 
-    _createSwitch(property_name, col=0, next_row=false) {
+    _createSwitch(property_name, col=0, next_row=false)
+    {
         let widget = null;
-        widget = new Gtk.Switch({halign: Gtk.Align.START});
+        widget = new Gtk.Switch({halign: Gtk.Align.END});
         this._settings.bind(property_name, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
         if (next_row) {
             this.row_pos = this.row_pos + 1;
@@ -186,9 +127,106 @@ const EyeExtendedSettings = new GObject.Class({
     }
 });
 
-function buildPrefsWidget() {
-     let widget = new EyeExtendedSettings();
-     widget.show_all();
+const EyeSettings = new GObject.Class({
+    Name: 'EyeSettings',
+    Extends: EyeExtendedSettings,
 
-     return widget;
+    _init: function (params) {
+        this.parent(params);
+
+        this._createLable(_('Eye mode'), [], 0, true);
+        this._createList('eye-mode', [
+            ["bulb", _("Bulb")],
+            ["lids", _("Lids")]
+        ], 2);
+
+        this._createLable(_('Eye position'), [], 0, true);
+        this._createList('eye-position', [
+            ["center", _("Center")],
+            ["right", _("Right")],
+            ["left", _("Left")]
+        ], 2);
+
+        this._createLable(_('Eye position weight'), [], 0, true);
+        this._createInt('eye-position-weight', [-255, 255], [1, 2], 2);
+
+        this._createLable(_('Eye line width'), [], 0, true);
+        this._createDouble('eye-line-width', [0.0, 5.0], [0.1, 0.2], 2);
+
+        this._createLable(_('Eye margin'), [], 0, true);
+        this._createDouble('eye-margin', [0.0, 5.0], [0.1, 0.2], 2);
+
+        this._createLable(_('Eye repaint interval'), [], 0, true);
+        this._createInt('eye-repaint-interval', [1, 1000], [10, 20], 2);
+    }
+});
+
+const MouseCircleSettings = new GObject.Class({
+    Name: 'MouseCircleSettings',
+    Extends: EyeExtendedSettings,
+
+    _init: function (params) {
+        this.parent(params);
+
+        this._createLable(_('To activate, click on the eye'),['b', 'i'], 0, true);
+
+        this._createLable(_('Mouse circle mode'), [], 0, true);
+        this._createInt('mouse-circle-mode', [1, 18], [1, 2], 2);
+
+        this._createLable(_('Mouse circle size'), [], 0, true);
+        this._createInt('mouse-circle-size', [1, 500], [10, 20], 2);
+
+        this._createLable(_('Mouse circle opacity'), [], 0, true);
+        this._createInt('mouse-circle-opacity', [1, 255], [10, 20], 2);
+
+        this._createLable(_('Mouse circle repaint interval'), [], 0, true);
+        this._createInt('mouse-circle-repaint-interval', [1, 1000], [10, 20], 2);
+
+        this._createLable(_('Mouse circle enable'), [], 0, true);
+        this._createSwitch('mouse-circle-enable', 2);
+
+        this._createLable(_('Mouse circle left click enable'), [], 0, true);
+        this._createSwitch('mouse-circle-left-click-enable', 2);
+
+        this._createLable(_('Mouse circle right click enable'), [], 0, true);
+        this._createSwitch('mouse-circle-right-click-enable', 2);
+    }
+});
+
+const ColorSettings = new GObject.Class({
+    Name: 'ColorSettings',
+    Extends: EyeExtendedSettings,
+
+    _init: function (params) {
+        this.parent(params);
+
+        this._createLable(_('Mouse circle color'), [], 0, true);
+        this._createColor('mouse-circle-color', 2);
+
+        this._createLable(_('Mouse circle left click color'), [], 0, true);
+        this._createColor('mouse-circle-left-click-color', 2);
+
+        this._createLable(_('Mouse circle right click color'), [], 0, true);
+        this._createColor('mouse-circle-right-click-color', 2);
+    }
+});
+
+const Notebook =  new GObject.Class({
+    Name: 'Notebook',
+    Extends: Gtk.Notebook,
+
+    _init(params) {
+        this.parent(params);
+
+        this.append_page(new EyeSettings, new Gtk.Label({ label: _('Eye properties') }));
+        this.append_page(new MouseCircleSettings, new Gtk.Label({ label: _('Mouse circle properties') }));
+        this.append_page(new ColorSettings, new Gtk.Label({ label: _('Color properties') }));
+    }
+});
+
+function buildPrefsWidget() {
+    const widget = new Notebook();
+    widget.show_all();
+
+    return widget;
 }
