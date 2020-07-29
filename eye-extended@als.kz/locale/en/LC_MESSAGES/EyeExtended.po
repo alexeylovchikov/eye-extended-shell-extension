@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-18 01:13+0600\n"
+"POT-Creation-Date: 2020-07-29 16:44+0600\n"
 "PO-Revision-Date: 2020-05-29 14:26+0600\n"
 "Last-Translator: Alexey <alexey@lovchikoval>\n"
 "Language-Team: English\n"
@@ -16,9 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-msgid "Eye properties"
-msgstr "Eye properties"
 
 msgid "Eye mode"
 msgstr "Eye mode"
@@ -53,9 +50,6 @@ msgstr "Eye margin"
 msgid "Eye repaint interval"
 msgstr "Eye repaint interval"
 
-msgid "Mouse circle properties"
-msgstr "Mouse circle properties"
-
 msgid "To activate, click on the eye"
 msgstr "To activate, click on the eye"
 
@@ -71,6 +65,26 @@ msgstr "Mouse circle opacity"
 msgid "Mouse circle repaint interval"
 msgstr "Mouse circle repaint interval"
 
+#, fuzzy
+#| msgid "Mouse circle mode"
+msgid "Mouse circle enable"
+msgstr "Mouse circle mode"
+
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle left click enable"
+msgstr "The color of mouse circle when left button is pressed"
+
+#, fuzzy
+#| msgid "Mouse circle right click color"
+msgid "Mouse circle right click enable"
+msgstr "The color of mouse circle when right button is pressed"
+
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle middle click enable"
+msgstr "The color of mouse circle when left button is pressed"
+
 msgid "Mouse circle color"
 msgstr "Default mouse indicator color"
 
@@ -79,3 +93,19 @@ msgstr "The color of mouse circle when left button is pressed"
 
 msgid "Mouse circle right click color"
 msgstr "The color of mouse circle when right button is pressed"
+
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle middle click color"
+msgstr "The color of mouse circle when left button is pressed"
+
+msgid "Eye properties"
+msgstr "Eye properties"
+
+msgid "Mouse circle properties"
+msgstr "Mouse circle properties"
+
+#, fuzzy
+#| msgid "Eye properties"
+msgid "Color properties"
+msgstr "Eye properties"

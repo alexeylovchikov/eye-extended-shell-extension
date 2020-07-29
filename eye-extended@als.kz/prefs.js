@@ -190,6 +190,9 @@ const MouseCircleSettings = new GObject.Class({
 
         this._createLable(_('Mouse circle right click enable'), [], 0, true);
         this._createSwitch('mouse-circle-right-click-enable', 2);
+
+        this._createLable(_('Mouse circle middle click enable'), [], 0, true);
+        this._createSwitch('mouse-circle-middle-click-enable', 2);
     }
 });
 
@@ -208,6 +211,9 @@ const ColorSettings = new GObject.Class({
 
         this._createLable(_('Mouse circle right click color'), [], 0, true);
         this._createColor('mouse-circle-right-click-color', 2);
+
+        this._createLable(_('Mouse circle middle click color'), [], 0, true);
+        this._createColor('mouse-circle-middle-click-color', 2);
     }
 });
 

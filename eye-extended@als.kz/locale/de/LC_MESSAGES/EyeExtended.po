@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-18 01:13+0600\n"
+"POT-Creation-Date: 2020-07-29 16:44+0600\n"
 "PO-Revision-Date: 2020-06-10 09:35+0200\n"
 "Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: German\n"
@@ -16,9 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-msgid "Eye properties"
-msgstr "Einstellungen für das Auge"
 
 msgid "Eye mode"
 msgstr "Darstellung des Auges"
@@ -53,9 +50,6 @@ msgstr "Augenrand"
 msgid "Eye repaint interval"
 msgstr "Aktualisierungsintervall der Augenbewegung"
 
-msgid "Mouse circle properties"
-msgstr "Einstellungen für den Mauskreis"
-
 msgid "To activate, click on the eye"
 msgstr "Zum Aktivieren auf das Auge klicken"
 
@@ -71,6 +65,26 @@ msgstr "Deckkraft des Mauskreises"
 msgid "Mouse circle repaint interval"
 msgstr "Aktualisierungsintervall des Mauskreises"
 
+#, fuzzy
+#| msgid "Mouse circle mode"
+msgid "Mouse circle enable"
+msgstr "Mauskreis-Darstellung"
+
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle left click enable"
+msgstr "Сolor of mouse circle when left button is pressed"
+
+#, fuzzy
+#| msgid "Mouse circle right click color"
+msgid "Mouse circle right click enable"
+msgstr "Сolor of mouse circle when right button is pressed"
+
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle middle click enable"
+msgstr "Сolor of mouse circle when left button is pressed"
+
 msgid "Mouse circle color"
 msgstr "Default mouse indicator color"
 
@@ -80,3 +94,18 @@ msgstr "Сolor of mouse circle when left button is pressed"
 msgid "Mouse circle right click color"
 msgstr "Сolor of mouse circle when right button is pressed"
 
+#, fuzzy
+#| msgid "Mouse circle left click color"
+msgid "Mouse circle middle click color"
+msgstr "Сolor of mouse circle when left button is pressed"
+
+msgid "Eye properties"
+msgstr "Einstellungen für das Auge"
+
+msgid "Mouse circle properties"
+msgstr "Einstellungen für den Mauskreis"
+
+#, fuzzy
+#| msgid "Eye properties"
+msgid "Color properties"
+msgstr "Einstellungen für das Auge"

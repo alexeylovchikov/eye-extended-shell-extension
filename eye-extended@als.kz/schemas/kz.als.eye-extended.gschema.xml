@@ -50,27 +50,34 @@
       <default>true</default>
       <summary>Mouse circle enable</summary>
     </key>
-    <key name="mouse-circle-color" type="s">
-      <default>"#ffc107"</default>
-      <summary>Mouse circle color</summary>
-    </key>
-
     <key name="mouse-circle-left-click-enable" type="b">
       <default>true</default>
       <summary>Mouse circle left click enable</summary>
+    </key>
+    <key name="mouse-circle-right-click-enable" type="b">
+      <default>true</default>
+      <summary>Mouse circle right click enable</summary>
+    </key>
+    <key name="mouse-circle-middle-click-enable" type="b">
+      <default>true</default>
+      <summary>Mouse circle middle click enable</summary>
+    </key>
+
+    <key name="mouse-circle-color" type="s">
+      <default>"#ffc107"</default>
+      <summary>Mouse circle color</summary>
     </key>
     <key name="mouse-circle-left-click-color" type="s">
       <default>"#ffc107"</default>
       <summary>Mouse circle left click color</summary>
     </key>
-
-    <key name="mouse-circle-right-click-enable" type="b">
-      <default>true</default>
-      <summary>Mouse circle right click enable</summary>
-    </key>
     <key name="mouse-circle-right-click-color" type="s">
       <default>"#ffc107"</default>
       <summary>Mouse circle right click color</summary>
+    </key>
+    <key name="mouse-circle-middle-click-color" type="s">
+      <default>"#ffc107"</default>
+      <summary>Mouse circle middle click color</summary>
     </key>
 
   </schema>
