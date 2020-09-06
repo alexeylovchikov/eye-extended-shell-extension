@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-18 01:13+0600\n"
+"PO-Revision-Date: 2020-09-06 17:25+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+msgid "Eye properties"
+msgstr "Ooginstellingen"
+
+msgid "Eye mode"
+msgstr "Oogmodus"
+
+msgid "Bulb"
+msgstr "Oogbal"
+
+msgid "Lids"
+msgstr "Oogleden"
+
+msgid "Eye position"
+msgstr "Oogpositie"
+
+msgid "Center"
+msgstr "Gecentreerd"
+
+msgid "Right"
+msgstr "Rechts"
+
+msgid "Left"
+msgstr "Links"
+
+msgid "Eye position weight"
+msgstr "Oogpositie-afstelling"
+
+msgid "Eye line width"
+msgstr "Lijnbreedte"
+
+msgid "Eye margin"
+msgstr "Marge"
+
+msgid "Eye repaint interval"
+msgstr "Bijwerktussenpoos"
+
+msgid "Mouse circle properties"
+msgstr "Muiscirkelinstellingen"
+
+msgid "To activate, click on the eye"
+msgstr "Klik op het oog om in te schakelen"
+
+msgid "Mouse circle mode"
+msgstr "Muiscirkelmodus"
+
+msgid "Mouse circle size"
+msgstr "Grootte"
+
+msgid "Mouse circle opacity"
+msgstr "Doorzichtigheid"
+
+msgid "Mouse circle repaint interval"
+msgstr "Bijwerktussenpoos"
+
+msgid "Mouse circle color"
+msgstr "Cirkelkleur"
+
+msgid "Mouse circle left click color"
+msgstr "Cirkelkleur (linksklikken)"
+
+msgid "Mouse circle right click color"
+msgstr "Cirkelkleur (rechtsklikken)"
