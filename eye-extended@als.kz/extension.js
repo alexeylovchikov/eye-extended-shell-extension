@@ -14,7 +14,6 @@ const Gio = imports.gi.Gio;
 const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
-const Tweener = imports.ui.tweener;
 
 let settings = null;
 let eye = null;
@@ -163,14 +162,14 @@ const Eye = new Lang.Class({
 
             Main.uiGroup.add_child(actor);
 
-            Tweener.addTween(actor, {
+            actor.ease({
                 x: mouse_x - (self.mouse_circle_size * actor_scale / 2),
                 y: mouse_y - (self.mouse_circle_size * actor_scale / 2),
                 scale_x: actor_scale,
                 scale_y: actor_scale,
                 opacity: 0,
-                time: 0.5,
-                transition: 'easeOutQuad',
+                duration: 500,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: function () {
                     Main.uiGroup.remove_child(actor);
                     actor.destroy;
