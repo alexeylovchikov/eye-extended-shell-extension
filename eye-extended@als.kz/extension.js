@@ -63,8 +63,8 @@ const Eye = new Lang.Class({
         this.data_dir = this._initDataDir();
 
         this.area = new St.DrawingArea();
-        this.actor.add_actor(this.area);
-        this.actor.connect('button-press-event', this._eyeClick.bind(this));
+        this.add_actor(this.area);
+        this.connect('button-press-event', this._eyeClick.bind(this));
 
         Atspi.init();
         this._mouseListener = Atspi.EventListener.new(Lang.bind(this, this._mouseCircleClick));
@@ -405,7 +405,7 @@ const Eye = new Lang.Class({
         Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position);
         this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
         this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
-        this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
+        this.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
     },
 });
 
