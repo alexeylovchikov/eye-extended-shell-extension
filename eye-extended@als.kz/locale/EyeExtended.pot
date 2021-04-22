@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-18 01:13+0600\n"
+"POT-Creation-Date: 2020-07-29 16:44+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,9 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-msgid "Eye properties"
-msgstr ""
 
 msgid "Eye mode"
 msgstr ""
@@ -53,9 +50,6 @@ msgstr ""
 msgid "Eye repaint interval"
 msgstr ""
 
-msgid "Mouse circle properties"
-msgstr ""
-
 msgid "To activate, click on the eye"
 msgstr ""
 
@@ -71,6 +65,18 @@ msgstr ""
 msgid "Mouse circle repaint interval"
 msgstr ""
 
+msgid "Mouse circle enable"
+msgstr ""
+
+msgid "Mouse circle left click enable"
+msgstr ""
+
+msgid "Mouse circle right click enable"
+msgstr ""
+
+msgid "Mouse circle middle click enable"
+msgstr ""
+
 msgid "Mouse circle color"
 msgstr ""
 
@@ -78,4 +84,16 @@ msgid "Mouse circle left click color"
 msgstr ""
 
 msgid "Mouse circle right click color"
+msgstr ""
+
+msgid "Mouse circle middle click color"
+msgstr ""
+
+msgid "Eye properties"
+msgstr ""
+
+msgid "Mouse circle properties"
+msgstr ""
+
+msgid "Color properties"
 msgstr ""

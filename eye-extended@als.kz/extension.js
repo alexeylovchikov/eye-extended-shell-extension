@@ -54,9 +54,16 @@ const Eye = new Lang.Class({
         this.mouse_circle_size = settings.get_int('mouse-circle-size');
         this.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
         this.mouse_circle_repaint_interval = settings.get_int('mouse-circle-repaint-interval');
+
+        this.mouse_circle_enable = settings.get_boolean('mouse-circle-enable');
+        this.mouse_circle_left_click_enable = settings.get_boolean('mouse-circle-left-click-enable');
+        this.mouse_circle_right_click_enable = settings.get_boolean('mouse-circle-right-click-enable');
+        this.mouse_circle_middle_click_enable = settings.get_boolean('mouse-circle-middle-click-enable');
+
         this.mouse_circle_color = settings.get_string('mouse-circle-color');
         this.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
         this.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
+        this.mouse_circle_middle_click_color = settings.get_string('mouse-circle-middle-click-color');
 
         this.mouse_circle_show = false;
         this.mouse_pointer = null;
@@ -70,6 +77,7 @@ const Eye = new Lang.Class({
         this._mouseListener = Atspi.EventListener.new(Lang.bind(this, this._mouseCircleClick));
 
         this.setActive(true);
+        this.setMouseCirclePropertyUpdate();
     },
 
     destroy() {
@@ -184,12 +192,19 @@ const Eye = new Lang.Class({
             });
         };
 
+        //log('eye: ' + event.type);
         switch (event.type) {
             case 'mouse:button:1p':
-                clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
+                if (this.mouse_circle_left_click_enable)
+                    clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
+                break;
+            case 'mouse:button:2p':
+                if (this.mouse_circle_middle_click_enable)
+                    clickAnimation(this,'middle_click', this.mouse_circle_middle_click_color);
                 break;
             case 'mouse:button:3p':
-                clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
+                if (this.mouse_circle_right_click_enable)
+                    clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
                 break;
         }
     },
@@ -199,11 +214,13 @@ const Eye = new Lang.Class({
         this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
         this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
         this._mouseCircleCreateDataIcon('right_click', this.mouse_circle_right_click_color);
+        this._mouseCircleCreateDataIcon('middle_click', this.mouse_circle_middle_click_color);
 
         if (this.mouse_pointer) {
             this.mouse_pointer.icon_size = this.mouse_circle_size;
-            this.mouse_pointer.opacity = this.mouse_circle_opacity;
+            this.mouse_pointer.opacity = this.mouse_circle_enable ? this.mouse_circle_opacity : 0;
             this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
+
         }
     },
 
@@ -256,15 +273,16 @@ const Eye = new Lang.Class({
         return true;
     },
 
-    _eyeClick: function(actor, event) {
+    _eyeClick: function(actor, event)
+    {
         let button = event.get_button();
 
-        if (button == 1 /* Left button */) {
+        if (button === 1 /* Left button */) {
             this.mouse_circle_show = !this.mouse_circle_show;
             this.setMouseCircleActive(this.mouse_circle_show);
         }
 
-        if (button == 2 /* Right button */) {
+        if (button === 2 /* Right button */) {
         }
     },
 
@@ -310,7 +328,7 @@ const Eye = new Lang.Class({
         let pupil_rad;
         let max_rad;
 
-        if(this.eye_mode == "bulb")
+        if(this.eye_mode === "bulb")
         {
             eye_rad = (area_height) / 2.3;
             iris_rad = eye_rad * 0.6;
@@ -319,7 +337,7 @@ const Eye = new Lang.Class({
             max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad) ) - this.eye_line_width;
         }
 
-        if(this.eye_mode == "lids")
+        if(this.eye_mode === "lids")
         {
             eye_rad = (area_height) / 2;
             iris_rad = eye_rad * 0.5;
@@ -349,13 +367,13 @@ const Eye = new Lang.Class({
         cr.translate(area_width * 0.5, area_height * 0.5);
         cr.setLineWidth(this.eye_line_width);
 
-        if(this.eye_mode == "bulb")
+        if(this.eye_mode === "bulb")
         {
             cr.arc(0,0, eye_rad, 0,2 * Math.PI);
             cr.stroke();
         }
 
-        if(this.eye_mode == "lids")
+        if(this.eye_mode === "lids")
         {
             let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
             let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
@@ -402,6 +420,7 @@ const Eye = new Lang.Class({
 
         cr.save();
         cr.restore();
+        cr.$dispose();
     },
 
     setEyePropertyUpdate: function()
@@ -425,9 +444,16 @@ function setEyePropertyUpdate(icon) {
         eye.mouse_circle_mode = settings.get_int('mouse-circle-mode');
         eye.mouse_circle_size = settings.get_int('mouse-circle-size');
         eye.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
+
+        eye.mouse_circle_enable = settings.get_boolean('mouse-circle-enable');
+        eye.mouse_circle_left_click_enable = settings.get_boolean('mouse-circle-left-click-enable');
+        eye.mouse_circle_right_click_enable = settings.get_boolean('mouse-circle-right-click-enable');
+        eye.mouse_circle_middle_click_enable = settings.get_boolean('mouse-circle-middle-click-enable');
+
         eye.mouse_circle_color = settings.get_string('mouse-circle-color');
         eye.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
         eye.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
+        eye.mouse_circle_middle_click_color = settings.get_string('mouse-circle-middle-click-color');
         eye.setMouseCirclePropertyUpdate();
     }
 }
@@ -465,9 +491,16 @@ function enable()
     settings.connect('changed::mouse-circle-size', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-opacity', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-repaint-interval', Lang.bind(this, setMouseCircleRepaintInterval));
+
+    settings.connect('changed::mouse-circle-enable', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-left-click-enable', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-right-click-enable', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-middle-click-enable', Lang.bind(this, setEyePropertyUpdate));
+
     settings.connect('changed::mouse-circle-color', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-left-click-color', Lang.bind(this, setEyePropertyUpdate));
     settings.connect('changed::mouse-circle-right-click-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-middle-click-color', Lang.bind(this, setEyePropertyUpdate));
 
     eye = new Eye(settings);
 }
