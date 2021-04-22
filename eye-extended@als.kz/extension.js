@@ -14,7 +14,6 @@ const Gio = imports.gi.Gio;
 const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
-const Tweener = imports.ui.tweener;
 
 let settings = null;
 let eye = null;
@@ -71,8 +70,8 @@ const Eye = new Lang.Class({
         this.data_dir = this._initDataDir();
 
         this.area = new St.DrawingArea();
-        this.actor.add_actor(this.area);
-        this.actor.connect('button-press-event', this._eyeClick.bind(this));
+        this.add_actor(this.area);
+        this.connect('button-press-event', this._eyeClick.bind(this));
 
         Atspi.init();
         this._mouseListener = Atspi.EventListener.new(Lang.bind(this, this._mouseCircleClick));
@@ -173,14 +172,14 @@ const Eye = new Lang.Class({
 
             Main.uiGroup.add_child(actor);
 
-            Tweener.addTween(actor, {
+            actor.ease({
                 x: mouse_x - (self.mouse_circle_size * actor_scale / 2),
                 y: mouse_y - (self.mouse_circle_size * actor_scale / 2),
                 scale_x: actor_scale,
                 scale_y: actor_scale,
                 opacity: 0,
-                time: 0.5,
-                transition: 'easeOutQuad',
+                duration: 500,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: function () {
                     Main.uiGroup.remove_child(actor);
                     actor.destroy;
@@ -429,7 +428,7 @@ const Eye = new Lang.Class({
         Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position);
         this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
         this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
-        this.actor.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
+        this.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
     },
 });
 
