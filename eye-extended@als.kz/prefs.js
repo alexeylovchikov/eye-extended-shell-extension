@@ -2,7 +2,7 @@ const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
-const Gdk = imports.gi.Gdk;
+//const Gdk = imports.gi.Gdk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -53,7 +53,7 @@ const EyeExtendedSettings = new GObject.Class({
         let widget = null;
         let color = null;
         widget = new Gtk.ColorButton({halign: Gtk.Align.END});
-        widget.set_color(Gdk.Color.parse(this._settings.get_string(property_name)).pop());
+        //widget.set_color(Gdk.Color.parse(this._settings.get_string(property_name)).pop());
         widget.connect('color-set', (button) => {
             color = button.get_color().to_string();
             color = color[0] + color[1] + color[2] + color[5] + color[6] + color[9] + color[10];
@@ -232,7 +232,7 @@ const Notebook =  new GObject.Class({
 
 function buildPrefsWidget() {
     const widget = new Notebook();
-    widget.show_all();
+    //widget.show_all();
 
     return widget;
 }
