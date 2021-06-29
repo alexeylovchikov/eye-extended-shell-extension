@@ -15,6 +15,10 @@ const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
 
+const Config = imports.misc.config;
+const [major] = Config.PACKAGE_VERSION.split('.');
+const shellVersion = Number.parseInt(major);
+
 let settings = null;
 let eye = null;
 
@@ -32,12 +36,15 @@ const Eye = new Lang.Class({
         if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
             throw new Error('Failed to create cache dir');
 
-        logex(data_dir);
+        logex(`Init path ${data_dir}`);
         return data_dir;
     },
 
     _init: function(settings, data_dir)
     {
+        logex(`Package version ${Config.PACKAGE_VERSION}`);
+        logex(`Shell version ${shellVersion}`);
+
         // Load superclass method
         PanelMenu.Button.prototype._init.call(this, "");
 
@@ -310,7 +317,7 @@ const Eye = new Lang.Class({
 
             return [area_x, area_y];
         };
-        
+
         let [area_width, area_height] = area.get_surface_size();
         let [area_x, area_y] = get_pos(this);
         area_x += area_width / 2;

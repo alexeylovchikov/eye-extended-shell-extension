@@ -10,6 +10,10 @@ const Convenience = Me.imports.convenience;
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Gettext.gettext;
 
+const Config = imports.misc.config;
+const [major] = Config.PACKAGE_VERSION.split('.');
+const shellVersion = Number.parseInt(major);
+
 function init() {
     Convenience.initTranslations();
 }
@@ -53,13 +57,23 @@ const EyeExtendedSettings = new GObject.Class({
         let widget = null;
         let color = null;
         widget = new Gtk.ColorButton({halign: Gtk.Align.END});
-        let gdk_color = new Gdk.RGBA();
-        if (gdk_color.parse(this._settings.get_string(property_name))){
-            widget.set_rgba(gdk_color);
+
+        if (shellVersion < 40) {
+            widget.set_color(Gdk.Color.parse(this._settings.get_string(property_name)).pop());
+        } else {
+            let gdk_color = new Gdk.RGBA();
+            if (gdk_color.parse(this._settings.get_string(property_name))){
+                widget.set_rgba(gdk_color);
+            }
         }
+
         widget.connect('color-set', (button) => {
-            color = button.get_rgba().to_string();
-            //color = color[0] + color[1] + color[2] + color[5] + color[6] + color[9] + color[10];
+            if (shellVersion < 40) {
+                color = button.get_color().to_string();
+                color = color[0] + color[1] + color[2] + color[5] + color[6] + color[9] + color[10];
+            } else {
+                color = button.get_rgba().to_string();
+            }
             this._settings.set_string(property_name, color);
         });
         if (next_row) {
@@ -235,7 +249,9 @@ const Notebook =  new GObject.Class({
 
 function buildPrefsWidget() {
     const widget = new Notebook();
-    //widget.show_all();
+    if (shellVersion < 40) {
+        widget.show_all();
+    }
 
     return widget;
 }
