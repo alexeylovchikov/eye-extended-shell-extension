@@ -9,6 +9,7 @@ The extension adds an eye to the indicator bar that follows your cursor.
 Documentation for anyone stumbling across this repo:
 
 * http://smasue.github.io/gnome-shell-tw
+* https://gjs.guide/extensions/upgrading/gnome-shell-40.html#show-all-and-destroy
 
 ## Installation
 
