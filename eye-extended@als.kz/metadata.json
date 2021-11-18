@@ -4,7 +4,7 @@
   "settings-schema": "kz.als.eye-extended",
   "gettext-domain": "EyeExtended",
   "shell-version": [
-    "3.36.0", "3.38.0", "40"
+    "3.36.0", "3.38.0", "40", "41"
   ],
   "url": "https://github.com/alexeylovchikov/eye-extended-shell-extension",
   "description": "Adds an eye to the indicator bar that follows your cursor \nYou can also display the mouse indicator, perhaps it will help you with the problem of displaying the mouse cursor in Skype"
