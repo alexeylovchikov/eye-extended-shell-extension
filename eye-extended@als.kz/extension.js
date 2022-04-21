@@ -90,7 +90,7 @@ const Eye = GObject.registerClass({
         this.setMouseCircleActive(false);
         this.setActive(false);
         this.area.destroy();
-        this.parent();
+        super.destroy();
     }
 
     setActive(enabled)
