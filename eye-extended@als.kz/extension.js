@@ -14,6 +14,7 @@ const Gio = imports.gi.Gio;
 const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const Atspi = imports.gi.Atspi;
+const GObject = imports.gi.GObject;
 
 const Config = imports.misc.config;
 const [major] = Config.PACKAGE_VERSION.split('.');
@@ -26,11 +27,9 @@ function logex(text) {
     log(`eye: ${text}`);
 }
 
-const Eye = new Lang.Class({
-    Name: 'Eye',
-    Extends: PanelMenu.Button,
-
-    _initDataDir: function() {
+const Eye = GObject.registerClass({
+}, class Eye extends PanelMenu.Button {
+    _initDataDir() {
         let data_dir = `${GLib.get_user_data_dir()}/${Me.metadata['gettext-domain']}`;
 
         if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
@@ -38,9 +37,9 @@ const Eye = new Lang.Class({
 
         logex(`Init path ${data_dir}`);
         return data_dir;
-    },
+    }
 
-    _init: function(settings, data_dir)
+    _init(settings, data_dir)
     {
         logex(`Package version ${Config.PACKAGE_VERSION}`);
         logex(`Shell version ${shellVersion}`);
@@ -85,16 +84,16 @@ const Eye = new Lang.Class({
 
         this.setActive(true);
         this.setMouseCirclePropertyUpdate();
-    },
+    }
 
     destroy() {
         this.setMouseCircleActive(false);
         this.setActive(false);
         this.area.destroy();
-        this.parent();
-    },
+        super.destroy();
+    }
 
-    setActive: function(enabled)
+    setActive(enabled)
     {
         this.setEyePropertyUpdate();
 
@@ -122,7 +121,7 @@ const Eye = new Lang.Class({
 
             this.area.queue_repaint();
         }
-    },
+    }
 
     // MOUSE CIRCLE
 
@@ -142,9 +141,9 @@ const Eye = new Lang.Class({
             dest.create(Gio.FileCreateFlags.NONE, null);
         }
         let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-    },
+    }
 
-    _mouseCircleTimeout: function()
+    _mouseCircleTimeout()
     {
         if (this.mouse_pointer) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
@@ -154,9 +153,9 @@ const Eye = new Lang.Class({
             );
         }
         return true;
-    },
+    }
 
-    _mouseCircleClick: function(event) {
+    _mouseCircleClick(event) {
 
         let clickAnimation = function(self, click_type, color) {
             let [mouse_x, mouse_y, mask] = global.get_pointer();
@@ -214,9 +213,9 @@ const Eye = new Lang.Class({
                     clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
                 break;
         }
-    },
+    }
 
-    setMouseCirclePropertyUpdate: function()
+    setMouseCirclePropertyUpdate()
     {
         this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
         this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
@@ -229,9 +228,9 @@ const Eye = new Lang.Class({
             this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
 
         }
-    },
+    }
 
-    setMouseCircleActive: function(enabled)
+    setMouseCircleActive(enabled)
     {
         if (enabled == null) {
             enabled = this.mouse_circle_show;
@@ -270,17 +269,17 @@ const Eye = new Lang.Class({
 
             this._mouseListener.deregister('mouse');
         }
-    },
+    }
 
     // EYE
 
-    _eyeTimeout: function()
+    _eyeTimeout()
     {
         this.area.queue_repaint();
         return true;
-    },
+    }
 
-    _eyeClick: function(actor, event)
+    _eyeClick(actor, event)
     {
         let button = event.get_button();
 
@@ -291,9 +290,9 @@ const Eye = new Lang.Class({
 
         if (button === 2 /* Right button */) {
         }
-    },
+    }
 
-    _eyeDraw: function(area)
+    _eyeDraw(area)
     {
         let get_pos = function(self)
         {
@@ -428,15 +427,15 @@ const Eye = new Lang.Class({
         cr.save();
         cr.restore();
         cr.$dispose();
-    },
+    }
 
-    setEyePropertyUpdate: function()
+    setEyePropertyUpdate()
     {
         Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position);
         this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
         this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
         this.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
-    },
+    }
 });
 
 function setEyePropertyUpdate(icon) {
