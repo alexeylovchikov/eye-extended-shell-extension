@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="EyeExtended">
-  <schema id="kz.als.eye-extended" path="/kz/als/eye-extended/">
-   
+  <schema id="org.gnome.shell.extensions.eye-extended" path="/org/gnome/shell/extensions/eye-extended/">
+
     <key name="eye-mode" type="s">
       <default>"lids"</default>
       <summary>Eye mode</summary>
       <description>Supported value "lids" and "bulb"</description>
-    </key>        
+    </key>
     <key name="eye-position" type="s">
       <default>"left"</default>
       <summary>Eye position</summary>

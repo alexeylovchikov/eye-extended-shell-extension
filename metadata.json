@@ -3,10 +3,8 @@
   "description": "An eye on the top panel that follows your cursor.\nAlso includes a mouse indicator to better keep track of your position.",
   "gettext-domain": "EyeExtended",
   "name": "Eye and Mouse Extended",
-  "settings-schema": "kz.als.eye-extended",
+  "settings-schema": "org.gnome.shell.extensions.eye-extended",
   "shell-version": [
-    "3.36.0",
-    "3.38.0",
     "40",
     "41",
     "42",
@@ -14,5 +12,5 @@
   ],
   "url": "https://github.com/alexeylovchikov/eye-extended-shell-extension",
   "uuid": "eye-extended@als.kz",
-  "version": 11
+  "version": 12
 }
