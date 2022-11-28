@@ -42,9 +42,9 @@ const EyeExtendedSettings = new GObject.Class({
 
         // Spacing values
         this.vexpand = true;
-        this.margin_top = 16;
+        this.margin_top = 12;
         this.margin_bottom = 8;
-        this.row_spacing = 12;
+        this.row_spacing = 8;
 
         this.row_pos = -1;// row position on a page
 
@@ -56,6 +56,7 @@ const EyeExtendedSettings = new GObject.Class({
         label = new Gtk.Label({
             hexpand: true,
             halign: Gtk.Align.START,
+            wrap: true,
             margin_start: 16
         });
         if (style.length > 0) {
@@ -148,30 +149,30 @@ const EyeSettings = new GObject.Class({
     _init: function (params) {
         this.parent(params);
 
-        this._createLabel(_('Eye mode'), [], 0, true);
+        this._createLabel(_("Shape"), [], 0, true);
         this._createList('eye-mode', [
-            ["bulb", _("Bulb")],
-            ["lids", _("Lids")]
-        ], 2);
+            ["bulb", _("Round")],
+            ["lids", _("Eyelid")]
+        ], 1);
 
-        this._createLabel(_('Eye position'), [], 0, true);
+        this._createLabel(_("Location"), [], 0, true);
         this._createList('eye-position', [
+            ["left", _("Left")],
             ["center", _("Center")],
-            ["right", _("Right")],
-            ["left", _("Left")]
-        ], 2);
+            ["right", _("Right")]
+        ], 1);
 
-        this._createLabel(_('Eye position weight'), [], 0, true);
-        this._createNumber('eye-position-weight',false, [-255, 255], [1, 2], 2)
+        this._createLabel(_("Position"), [], 0, true);
+        this._createNumber('eye-position-weight',false, [-255, 255], [1, 2], 1);
 
-        this._createLabel(_('Eye line width'), [], 0, true);
-        this._createNumber('eye-line-width', true, [0.0, 5.0], [0.1, 0.2], 2);
+        this._createLabel(_("Line Thickness"), [], 0, true);
+        this._createNumber('eye-line-width', true, [0.0, 5.0], [0.1, 0.2], 1);
 
-        this._createLabel(_('Eye margin'), [], 0, true);
-        this._createNumber('eye-margin', true, [0.0, 5.0], [0.1, 0.2], 2);
+        this._createLabel(_("Margin"), [], 0, true);
+        this._createNumber('eye-margin', true, [0.0, 5.0], [0.1, 0.2], 1);
 
-        this._createLabel(_('Eye repaint interval'), [], 0, true);
-        this._createNumber('eye-repaint-interval', false, [1, 1000], [10, 20], 2);
+        this._createLabel(_("Refresh interval (ms)"), [], 0, true);
+        this._createNumber('eye-repaint-interval', false, [1, 1000], [10, 20], 1);
     }
 });
 
@@ -183,31 +184,31 @@ const MouseCircleSettings = new GObject.Class({
     _init: function (params) {
         this.parent(params);
 
-        this._createLabel(_('To activate, click on the eye'),['b', 'i'], 0, true);
+        this._createLabel(_("Click on the eye to turn it on"),['b', 'i'], 0, true);
 
-        this._createLabel(_('Mouse circle mode'), [], 0, true);
-        this._createNumber('mouse-circle-mode', false, [1, 18], [1, 2], 2);
+        this._createLabel(_("Enable"), [], 0, true);
+        this._createSwitch('mouse-circle-enable', 1);
 
-        this._createLabel(_('Mouse circle size'), [], 0, true);
-        this._createNumber('mouse-circle-size', false, [1, 500], [10, 20], 2);
+        this._createLabel(_("Shape"), [], 0, true);
+        this._createNumber('mouse-circle-mode', false, [1, 18], [1, 2], 1);
 
-        this._createLabel(_('Mouse circle opacity'), [], 0, true);
-        this._createNumber('mouse-circle-opacity', false, [1, 255], [10, 20], 2);
+        this._createLabel(_("Size"), [], 0, true);
+        this._createNumber('mouse-circle-size', false, [1, 500], [10, 20], 1);
 
-        this._createLabel(_('Mouse circle repaint interval'), [], 0, true);
-        this._createNumber('mouse-circle-repaint-interval', false, [1, 1000], [10, 20], 2);
+        this._createLabel(_("Opacity"), [], 0, true);
+        this._createNumber('mouse-circle-opacity', false, [1, 255], [10, 20], 1);
 
-        this._createLabel(_('Mouse circle enable'), [], 0, true);
-        this._createSwitch('mouse-circle-enable', 2);
+        this._createLabel(_("Refresh interval (ms)"), [], 0, true);
+        this._createNumber('mouse-circle-repaint-interval', false, [1, 1000], [10, 20], 1);
 
-        this._createLabel(_('Mouse circle left click enable'), [], 0, true);
-        this._createSwitch('mouse-circle-left-click-enable', 2);
+        this._createLabel(_("Enable left click coloring"), [], 0, true);
+        this._createSwitch('mouse-circle-left-click-enable', 1);
 
-        this._createLabel(_('Mouse circle right click enable'), [], 0, true);
-        this._createSwitch('mouse-circle-right-click-enable', 2);
+        this._createLabel(_("Enable right click coloring"), [], 0, true);
+        this._createSwitch('mouse-circle-right-click-enable', 1);
 
-        this._createLabel(_('Mouse circle middle click enable'), [], 0, true);
-        this._createSwitch('mouse-circle-middle-click-enable', 2);
+        this._createLabel(_("Enable middle click coloring"), [], 0, true);
+        this._createSwitch('mouse-circle-middle-click-enable', 1);
     }
 });
 
@@ -219,17 +220,17 @@ const ColorSettings = new GObject.Class({
     _init: function (params) {
         this.parent(params);
 
-        this._createLabel(_('Mouse circle color'), [], 0, true);
-        this._createColor('mouse-circle-color', 2);
+        this._createLabel(_("Default"), [], 0, true);
+        this._createColor('mouse-circle-color', 1);
 
-        this._createLabel(_('Mouse circle left click color'), [], 0, true);
-        this._createColor('mouse-circle-left-click-color', 2);
+        this._createLabel(_("Left click"), [], 0, true);
+        this._createColor('mouse-circle-left-click-color', 1);
 
-        this._createLabel(_('Mouse circle right click color'), [], 0, true);
-        this._createColor('mouse-circle-right-click-color', 2);
+        this._createLabel(_("Right click"), [], 0, true);
+        this._createColor('mouse-circle-right-click-color', 1);
 
-        this._createLabel(_('Mouse circle middle click color'), [], 0, true);
-        this._createColor('mouse-circle-middle-click-color', 2);
+        this._createLabel(_("Middle click"), [], 0, true);
+        this._createColor('mouse-circle-middle-click-color', 1);
     }
 });
 
@@ -241,9 +242,9 @@ const Notebook =  new GObject.Class({
     _init(params) {
         this.parent(params);
 
-        this.append_page(new EyeSettings, new Gtk.Label({ label: _('Eye properties') }));
-        this.append_page(new MouseCircleSettings, new Gtk.Label({ label: _('Mouse circle properties') }));
-        this.append_page(new ColorSettings, new Gtk.Label({ label: _('Color properties') }));
+        this.append_page(new EyeSettings, new Gtk.Label({ label: _("Eye") }));
+        this.append_page(new MouseCircleSettings, new Gtk.Label({ label: _("Mouse indicator") }));
+        this.append_page(new ColorSettings, new Gtk.Label({ label: _("Color") }));
     }
 });
 

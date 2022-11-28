@@ -5,107 +5,142 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: EyeExtended 13\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-29 16:44+0600\n"
-"PO-Revision-Date: 2020-06-10 09:35+0200\n"
-"Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
-"Language-Team: German\n"
+"POT-Creation-Date: 2022-11-27 23:22-0500\n"
+"PO-Revision-Date: 2022-11-28 10:26-0500\n"
+"Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
+"Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
 
-msgid "Eye mode"
-msgstr "Darstellung des Auges"
+#
+# File: prefs.js, line: 151
+# File: prefs.js, line: 191
+msgid "Shape"
+msgstr "Form"
 
-msgid "Bulb"
-msgstr "Kugel"
+#
+# File: prefs.js, line: 153
+msgid "Round"
+msgstr "Rund"
 
-msgid "Lids"
-msgstr "Lid"
+#
+# File: prefs.js, line: 154
+msgid "Eyelid"
+msgstr "Augenlid"
 
-msgid "Eye position"
-msgstr "Position des Auges"
+#
+# File: prefs.js, line: 157
+msgid "Location"
+msgstr "Stelle"
 
-msgid "Center"
-msgstr "Mitte"
-
-msgid "Right"
-msgstr "Rechts"
-
+#
+# File: prefs.js, line: 159
 msgid "Left"
 msgstr "Links"
 
-msgid "Eye position weight"
-msgstr "Breite der Augenposition"
+#
+# File: prefs.js, line: 160
+msgid "Center"
+msgstr "Zentrum"
 
-msgid "Eye line width"
-msgstr "Stärke der Augenlinien"
+#
+# File: prefs.js, line: 161
+msgid "Right"
+msgstr "Rechts"
 
-msgid "Eye margin"
-msgstr "Augenrand"
+#
+# File: prefs.js, line: 164
+msgid "Position"
+msgstr "Position"
 
-msgid "Eye repaint interval"
-msgstr "Aktualisierungsintervall der Augenbewegung"
+#
+# File: prefs.js, line: 167
+msgid "Line Thickness"
+msgstr "Dicke der Linie"
 
-msgid "To activate, click on the eye"
-msgstr "Zum Aktivieren auf das Auge klicken"
+#
+# File: prefs.js, line: 170
+msgid "Margin"
+msgstr "Rand"
 
-msgid "Mouse circle mode"
-msgstr "Mauskreis-Darstellung"
+#
+# File: prefs.js, line: 173
+# File: prefs.js, line: 200
+msgid "Refresh interval (ms)"
+msgstr "Aktualisierungsintervall (ms)"
 
-msgid "Mouse circle size"
-msgstr "Mauskreis-Größe"
+#
+# File: prefs.js, line: 186
+msgid "Click on the eye to turn it on"
+msgstr "Klicken Sie auf das Auge, um es einzuschalten"
 
-msgid "Mouse circle opacity"
-msgstr "Deckkraft des Mauskreises"
+#
+# File: prefs.js, line: 188
+msgid "Enable"
+msgstr "Aktivieren"
 
-msgid "Mouse circle repaint interval"
-msgstr "Aktualisierungsintervall des Mauskreises"
+#
+# File: prefs.js, line: 194
+msgid "Size"
+msgstr "Größe"
 
-#, fuzzy
-#| msgid "Mouse circle mode"
-msgid "Mouse circle enable"
-msgstr "Mauskreis-Darstellung"
+#
+# File: prefs.js, line: 197
+msgid "Opacity"
+msgstr "Deckkraft"
 
-#, fuzzy
-#| msgid "Mouse circle left click color"
-msgid "Mouse circle left click enable"
-msgstr "Сolor of mouse circle when left button is pressed"
+#
+# File: prefs.js, line: 203
+msgid "Enable left click coloring"
+msgstr "Färbung bei Linksklick aktivieren"
 
-#, fuzzy
-#| msgid "Mouse circle right click color"
-msgid "Mouse circle right click enable"
-msgstr "Сolor of mouse circle when right button is pressed"
+#
+# File: prefs.js, line: 206
+msgid "Enable right click coloring"
+msgstr "Färbung bei Rechtsklick aktivieren"
 
-#, fuzzy
-#| msgid "Mouse circle left click color"
-msgid "Mouse circle middle click enable"
-msgstr "Сolor of mouse circle when left button is pressed"
+#
+# File: prefs.js, line: 209
+msgid "Enable middle click coloring"
+msgstr "Färbung bei Mittelklick aktivieren"
 
-msgid "Mouse circle color"
-msgstr "Default mouse indicator color"
+#
+# File: prefs.js, line: 222
+msgid "Default"
+msgstr "Voreingestellt"
 
-msgid "Mouse circle left click color"
-msgstr "Сolor of mouse circle when left button is pressed"
+#
+# File: prefs.js, line: 225
+msgid "Left click"
+msgstr "Linksklick"
 
-msgid "Mouse circle right click color"
-msgstr "Сolor of mouse circle when right button is pressed"
+#
+# File: prefs.js, line: 228
+msgid "Right click"
+msgstr "Rechtsklick"
 
-#, fuzzy
-#| msgid "Mouse circle left click color"
-msgid "Mouse circle middle click color"
-msgstr "Сolor of mouse circle when left button is pressed"
+#
+# File: prefs.js, line: 231
+msgid "Middle click"
+msgstr "Mittelklick"
 
-msgid "Eye properties"
-msgstr "Einstellungen für das Auge"
+#
+# File: prefs.js, line: 244
+msgid "Eye"
+msgstr "Auge"
 
-msgid "Mouse circle properties"
-msgstr "Einstellungen für den Mauskreis"
+#
+# File: prefs.js, line: 245
+msgid "Mouse indicator"
+msgstr "Mauszeiger"
 
-#, fuzzy
-#| msgid "Eye properties"
-msgid "Color properties"
-msgstr "Einstellungen für das Auge"
+#
+# File: prefs.js, line: 246
+msgid "Color"
+msgstr "Farbe"
