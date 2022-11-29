@@ -18,17 +18,11 @@
 'use strict';
 
 const Main = imports.ui.main;// access to the panel menu;
-
 const Lang = imports.lang;// helper library to point to and connect objects;
-
 const PanelMenu = imports.ui.panelMenu;// object classes for items in the panel
-
 const Panel = imports.ui.panel;// libraries for the panel area
-
 const Mainloop = imports.mainloop;// library for drawing and animating the eye
-
 const { Atspi, Clutter, GLib , GObject, Gio, St } = imports.gi;// graphic objects libraries;
-
 const ExtensionUtils = imports.misc.extensionUtils;// access to settings from schema
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -42,7 +36,7 @@ const Eye = GObject.registerClass({},
 
         // Create/return a cache directory for thumbnails
         _initDataDir() {
-            let data_dir = `${GLib.get_user_cache_dir()}/${Me.metadata.uuid}`;
+            let data_dir = `${GLib.get_user_cache_dir()}/${Me.metadata['gettext-domain']}`;
             if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
                 throw new Error(`Failed to create cache dir at ${data_dir}`);
             return data_dir;
@@ -131,7 +125,7 @@ const Eye = GObject.registerClass({},
 
         _mouseCircleCreateDataIcon(name, color) {
             // Load content
-            let source = Gio.File.new_for_path(`${Me.path}/img/circle/${this.mouse_circle_mode}.svg`);
+            let source = Gio.File.new_for_path(`${Me.path}/circle/${this.mouse_circle_mode}.svg`);
             let [l_success, contents] = source.load_contents(null);
             contents = imports.byteArray.toString(contents);
 

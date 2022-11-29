@@ -19,17 +19,14 @@
 
 // Import required libraries
 const { GObject, Gdk, Gio, Gtk } = imports.gi;// graphic objects libraries
-
 const Lang = imports.lang;// helper library to point to and connect objects
-
 const ExtensionUtils = imports.misc.extensionUtils;// access to settings from schema
 const Me = ExtensionUtils.getCurrentExtension();
-
-const Domain = imports.gettext.domain(Me.metadata.uuid);// object with functions for marking strings as translatable
+const Domain = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Domain.gettext;// tool to get translations
 
 function init() {
-    ExtensionUtils.initTranslations(Me.metadata.uuid);
+    ExtensionUtils.initTranslations();
 }
 
 // Class to create options and labels in the settings menu

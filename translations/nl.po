@@ -1,146 +1,146 @@
-# Russian translations for PACKAGE package.
-# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Alexey <alexey@lovchikoval>, 2020.
+# Dutch translations for the Eye and Mouse Extended extension.
+# Copyright (C) 2020 Alexey
+# This file is distributed under the same license as the Eye and Mouse Extended extension.
+# Heimen Stoffels <vistausss@outlook.com>, 2020.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: EyeExtended 13\n"
+"Project-Id-Version: EyeExtendedExtension\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-27 23:22-0500\n"
-"PO-Revision-Date: 2022-11-28 10:27-0500\n"
+"PO-Revision-Date: 2022-11-28 10:26-0500\n"
 "Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
 "Language-Team: \n"
-"Language: ru\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 
 #
 # File: prefs.js, line: 151
 # File: prefs.js, line: 191
 msgid "Shape"
-msgstr "Форма"
+msgstr "Vorm"
 
 #
 # File: prefs.js, line: 153
 msgid "Round"
-msgstr "Круглый"
+msgstr "Rond"
 
 #
 # File: prefs.js, line: 154
 msgid "Eyelid"
-msgstr "Глаз"
+msgstr "Ooglid"
 
 #
 # File: prefs.js, line: 157
 msgid "Location"
-msgstr "Местоположение"
+msgstr "Locatie"
 
 #
 # File: prefs.js, line: 159
 msgid "Left"
-msgstr "Слевa"
+msgstr "Links"
 
 #
 # File: prefs.js, line: 160
 msgid "Center"
-msgstr "Центр"
+msgstr "Gecentreerd"
 
 #
 # File: prefs.js, line: 161
 msgid "Right"
-msgstr "Справа"
+msgstr "Rechts"
 
 #
 # File: prefs.js, line: 164
 msgid "Position"
-msgstr "Место"
+msgstr "Positie"
 
 #
 # File: prefs.js, line: 167
 msgid "Line Thickness"
-msgstr "Толщина линии"
+msgstr "Lijnbreedte"
 
 #
 # File: prefs.js, line: 170
 msgid "Margin"
-msgstr "Отступ"
+msgstr "Marge"
 
 #
 # File: prefs.js, line: 173
 # File: prefs.js, line: 200
 msgid "Refresh interval (ms)"
-msgstr "Интервал рисования (мс)"
+msgstr "Bijwerktussenpoos"
 
 #
 # File: prefs.js, line: 186
 msgid "Click on the eye to turn it on"
-msgstr "Для активации нажмите на глаз"
+msgstr "Klik op het oog om het aan te zetten"
 
 #
 # File: prefs.js, line: 188
 msgid "Enable"
-msgstr "Отображать"
+msgstr "Inschakelen"
 
 #
 # File: prefs.js, line: 194
 msgid "Size"
-msgstr "Размер"
+msgstr "Grootte"
 
 #
 # File: prefs.js, line: 197
 msgid "Opacity"
-msgstr "Непрозрачность"
+msgstr "Dekking"
 
 #
 # File: prefs.js, line: 203
 msgid "Enable left click coloring"
-msgstr "Включить раскрашивание при нажатии левой кнопкой"
+msgstr "Zet kleuren aan op linker klik"
 
 #
 # File: prefs.js, line: 206
 msgid "Enable right click coloring"
-msgstr "Включить раскрашивание при нажатии правой кнопкой"
+msgstr "Zet kleuren aan op rechts klik"
 
 #
 # File: prefs.js, line: 209
 msgid "Enable middle click coloring"
-msgstr "Включить раскрашивание при нажатии средней кнопкой"
+msgstr "Zet kleuren aan op middelste klik"
 
 #
 # File: prefs.js, line: 222
 msgid "Default"
-msgstr "По умолчанию"
+msgstr "Verstek"
 
 #
 # File: prefs.js, line: 225
 msgid "Left click"
-msgstr "Нажатии левой кнопкой"
+msgstr "Linksklikken"
 
 #
 # File: prefs.js, line: 228
 msgid "Right click"
-msgstr "Нажатии правой кнопкой"
+msgstr "Rechtsklikken"
 
 #
 # File: prefs.js, line: 231
 msgid "Middle click"
-msgstr "Нажатии средней кнопкой"
+msgstr "Middeklik"
 
 #
 # File: prefs.js, line: 244
 msgid "Eye"
-msgstr "Глаз"
+msgstr "Oog"
 
 #
 # File: prefs.js, line: 245
 msgid "Mouse indicator"
-msgstr "Индикатор мыши"
+msgstr "Muisindicator"
 
 #
 # File: prefs.js, line: 246
 msgid "Color"
-msgstr "Цвет"
+msgstr "Kleur"
