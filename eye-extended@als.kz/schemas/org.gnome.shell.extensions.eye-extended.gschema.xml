@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="EyeExtended">
+<schemalist gettext-domain="eye-extended-extension">
   <schema id="org.gnome.shell.extensions.eye-extended" path="/org/gnome/shell/extensions/eye-extended/">
 
     <key name="eye-mode" type="s">

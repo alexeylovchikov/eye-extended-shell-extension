@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the EyeExtended package.
+# LANGUAGE translations for the Eye and Mouse Extended extension.
+# Copyright (C) 2020 Alexey
+# This file is distributed under the same license as the Eye and Mouse Extended extension.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
