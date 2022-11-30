@@ -18,7 +18,6 @@
 'use strict';
 
 const Main = imports.ui.main;// access to the panel menu;
-const Lang = imports.lang;// helper library to point to and connect objects;
 const PanelMenu = imports.ui.panelMenu;// object classes for items in the panel
 const Panel = imports.ui.panel;// libraries for the panel area
 const Mainloop = imports.mainloop;// library for drawing and animating the eye
@@ -79,7 +78,7 @@ const Eye = GObject.registerClass({},
             this.connect('button-press-event', this._eyeClick.bind(this));
 
             Atspi.init();
-            this._mouseListener = Atspi.EventListener.new(Lang.bind(this, this._mouseCircleClick));
+            this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
 
             this.setActive(true);
             this.setMouseCirclePropertyUpdate();
@@ -111,10 +110,10 @@ const Eye = GObject.registerClass({},
             }
 
             if (enabled) {
-                this._repaint_handler = this.area.connect("repaint", Lang.bind(this, this._eyeDraw));
+                this._repaint_handler = this.area.connect("repaint", this._eyeDraw.bind(this));
 
                 this._eye_update_handler = Mainloop.timeout_add(
-                    this.eye_repaint_interval, Lang.bind(this, this._eyeTimeout)
+                    this.eye_repaint_interval, this._eyeTimeout.bind(this)
                 );
 
                 this.area.queue_repaint();
@@ -236,7 +235,7 @@ const Eye = GObject.registerClass({},
 
             if (enabled) {
                 this._mouse_circle_update_handler = Mainloop.timeout_add(
-                    this.mouse_circle_repaint_interval, Lang.bind(this, this._mouseCircleTimeout)
+                    this.mouse_circle_repaint_interval, this._mouseCircleTimeout.bind(this)
                 );
 
                 this.mouse_pointer = new St.Icon({
@@ -472,27 +471,26 @@ function enable() {
     settings = ExtensionUtils.getSettings();
 
     // Connect the changing of any value to an update function
+    settings.connect('changed::eye-mode', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::eye-position', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::eye-position-weight', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::eye-line-width', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::eye-margin', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::eye-repaint-interval', setEyeRepaintInterval.bind(this));
 
-    settings.connect('changed::eye-mode', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::eye-position', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::eye-position-weight', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::eye-line-width', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::eye-margin', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::eye-repaint-interval', Lang.bind(this, setEyeRepaintInterval));
+    settings.connect('changed::mouse-circle-mode', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-size', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-opacity', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-repaint-interval', setMouseCircleRepaintInterval.bind(this));
+    settings.connect('changed::mouse-circle-enable', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-left-click-enable', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-right-click-enable', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-middle-click-enable', setEyePropertyUpdate.bind(this));
 
-    settings.connect('changed::mouse-circle-mode', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-size', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-opacity', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-repaint-interval', Lang.bind(this, setMouseCircleRepaintInterval));
-    settings.connect('changed::mouse-circle-enable', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-left-click-enable', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-right-click-enable', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-middle-click-enable', Lang.bind(this, setEyePropertyUpdate));
-
-    settings.connect('changed::mouse-circle-color', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-left-click-color', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-right-click-color', Lang.bind(this, setEyePropertyUpdate));
-    settings.connect('changed::mouse-circle-middle-click-color', Lang.bind(this, setEyePropertyUpdate));
+    settings.connect('changed::mouse-circle-color', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-left-click-color', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-right-click-color', setEyePropertyUpdate.bind(this));
+    settings.connect('changed::mouse-circle-middle-click-color', setEyePropertyUpdate.bind(this));
 
     eye = new Eye(settings);
 }

@@ -19,7 +19,6 @@
 
 // Import required libraries
 const { GObject, Gdk, Gio, Gtk } = imports.gi;// graphic objects libraries
-const Lang = imports.lang;// helper library to point to and connect objects
 const ExtensionUtils = imports.misc.extensionUtils;// access to settings from schema
 const Me = ExtensionUtils.getCurrentExtension();
 const Domain = imports.gettext.domain(Me.metadata['gettext-domain']);
@@ -44,13 +43,11 @@ const EyeExtendedSettings = new GObject.Class({
         this.row_spacing = 8;
 
         this.row_pos = -1;// row position on a page
-
         this._settings = ExtensionUtils.getSettings();// connect to settings
     },
 
     _createLabel(text, style=[], col=0, next_row=false) {
-        let label = null;
-        label = new Gtk.Label({
+        let label = new Gtk.Label({
             hexpand: true,
             halign: Gtk.Align.START,
             wrap: true,
@@ -67,27 +64,24 @@ const EyeExtendedSettings = new GObject.Class({
     },
 
     _createColor(property_name, col=0, next_row=false) {
-        let widget = null;
-        let color = null;
-        widget = new Gtk.ColorButton({
+        let gdk_color = null;
+        let widget = new Gtk.ColorButton({
             halign: Gtk.Align.END,
             margin_end: 16
         });
-        let gdk_color = new Gdk.RGBA();
-            if (gdk_color.parse(this._settings.get_string(property_name))){
-                widget.set_rgba(gdk_color);
-            }
-        widget.connect('color-set', (button) => {
-            color = button.get_rgba().to_string();
-            this._settings.set_string(property_name, color);
+        gdk_color = new Gdk.RGBA();
+        if (gdk_color.parse(this._settings.get_string(property_name))) {
+            widget.set_rgba(gdk_color);
+        }
+        widget.connect('color-set', w => {
+            this._settings.set_string(property_name, w.get_rgba().to_string());
         });
         if (next_row) {this.row_pos += 1;}
         this.attach(widget, col, this.row_pos, 1, 1);
     },
 
     _createList(property_name, list, col=0, next_row=false) {
-        let widget = null;
-        widget = new Gtk.ComboBoxText({
+        let widget = new Gtk.ComboBoxText({
             halign: Gtk.Align.END,
             margin_end: 16
         });
@@ -98,9 +92,7 @@ const EyeExtendedSettings = new GObject.Class({
     },
 
     _createNumber(property_name, decimal=false, range, increments, col=0, next_row=false) {
-        let widget = null;
-        let value = null;
-        widget = new Gtk.SpinButton({
+        let widget = new Gtk.SpinButton({
             halign: Gtk.Align.END,
             margin_end: 16
         });
@@ -110,25 +102,17 @@ const EyeExtendedSettings = new GObject.Class({
         if (decimal) {
             widget.set_digits(1);
             widget.set_value(this._settings.get_double(property_name));
-            widget.connect('value-changed', Lang.bind(this, function(w){
-                value = w.get_value();
-                this._settings.set_double(property_name, value);
-             }));
         }
         else {
             widget.set_value(this._settings.get_int(property_name));
-            widget.connect('value-changed', Lang.bind(this, function(w){
-                value = w.get_value_as_int();
-                this._settings.set_int(property_name, value);
-           }));
         }
+        this._settings.bind(property_name, widget, 'value', Gio.SettingsBindFlags.DEFAULT);
         if (next_row) {this.row_pos += 1;}
         this.attach(widget, col, this.row_pos, 1, 1);
     },
 
     _createSwitch(property_name, col=0, next_row=false) {
-        let widget = null;
-        widget = new Gtk.Switch({
+        let widget = new Gtk.Switch({
             halign: Gtk.Align.END,
             margin_end: 16
         });
