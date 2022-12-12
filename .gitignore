@@ -1,2 +1,11 @@
-.idea
+eye-extended@als.kz/locale/
+*.mo
+*gschemas.compiled
 *.zip
+
+.idea
+.vscode/
+
+*.shell-extension.zip
+
+TODO.txt

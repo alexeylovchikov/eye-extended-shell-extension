@@ -1,0 +1,146 @@
+# Russian translations for the Eye and Mouse Extended extension.
+# Copyright (C) 2020 Alexey
+# This file is distributed under the same license as the Eye and Mouse Extended extension.
+# Alexey <alexey@lovchikoval>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: EyeExtendedExtension\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-27 23:22-0500\n"
+"PO-Revision-Date: 2022-11-28 10:27-0500\n"
+"Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#
+# File: prefs.js, line: 151
+# File: prefs.js, line: 191
+msgid "Shape"
+msgstr "Форма"
+
+#
+# File: prefs.js, line: 153
+msgid "Round"
+msgstr "Круглый"
+
+#
+# File: prefs.js, line: 154
+msgid "Eyelid"
+msgstr "Глаз"
+
+#
+# File: prefs.js, line: 157
+msgid "Location"
+msgstr "Местоположение"
+
+#
+# File: prefs.js, line: 159
+msgid "Left"
+msgstr "Слевa"
+
+#
+# File: prefs.js, line: 160
+msgid "Center"
+msgstr "Центр"
+
+#
+# File: prefs.js, line: 161
+msgid "Right"
+msgstr "Справа"
+
+#
+# File: prefs.js, line: 164
+msgid "Position"
+msgstr "Место"
+
+#
+# File: prefs.js, line: 167
+msgid "Line Thickness"
+msgstr "Толщина линии"
+
+#
+# File: prefs.js, line: 170
+msgid "Margin"
+msgstr "Отступ"
+
+#
+# File: prefs.js, line: 173
+# File: prefs.js, line: 200
+msgid "Refresh interval (ms)"
+msgstr "Интервал рисования (мс)"
+
+#
+# File: prefs.js, line: 186
+msgid "Click on the eye to turn it on"
+msgstr "Для активации нажмите на глаз"
+
+#
+# File: prefs.js, line: 188
+msgid "Enable"
+msgstr "Отображать"
+
+#
+# File: prefs.js, line: 194
+msgid "Size"
+msgstr "Размер"
+
+#
+# File: prefs.js, line: 197
+msgid "Opacity"
+msgstr "Непрозрачность"
+
+#
+# File: prefs.js, line: 203
+msgid "Enable left click coloring"
+msgstr "Включить раскрашивание при нажатии левой кнопкой"
+
+#
+# File: prefs.js, line: 206
+msgid "Enable right click coloring"
+msgstr "Включить раскрашивание при нажатии правой кнопкой"
+
+#
+# File: prefs.js, line: 209
+msgid "Enable middle click coloring"
+msgstr "Включить раскрашивание при нажатии средней кнопкой"
+
+#
+# File: prefs.js, line: 222
+msgid "Default"
+msgstr "По умолчанию"
+
+#
+# File: prefs.js, line: 225
+msgid "Left click"
+msgstr "Нажатии левой кнопкой"
+
+#
+# File: prefs.js, line: 228
+msgid "Right click"
+msgstr "Нажатии правой кнопкой"
+
+#
+# File: prefs.js, line: 231
+msgid "Middle click"
+msgstr "Нажатии средней кнопкой"
+
+#
+# File: prefs.js, line: 244
+msgid "Eye"
+msgstr "Глаз"
+
+#
+# File: prefs.js, line: 245
+msgid "Mouse indicator"
+msgstr "Индикатор мыши"
+
+#
+# File: prefs.js, line: 246
+msgid "Color"
+msgstr "Цвет"

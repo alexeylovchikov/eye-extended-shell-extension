@@ -1,0 +1,146 @@
+# French translations for the Eye and Mouse Extended extension.
+# Copyright (C) 2020 Alexey
+# This file is distributed under the same license as the Eye and Mouse Extended extension.
+# Philippe-André Akue <pakueamb@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: EyeExtendedExtension\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-27 23:22-0500\n"
+"PO-Revision-Date: 2022-11-28 14:43-0500\n"
+"Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#
+# File: prefs.js, line: 151
+# File: prefs.js, line: 191
+msgid "Shape"
+msgstr "Forme"
+
+#
+# File: prefs.js, line: 153
+msgid "Round"
+msgstr "Cercle"
+
+#
+# File: prefs.js, line: 154
+msgid "Eyelid"
+msgstr "Paupière"
+
+#
+# File: prefs.js, line: 157
+msgid "Location"
+msgstr "Emplacement"
+
+#
+# File: prefs.js, line: 159
+msgid "Left"
+msgstr "Gauche"
+
+#
+# File: prefs.js, line: 160
+msgid "Center"
+msgstr "Centre"
+
+#
+# File: prefs.js, line: 161
+msgid "Right"
+msgstr "Droit"
+
+#
+# File: prefs.js, line: 164
+msgid "Position"
+msgstr "Position"
+
+#
+# File: prefs.js, line: 167
+msgid "Line Thickness"
+msgstr "Épaisseur des lignes"
+
+#
+# File: prefs.js, line: 170
+msgid "Margin"
+msgstr "Marge"
+
+#
+# File: prefs.js, line: 173
+# File: prefs.js, line: 200
+msgid "Refresh interval (ms)"
+msgstr "Intervalle de rafraîchissement (ms)"
+
+#
+# File: prefs.js, line: 186
+msgid "Click on the eye to turn it on"
+msgstr "Cliquez sur l'œil pour l'allumer"
+
+#
+# File: prefs.js, line: 188
+msgid "Enable"
+msgstr "Activer"
+
+#
+# File: prefs.js, line: 194
+msgid "Size"
+msgstr "Taille"
+
+#
+# File: prefs.js, line: 197
+msgid "Opacity"
+msgstr "Opacité"
+
+#
+# File: prefs.js, line: 203
+msgid "Enable left click coloring"
+msgstr "Activer la coloration du clic gauche"
+
+#
+# File: prefs.js, line: 206
+msgid "Enable right click coloring"
+msgstr "Activer la coloration du clic droit"
+
+#
+# File: prefs.js, line: 209
+msgid "Enable middle click coloring"
+msgstr "Activer la coloration du clic du milieu"
+
+#
+# File: prefs.js, line: 222
+msgid "Default"
+msgstr "Défaut"
+
+#
+# File: prefs.js, line: 225
+msgid "Left click"
+msgstr "Clic gauche"
+
+#
+# File: prefs.js, line: 228
+msgid "Right click"
+msgstr "Clic droit"
+
+#
+# File: prefs.js, line: 231
+msgid "Middle click"
+msgstr "Clic du milieu"
+
+#
+# File: prefs.js, line: 244
+msgid "Eye"
+msgstr "Œil"
+
+#
+# File: prefs.js, line: 245
+msgid "Mouse indicator"
+msgstr "Indicateur de souris"
+
+#
+# File: prefs.js, line: 246
+msgid "Color"
+msgstr "Couleur"
