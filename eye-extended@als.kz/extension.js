@@ -433,6 +433,7 @@ const Eye = GObject.registerClass({},
             this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
             this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
             this.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
+            this.area.queue_repaint();
         }
 });
 
