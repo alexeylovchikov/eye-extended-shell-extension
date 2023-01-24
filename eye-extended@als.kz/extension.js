@@ -82,6 +82,9 @@ const Eye = GObject.registerClass({},
 
             this.setActive(true);
             this.setMouseCirclePropertyUpdate();
+
+            this._last_mouse_x_pos = undefined;
+            this._last_mouse_y_pos = undefined;
         }
 
         destroy() {
@@ -265,7 +268,14 @@ const Eye = GObject.registerClass({},
         // EYE FUNCTIONS
 
         _eyeTimeout() {
-            this.area.queue_repaint();
+            let [mouse_x, mouse_y, mask] = global.get_pointer();
+
+            if (this._last_mouse_x_pos !== mouse_x && this._last_mouse_y_pos !== mouse_y) {
+                this._last_mouse_x_pos = mouse_x;
+                this._last_mouse_y_pos = mouse_y;
+                this.area.queue_repaint();
+            }
+
             return true;
         }
 
@@ -275,6 +285,7 @@ const Eye = GObject.registerClass({},
             if (button === 1 /* Left button */) {
                 this.mouse_circle_show = !this.mouse_circle_show;
                 this.setMouseCircleActive(this.mouse_circle_show);
+                this.area.queue_repaint();
             }
 
             if (button === 2 /* Right button */) {
