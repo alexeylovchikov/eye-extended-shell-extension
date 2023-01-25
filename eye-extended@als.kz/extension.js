@@ -186,7 +186,7 @@ const Eye = GObject.registerClass({},
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: function () {
                         Main.uiGroup.remove_child(actor);
-                        actor.destroy;
+                        actor.destroy();
                         actor = null;
 
                         if (self.mouse_pointer) {
