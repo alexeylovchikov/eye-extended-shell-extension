@@ -171,7 +171,7 @@ const MouseCircleSettings = new GObject.Class({
         this._createSwitch('mouse-circle-enable', 1);
 
         this._createLabel(_("Shape"), [], 0, true);
-        this._createNumber('mouse-circle-mode', false, [1, 18], [1, 2], 1);
+        this._createNumber('mouse-circle-mode', false, [1, 19], [1, 2], 1);
 
         this._createLabel(_("Size"), [], 0, true);
         this._createNumber('mouse-circle-size', false, [1, 500], [10, 20], 1);
