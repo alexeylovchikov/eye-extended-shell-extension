@@ -19,6 +19,7 @@
 
 const Main = imports.ui.main;// access to the panel menu;
 const PanelMenu = imports.ui.panelMenu;// object classes for items in the panel
+const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;// libraries for the panel area
 const Mainloop = imports.mainloop;// library for drawing and animating the eye
 const { Atspi, Clutter, GLib , GObject, Gio, St } = imports.gi;// graphic objects libraries;
@@ -42,6 +43,8 @@ const Eye = GObject.registerClass({},
         }
 
         _init(settings) {
+
+            
             // Load superclass method
             PanelMenu.Button.prototype._init.call(this, "");
 
@@ -76,6 +79,7 @@ const Eye = GObject.registerClass({},
             this.area = new St.DrawingArea();
             this.add_actor(this.area);
             this.connect('button-press-event', this._eyeClick.bind(this));
+            this.connect('touch-event', this._eyeClick.bind(this));
 
             Atspi.init();
             this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
@@ -85,6 +89,10 @@ const Eye = GObject.registerClass({},
 
             this._last_mouse_x_pos = undefined;
             this._last_mouse_y_pos = undefined;
+
+            const settingsItem = new PopupMenu.PopupMenuItem('Settings');
+            settingsItem.connect('activate', () => { ExtensionUtils.openPrefs(); });
+            this.menu.addMenuItem(settingsItem);
         }
 
         destroy() {
@@ -280,15 +288,11 @@ const Eye = GObject.registerClass({},
         }
 
         _eyeClick(actor, event) {
-            let button = event.get_button();
-
-            if (button === 1 /* Left button */) {
+            if (event.get_button() === Clutter.BUTTON_PRIMARY) {
+                this.menu.close();
                 this.mouse_circle_show = !this.mouse_circle_show;
                 this.setMouseCircleActive(this.mouse_circle_show);
                 this.area.queue_repaint();
-            }
-
-            if (button === 2 /* Right button */) {
             }
         }
 
@@ -509,6 +513,13 @@ function enable() {
 
 // Run when extension is disabled
 function disable() {
-    eye.destroy();
-    eye = null;
+    if (eye) {
+        eye.destroy();
+        eye = null;
+    }
+
+    if (settings) {
+        settings.run_dispose();
+        settings = null;
+    }
 }
