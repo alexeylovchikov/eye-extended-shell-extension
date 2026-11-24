@@ -118,3 +118,7 @@ msgstr ""
 # File: prefs.js, line: 246
 msgid "Color"
 msgstr ""
+#
+# File: extension.js
+msgid "Settings"
+msgstr ""

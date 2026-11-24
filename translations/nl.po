@@ -144,3 +144,7 @@ msgstr "Muisindicator"
 # File: prefs.js, line: 246
 msgid "Color"
 msgstr "Kleur"
+#
+# File: extension.js
+msgid "Settings"
+msgstr "Instellingen"

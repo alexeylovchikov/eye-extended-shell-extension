@@ -144,3 +144,7 @@ msgstr "Mauszeiger"
 # File: prefs.js, line: 246
 msgid "Color"
 msgstr "Farbe"
+#
+# File: extension.js
+msgid "Settings"
+msgstr "Einstellungen"

@@ -15,511 +15,473 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-'use strict';
 
-const Main = imports.ui.main;// access to the panel menu;
-const PanelMenu = imports.ui.panelMenu;// object classes for items in the panel
-const PopupMenu = imports.ui.popupMenu;
-const Panel = imports.ui.panel;// libraries for the panel area
-const Mainloop = imports.mainloop;// library for drawing and animating the eye
-const { Atspi, Clutter, GLib , GObject, Gio, St } = imports.gi;// graphic objects libraries;
-const ExtensionUtils = imports.misc.extensionUtils;// access to settings from schema
-const Me = ExtensionUtils.getCurrentExtension();
+import Atspi from 'gi://Atspi';
+import Clutter from 'gi://Clutter';
+import Cogl from 'gi://Cogl';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-let settings = null;// create a global variable to connect user settings
-let eye = null;// create the variable to hold our extension object
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+// Panel.PANEL_ICON_SIZE was removed in GNOME Shell 49
+const PANEL_ICON_SIZE = 16;
 
-// Class to create the Eye
-const Eye = GObject.registerClass({},
-    class Eye extends PanelMenu.Button {
+// Clutter.Color was replaced by Cogl.Color in GNOME Shell 47
+const ColorClass = Clutter.Color ?? Cogl.Color;
 
-        // Create/return a cache directory for thumbnails
-        _initDataDir() {
-            let data_dir = `${GLib.get_user_cache_dir()}/${Me.metadata['gettext-domain']}`;
-            if (GLib.mkdir_with_parents(`${data_dir}/icons`, 0o777) < 0)
-                throw new Error(`Failed to create cache dir at ${data_dir}`);
-            return data_dir;
+const CLICK_ANIMATION_DURATION = 500;
+
+const CIRCLE_KEYS = [
+    'mouse-circle-mode',
+    'mouse-circle-size',
+    'mouse-circle-opacity',
+    'mouse-circle-repaint-interval',
+    'mouse-circle-enable',
+    'mouse-circle-left-click-enable',
+    'mouse-circle-right-click-enable',
+    'mouse-circle-middle-click-enable',
+    'mouse-circle-color',
+    'mouse-circle-left-click-color',
+    'mouse-circle-right-click-color',
+    'mouse-circle-middle-click-color',
+];
+
+function parseColor(str) {
+    try {
+        const [ok, color] = ColorClass.from_string(str);
+        if (ok)
+            return color;
+    } catch (e) {
+        logError(e, `Eye Extended: cannot parse color "${str}"`);
+    }
+    return null;
+}
+
+function setSourceColor(cr, color) {
+    cr.setSourceRGBA(color.red / 255, color.green / 255, color.blue / 255, color.alpha / 255);
+}
+
+// Mouse indicator that follows the pointer and highlights clicks
+class MouseCircle {
+    constructor(extension, settings, onStateChanged) {
+        this._extension = extension;
+        this._settings = settings;
+        this._onStateChanged = onStateChanged;
+
+        this._active = false;
+        this._pointer = null;
+        this._timeoutId = 0;
+        this._listening = false;
+        this._animations = new Set();
+
+        this._iconDir = GLib.build_filenamev([
+            GLib.get_user_cache_dir(), extension.metadata['gettext-domain'], 'icons',
+        ]);
+        if (GLib.mkdir_with_parents(this._iconDir, 0o755) !== 0)
+            throw new Error(`Failed to create cache dir at ${this._iconDir}`);
+
+        Atspi.init();
+        this._listener = Atspi.EventListener.new(event => this._onClick(event));
+
+        this._loadSettings();
+        this._settings.connectObject('changed', (s, key) => {
+            if (CIRCLE_KEYS.includes(key))
+                this._reload();
+        }, this);
+    }
+
+    get active() {
+        return this._active;
+    }
+
+    get color() {
+        return this._color;
+    }
+
+    toggle() {
+        this.setActive(!this._active);
+    }
+
+    setActive(active) {
+        if (this._active === active)
+            return;
+        this._active = active;
+
+        if (active) {
+            this._pointer = new St.Icon({
+                reactive: false,
+                can_focus: false,
+                track_hover: false,
+            });
+            Main.uiGroup.add_child(this._pointer);
+            this._updatePointer();
+            this._startTimer();
+
+            this._listener.register('mouse');
+            this._listening = true;
+        } else {
+            this._stopTimer();
+            this._stopListening();
+            this._pointer?.destroy();
+            this._pointer = null;
         }
 
-        _init(settings) {
+        this._onStateChanged();
+    }
 
-            
-            // Load superclass method
-            PanelMenu.Button.prototype._init.call(this, "");
+    destroy() {
+        this._settings.disconnectObject(this);
+        this.setActive(false);
+        this._stopListening();
+        for (const actor of this._animations) {
+            actor.remove_all_transitions();
+            actor.destroy();
+        }
+        this._animations.clear();
+        this._listener = null;
+    }
 
-            // Load parameters for Eye
-            this.eye_mode = settings.get_string('eye-mode');
-            this.eye_position = settings.get_string('eye-position');
-            this.eye_position_weight = settings.get_int('eye-position-weight');
-            this.eye_line_width = settings.get_double('eye-line-width');
-            this.eye_margin = settings.get_double('eye-margin');
-            this.eye_repaint_interval = settings.get_int('eye-repaint-interval');
+    _loadSettings() {
+        const s = this._settings;
+        this._mode = s.get_int('mouse-circle-mode');
+        this._size = s.get_int('mouse-circle-size');
+        this._opacity = s.get_int('mouse-circle-opacity');
+        this._interval = s.get_int('mouse-circle-repaint-interval');
+        this._enabled = s.get_boolean('mouse-circle-enable');
+        this._color = s.get_string('mouse-circle-color');
+        this._clicks = {
+            'mouse:button:1p': {
+                name: 'left_click',
+                enabled: s.get_boolean('mouse-circle-left-click-enable'),
+                color: s.get_string('mouse-circle-left-click-color'),
+            },
+            'mouse:button:2p': {
+                name: 'middle_click',
+                enabled: s.get_boolean('mouse-circle-middle-click-enable'),
+                color: s.get_string('mouse-circle-middle-click-color'),
+            },
+            'mouse:button:3p': {
+                name: 'right_click',
+                enabled: s.get_boolean('mouse-circle-right-click-enable'),
+                color: s.get_string('mouse-circle-right-click-color'),
+            },
+        };
 
-            // Load parameters for Mouse circle
-            this.mouse_circle_mode = settings.get_int('mouse-circle-mode');
-            this.mouse_circle_size = settings.get_int('mouse-circle-size');
-            this.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
-            this.mouse_circle_repaint_interval = settings.get_int('mouse-circle-repaint-interval');
-            this.mouse_circle_enable = settings.get_boolean('mouse-circle-enable');
-            this.mouse_circle_left_click_enable = settings.get_boolean('mouse-circle-left-click-enable');
-            this.mouse_circle_right_click_enable = settings.get_boolean('mouse-circle-right-click-enable');
-            this.mouse_circle_middle_click_enable = settings.get_boolean('mouse-circle-middle-click-enable');
+        this._defaultIcon = this._createIcon(this._color);
+        for (const click of Object.values(this._clicks))
+            click.icon = this._createIcon(click.color);
+    }
 
-            // Load parameters for Mouse circle color
-            this.mouse_circle_color = settings.get_string('mouse-circle-color');
-            this.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
-            this.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
-            this.mouse_circle_middle_click_color = settings.get_string('mouse-circle-middle-click-color');
+    _reload() {
+        this._loadSettings();
+        if (!this._active)
+            return;
 
-            this.mouse_circle_show = false;
-            this.mouse_pointer = null;
-            this.data_dir = this._initDataDir();
+        this._updatePointer();
+        this._stopTimer();
+        this._startTimer();
+        this._onStateChanged();
+    }
 
-            this.area = new St.DrawingArea();
-            this.add_actor(this.area);
-            this.connect('button-press-event', this._eyeClick.bind(this));
-            this.connect('touch-event', this._eyeClick.bind(this));
+    // Creates a colored copy of the shape SVG in the cache dir
+    _createIcon(color) {
+        const hash = GLib.compute_checksum_for_string(GLib.ChecksumType.MD5, color, -1);
+        const path = GLib.build_filenamev([this._iconDir, `${this._mode}_${hash}.svg`]);
+        const dest = Gio.File.new_for_path(path);
 
-            Atspi.init();
-            this._mouseListener = Atspi.EventListener.new(this._mouseCircleClick.bind(this));
-
-            this.setActive(true);
-            this.setMouseCirclePropertyUpdate();
-
-            this._last_mouse_x_pos = undefined;
-            this._last_mouse_y_pos = undefined;
-
-            const settingsItem = new PopupMenu.PopupMenuItem('Settings');
-            settingsItem.connect('activate', () => { ExtensionUtils.openPrefs(); });
-            this.menu.addMenuItem(settingsItem);
+        if (!dest.query_exists(null)) {
+            const source = Gio.File.new_for_path(
+                GLib.build_filenamev([this._extension.path, 'circle', `${this._mode}.svg`]));
+            const [, bytes] = source.load_contents(null);
+            const contents = new TextDecoder().decode(bytes)
+                .replace('fill="#000000"', `fill="${color}"`);
+            dest.replace_contents(new TextEncoder().encode(contents), null, false,
+                Gio.FileCreateFlags.REPLACE_DESTINATION, null);
         }
 
-        destroy() {
-            this.setMouseCircleActive(false);
-            this.setActive(false);
-            this.area.destroy();
-            super.destroy();
+        return Gio.icon_new_for_string(path);
+    }
+
+    _updatePointer() {
+        if (!this._pointer)
+            return;
+
+        this._pointer.icon_size = this._size;
+        this._pointer.opacity = this._opacity;
+        this._pointer.gicon = this._defaultIcon;
+        this._pointer.visible = this._enabled;
+        this._movePointer();
+    }
+
+    _movePointer() {
+        const [x, y] = global.get_pointer();
+        this._pointer.set_position(x - this._size / 2, y - this._size / 2);
+    }
+
+    _startTimer() {
+        if (this._timeoutId || !this._enabled)
+            return;
+
+        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._interval, () => {
+            this._movePointer();
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _stopTimer() {
+        if (this._timeoutId) {
+            GLib.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
+    }
+
+    _stopListening() {
+        if (this._listening) {
+            this._listener.deregister('mouse');
+            this._listening = false;
+        }
+    }
+
+    _onClick(event) {
+        const click = this._clicks[event.type];
+        if (!this._active || !click?.enabled)
+            return;
+
+        const [x, y] = global.get_pointer();
+        const scale = this._size > 20 ? 1.5 : 3;
+
+        if (this._pointer)
+            this._pointer.gicon = click.icon;
+
+        const actor = new St.Icon({
+            x: x - this._size / 2,
+            y: y - this._size / 2,
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+            icon_size: this._size,
+            opacity: this._opacity,
+            gicon: click.icon,
+        });
+        Main.uiGroup.add_child(actor);
+        this._animations.add(actor);
+
+        actor.ease({
+            x: x - this._size * scale / 2,
+            y: y - this._size * scale / 2,
+            scale_x: scale,
+            scale_y: scale,
+            opacity: 0,
+            duration: CLICK_ANIMATION_DURATION,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                if (!this._animations.delete(actor))
+                    return;
+                actor.destroy();
+                if (this._pointer)
+                    this._pointer.gicon = this._defaultIcon;
+            },
+        });
+    }
+}
+
+// Eye in the top panel
+const EyeIndicator = GObject.registerClass(
+class EyeIndicator extends PanelMenu.Button {
+    _init(extension, settings, circle) {
+        super._init(0.5, extension.metadata.name, false);
+
+        this._settings = settings;
+        this._circle = circle;
+        this._timeoutId = 0;
+        this._lastX = undefined;
+        this._lastY = undefined;
+
+        this._area = new St.DrawingArea();
+        this._area.connect('repaint', area => this._draw(area));
+        this.add_child(this._area);
+
+        const settingsItem = new PopupMenu.PopupMenuItem(_('Settings'));
+        settingsItem.connect('activate', () => extension.openPreferences());
+        this.menu.addMenuItem(settingsItem);
+
+        this._loadSettings();
+        this._startTimer();
+
+        this._settings.connectObject(
+            'changed::eye-mode', () => this._loadSettings(),
+            'changed::eye-line-width', () => this._loadSettings(),
+            'changed::eye-margin', () => this._loadSettings(),
+            'changed::eye-repaint-interval', () => {
+                this._loadSettings();
+                this._stopTimer();
+                this._startTimer();
+            },
+            this);
+
+        this.connect('destroy', () => this._stopTimer());
+    }
+
+    queueRepaint() {
+        this._area.queue_repaint();
+    }
+
+    // Left click toggles the mouse indicator, other buttons open the menu
+    vfunc_event(event) {
+        if (event.type() === Clutter.EventType.BUTTON_PRESS &&
+            event.get_button() === Clutter.BUTTON_PRIMARY) {
+            this.menu.close();
+            this._circle.toggle();
+            return Clutter.EVENT_STOP;
+        }
+        return super.vfunc_event(event);
+    }
+
+    _loadSettings() {
+        this._mode = this._settings.get_string('eye-mode') === 'lids' ? 'lids' : 'bulb';
+        this._lineWidth = this._settings.get_double('eye-line-width');
+        this._margin = this._settings.get_double('eye-margin');
+        this._interval = this._settings.get_int('eye-repaint-interval');
+
+        this._area.set_width(PANEL_ICON_SIZE * 2 - 2 * this._margin);
+        this._area.set_height(PANEL_ICON_SIZE - 2 * this._margin);
+        this._area.queue_repaint();
+    }
+
+    _startTimer() {
+        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._interval, () => {
+            const [x, y] = global.get_pointer();
+            if (this._lastX !== x || this._lastY !== y) {
+                this._lastX = x;
+                this._lastY = y;
+                this._area.queue_repaint();
+            }
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _stopTimer() {
+        if (this._timeoutId) {
+            GLib.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
+    }
+
+    _draw(area) {
+        const [areaWidth, areaHeight] = area.get_surface_size();
+        const [areaX, areaY] = area.get_transformed_position();
+
+        const [pointerX, pointerY] = global.get_pointer();
+        const mouseX = pointerX - areaX - areaWidth / 2;
+        const mouseY = pointerY - areaY - areaHeight / 2;
+
+        const mouseAng = Math.atan2(mouseY, mouseX);
+        let mouseRad = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+
+        let eyeRad, irisRad, pupilRad, maxRad;
+        if (this._mode === 'lids') {
+            eyeRad = areaHeight / 2;
+            irisRad = eyeRad * 0.5;
+            pupilRad = irisRad * 0.4;
+            maxRad = eyeRad * (Math.pow(Math.cos(mouseAng), 4) * 0.5 + 0.25);
+        } else {
+            eyeRad = areaHeight / 2.3;
+            irisRad = eyeRad * 0.6;
+            pupilRad = irisRad * 0.4;
+            maxRad = eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - this._lineWidth;
         }
 
-        setActive(enabled) {
-            this.setEyePropertyUpdate();
+        if (mouseRad > maxRad)
+            mouseRad = maxRad;
 
-            if(this._repaint_handler) {
-                this.area.disconnect(this._repaint_handler);
-                this._repaint_handler = null;
-            }
+        const irisArc = Math.asin(irisRad / eyeRad);
+        const irisR = eyeRad * Math.cos(irisArc);
+        const eyeAng = Math.atan(mouseRad / irisR);
 
-            if(this._eye_update_handler) {
-                Mainloop.source_remove(this._eye_update_handler);
-                this._eye_update_handler = null;
-            }
+        const cr = area.get_context();
 
-            if(this._mouse_circle_update_handler) {
-                Mainloop.source_remove(this._mouse_circle_update_handler);
-                this._mouse_circle_update_handler = null;
-            }
+        const color = (this._circle.active && parseColor(this._circle.color)) ||
+            area.get_theme_node().get_foreground_color();
+        setSourceColor(cr, color);
 
-            if (enabled) {
-                this._repaint_handler = this.area.connect("repaint", this._eyeDraw.bind(this));
+        cr.translate(areaWidth * 0.5, areaHeight * 0.5);
+        cr.setLineWidth(this._lineWidth);
 
-                this._eye_update_handler = Mainloop.timeout_add(
-                    this.eye_repaint_interval, this._eyeTimeout.bind(this)
-                );
+        if (this._mode === 'lids') {
+            const xDef = irisRad * Math.cos(mouseAng) * Math.sin(eyeAng);
+            const yDef = irisRad * Math.sin(mouseAng) * Math.sin(eyeAng);
+            const topAmp = eyeRad * 0.8;
+            const bottomAmp = eyeRad * 0.6;
 
-                this.area.queue_repaint();
-            }
-        }
-
-        // MOUSE CIRCLE FUNCTIONS
-
-        _mouseCircleCreateDataIcon(name, color) {
-            // Load content
-            let source = Gio.File.new_for_path(`${Me.path}/circle/${this.mouse_circle_mode}.svg`);
-            let [l_success, contents] = source.load_contents(null);
-            contents = imports.byteArray.toString(contents);
-
-            // Replace to new color
-            contents = contents.replace('fill="#000000"', `fill="${color}"`);
-
-            // Save content to cache dir
-            let dest = Gio.File.new_for_path(`${this.data_dir}/icons/${this.mouse_circle_mode}_${name}_${color}.svg`);
-            if (!dest.query_exists(null)) {
-                dest.create(Gio.FileCreateFlags.NONE, null);
-            }
-            let [r_success, tag] = dest.replace_contents(contents, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-        }
-
-        _mouseCircleTimeout() {
-            if (this.mouse_pointer) {
-                let [mouse_x, mouse_y, mask] = global.get_pointer();
-                this.mouse_pointer.set_position(
-                    mouse_x - (this.mouse_circle_size / 2),
-                    mouse_y - (this.mouse_circle_size / 2)
-                );
-            }
-            return true;
-        }
-
-        _mouseCircleClick(event) {
-
-            let clickAnimation = function(self, click_type, color) {
-                let [mouse_x, mouse_y, mask] = global.get_pointer();
-                let actor_scale = self.mouse_circle_size > 20 ? 1.5 : 3;
-
-                if (self.mouse_pointer) {
-                    self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`);
-                }
-
-                let actor = new St.Icon({
-                    x: mouse_x - (self.mouse_circle_size / 2),
-                    y: mouse_y - (self.mouse_circle_size / 2),
-                    reactive : false,
-                    can_focus : false,
-                    track_hover : false,
-                    icon_size : self.mouse_circle_size,
-                    opacity : self.mouse_circle_opacity,
-                    gicon : Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_${click_type}_${color}.svg`)
-                });
-
-                Main.uiGroup.add_child(actor);
-
-                actor.ease({
-                    x: mouse_x - (self.mouse_circle_size * actor_scale / 2),
-                    y: mouse_y - (self.mouse_circle_size * actor_scale / 2),
-                    scale_x: actor_scale,
-                    scale_y: actor_scale,
-                    opacity: 0,
-                    duration: 500,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onComplete: function () {
-                        Main.uiGroup.remove_child(actor);
-                        actor.destroy();
-                        actor = null;
-
-                        if (self.mouse_pointer) {
-                            self.mouse_pointer.gicon = Gio.icon_new_for_string(`${self.data_dir}/icons/${self.mouse_circle_mode}_default_${self.mouse_circle_color}.svg`);
-                        }
-                    }
-                });
+            const lidsPath = () => {
+                cr.moveTo(-eyeRad, 0);
+                cr.curveTo(xDef - irisRad, yDef + topAmp,
+                    xDef + irisRad, yDef + topAmp, eyeRad, 0);
+                cr.curveTo(xDef + irisRad, yDef - bottomAmp,
+                    xDef - irisRad, yDef - bottomAmp, -eyeRad, 0);
             };
 
-            switch (event.type) {
-                case 'mouse:button:1p':
-                    if (this.mouse_circle_left_click_enable)
-                        clickAnimation(this,'left_click', this.mouse_circle_left_click_color);
-                    break;
-                case 'mouse:button:2p':
-                    if (this.mouse_circle_middle_click_enable)
-                        clickAnimation(this,'middle_click', this.mouse_circle_middle_click_color);
-                    break;
-                case 'mouse:button:3p':
-                    if (this.mouse_circle_right_click_enable)
-                        clickAnimation(this,'right_click', this.mouse_circle_right_click_color);
-                    break;
-            }
-        }
-
-        setMouseCirclePropertyUpdate() {
-            this._mouseCircleCreateDataIcon('default', this.mouse_circle_color);
-            this._mouseCircleCreateDataIcon('left_click', this.mouse_circle_left_click_color);
-            this._mouseCircleCreateDataIcon('right_click', this.mouse_circle_right_click_color);
-            this._mouseCircleCreateDataIcon('middle_click', this.mouse_circle_middle_click_color);
-
-            if (this.mouse_pointer) {
-                this.mouse_pointer.icon_size = this.mouse_circle_size;
-                this.mouse_pointer.opacity = this.mouse_circle_enable ? this.mouse_circle_opacity : 0;
-                this.mouse_pointer.gicon = Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`);
-            }
-        }
-
-        setMouseCircleActive(enabled) {
-            if (enabled == null) {
-                enabled = this.mouse_circle_show;
-            }
-
-            if (this.mouse_pointer) {
-                Main.uiGroup.remove_child(this.mouse_pointer);
-                this.mouse_pointer.destroy();
-                this.mouse_pointer = null;
-            }
-
-            if (enabled) {
-                this._mouse_circle_update_handler = Mainloop.timeout_add(
-                    this.mouse_circle_repaint_interval, this._mouseCircleTimeout.bind(this)
-                );
-
-                this.mouse_pointer = new St.Icon({
-                    reactive : false,
-                    can_focus : false,
-                    track_hover : false,
-                    icon_size: this.mouse_circle_size,
-                    opacity: this.mouse_circle_opacity,
-                    gicon: Gio.icon_new_for_string(`${this.data_dir}/icons/${this.mouse_circle_mode}_default_${this.mouse_circle_color}.svg`)
-                });
-                Main.uiGroup.add_child(this.mouse_pointer);
-
-                this.setMouseCirclePropertyUpdate();
-                this._mouseCircleTimeout();
-
-                this._mouseListener.register('mouse');
-            } else {
-                if(this._mouse_circle_update_handler) {
-                    Mainloop.source_remove(this._mouse_circle_update_handler);
-                    this._mouse_circle_update_handler = null;
-                }
-
-                this._mouseListener.deregister('mouse');
-            }
-        }
-
-        // EYE FUNCTIONS
-
-        _eyeTimeout() {
-            let [mouse_x, mouse_y, mask] = global.get_pointer();
-
-            if (this._last_mouse_x_pos !== mouse_x || this._last_mouse_y_pos !== mouse_y) {
-                this._last_mouse_x_pos = mouse_x;
-                this._last_mouse_y_pos = mouse_y;
-                this.area.queue_repaint();
-            }
-
-            return true;
-        }
-
-        _eyeClick(actor, event) {
-            if (event.get_button() === Clutter.BUTTON_PRIMARY) {
-                this.menu.close();
-                this.mouse_circle_show = !this.mouse_circle_show;
-                this.setMouseCircleActive(this.mouse_circle_show);
-                this.area.queue_repaint();
-            }
-        }
-
-        _eyeDraw(area) {
-            let get_pos = function(self)
-            {
-                let area_x = 0;
-                let area_y = 0;
-
-                let obj = self.area;
-                do
-                {
-                    let tx = 0;
-                    let ty = 0;
-                    try {
-                        [tx, ty] = obj.get_position();
-                    } catch {
-                    }
-                    area_x += tx;
-                    area_y += ty;
-                    obj = obj.get_parent();
-                }
-                while(obj);
-
-                return [area_x, area_y];
-            };
-
-            let [area_width, area_height] = area.get_surface_size();
-            let [area_x, area_y] = get_pos(this);
-            area_x += area_width / 2;
-            area_y += area_height / 2;
-
-            let [mouse_x, mouse_y, mask] = global.get_pointer();
-            mouse_x -= area_x;
-            mouse_y -= area_y;
-
-            let mouse_ang = Math.atan2(mouse_y, mouse_x);
-            let mouse_rad = Math.sqrt(mouse_x * mouse_x + mouse_y * mouse_y);
-
-            let eye_rad;
-            let iris_rad;
-            let pupil_rad;
-            let max_rad;
-
-            if(this.eye_mode === "bulb")
-            {
-                eye_rad = (area_height) / 2.3;
-                iris_rad = eye_rad * 0.6;
-                pupil_rad = iris_rad * 0.4;
-
-                max_rad = eye_rad * Math.cos(Math.asin((iris_rad) / eye_rad) ) - this.eye_line_width;
-            }
-
-            if(this.eye_mode === "lids")
-            {
-                eye_rad = (area_height) / 2;
-                iris_rad = eye_rad * 0.5;
-                pupil_rad = iris_rad * 0.4;
-
-                max_rad = eye_rad * (Math.pow(Math.cos(mouse_ang), 4) * 0.5 + 0.25)
-            }
-
-            if(mouse_rad > max_rad)
-                mouse_rad = max_rad;
-
-            let iris_arc = Math.asin(iris_rad / eye_rad);
-            let iris_r = eye_rad * Math.cos(iris_arc);
-
-            let eye_ang = Math.atan(mouse_rad / iris_r);
-
-            let cr = area.get_context();
-            let theme_node = this.area.get_theme_node();
-
-            if (this.mouse_circle_show) {
-                let [ok, color] = Clutter.Color.from_string(this.mouse_circle_color);
-                Clutter.cairo_set_source_color(cr, ok ? color : theme_node.get_foreground_color());
-            } else {
-                Clutter.cairo_set_source_color(cr, theme_node.get_foreground_color());
-            }
-
-            cr.translate(area_width * 0.5, area_height * 0.5);
-            cr.setLineWidth(this.eye_line_width);
-
-            if(this.eye_mode === "bulb")
-            {
-                cr.arc(0,0, eye_rad, 0,2 * Math.PI);
-                cr.stroke();
-            }
-
-            if(this.eye_mode === "lids")
-            {
-                let x_def = iris_rad * Math.cos(mouse_ang) * (Math.sin(eye_ang));
-                let y_def = iris_rad * Math.sin(mouse_ang) * (Math.sin(eye_ang));
-                let amp;
-
-                let top_lid = 0.8;
-                let bottom_lid = 0.6
-
-                amp = eye_rad * top_lid;
-                cr.moveTo(-eye_rad, 0);
-                cr.curveTo(x_def-iris_rad, y_def + amp,
-                            x_def + iris_rad, y_def + amp, eye_rad, 0);
-
-                amp = eye_rad * bottom_lid;
-                cr.curveTo(x_def + iris_rad, y_def - amp,
-                            x_def - iris_rad, y_def - amp, -eye_rad, 0);
-                cr.stroke();
-
-                amp = eye_rad * top_lid;
-                cr.moveTo(-eye_rad, 0);
-                cr.curveTo(x_def - iris_rad, y_def + amp,
-                            x_def + iris_rad, y_def + amp, eye_rad, 0);
-
-                amp = eye_rad * bottom_lid;
-                cr.curveTo(x_def + iris_rad, y_def - amp,
-                            x_def - iris_rad, y_def - amp, -eye_rad, 0);
-                cr.clip();
-            }
-
-            cr.rotate(mouse_ang);
-            cr.setLineWidth(this.eye_line_width / iris_rad);
-
-            cr.translate(iris_r * Math.sin(eye_ang), 0);
-            cr.scale(iris_rad * Math.cos(eye_ang), iris_rad);
-            cr.arc(0,0, 1.0, 0,2 * Math.PI);
+            lidsPath();
             cr.stroke();
-            cr.scale(1 / (iris_rad * Math.cos(eye_ang)), 1 / iris_rad);
-            cr.translate(-iris_r * Math.sin(eye_ang), 0);
-
-            cr.translate(eye_rad * Math.sin(eye_ang), 0);
-            cr.scale(pupil_rad * Math.cos(eye_ang), pupil_rad);
-            cr.arc(0,0, 1.0, 0,2 * Math.PI);
-            cr.fill();
-
-            cr.save();
-            cr.restore();
-            cr.$dispose();
+            lidsPath();
+            cr.clip();
+        } else {
+            cr.arc(0, 0, eyeRad, 0, 2 * Math.PI);
+            cr.stroke();
         }
 
-        setEyePropertyUpdate() {
-            Main.panel.addToStatusArea('EyeExtended'+ Math.random(), this, this.eye_position_weight, this.eye_position);
-            this.area.set_width((Panel.PANEL_ICON_SIZE * 2) - (2 * this.eye_margin));
-            this.area.set_height(Panel.PANEL_ICON_SIZE - (2 * this.eye_margin));
-            this.set_width(Panel.PANEL_ICON_SIZE * (2 * this.eye_margin));
-            this.area.queue_repaint();
-        }
+        cr.rotate(mouseAng);
+        cr.setLineWidth(this._lineWidth / irisRad);
+
+        cr.translate(irisR * Math.sin(eyeAng), 0);
+        cr.scale(irisRad * Math.cos(eyeAng), irisRad);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
+        cr.stroke();
+        cr.scale(1 / (irisRad * Math.cos(eyeAng)), 1 / irisRad);
+        cr.translate(-irisR * Math.sin(eyeAng), 0);
+
+        cr.translate(eyeRad * Math.sin(eyeAng), 0);
+        cr.scale(pupilRad * Math.cos(eyeAng), pupilRad);
+        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
+        cr.fill();
+
+        cr.$dispose();
+    }
 });
 
-function setEyePropertyUpdate() {
-    if (eye) {
-        eye.eye_mode = settings.get_string('eye-mode');
-        eye.eye_position = settings.get_string('eye-position');
-        eye.eye_position_weight = settings.get_int('eye-position-weight');
-        eye.eye_line_width = settings.get_double('eye-line-width');
-        eye.eye_margin = settings.get_double('eye-margin');
-        eye.setEyePropertyUpdate();
+export default class EyeExtendedExtension extends Extension {
+    enable() {
+        this._settings = this.getSettings();
+        this._circle = new MouseCircle(this, this._settings,
+            () => this._indicator?.queueRepaint());
 
-        eye.mouse_circle_mode = settings.get_int('mouse-circle-mode');
-        eye.mouse_circle_size = settings.get_int('mouse-circle-size');
-        eye.mouse_circle_opacity = settings.get_int('mouse-circle-opacity');
-        eye.mouse_circle_enable = settings.get_boolean('mouse-circle-enable');
-        eye.mouse_circle_left_click_enable = settings.get_boolean('mouse-circle-left-click-enable');
-        eye.mouse_circle_right_click_enable = settings.get_boolean('mouse-circle-right-click-enable');
-        eye.mouse_circle_middle_click_enable = settings.get_boolean('mouse-circle-middle-click-enable');
-
-        eye.mouse_circle_color = settings.get_string('mouse-circle-color');
-        eye.mouse_circle_left_click_color = settings.get_string('mouse-circle-left-click-color');
-        eye.mouse_circle_right_click_color = settings.get_string('mouse-circle-right-click-color');
-        eye.mouse_circle_middle_click_color = settings.get_string('mouse-circle-middle-click-color');
-        eye.setMouseCirclePropertyUpdate();
-    }
-}
-
-function setEyeRepaintInterval() {
-    if (eye) {
-        eye.eye_repaint_interval = settings.get_int('eye-repaint-interval');
-        eye.setActive(true);
-    }
-}
-
-function setMouseCircleRepaintInterval() {
-    if (eye) {
-        eye.mouse_circle_repaint_interval = settings.get_int('mouse-circle-repaint-interval');
-        eye.setMouseCircleActive(null);
-    }
-}
-
-function init() {}// launch the extension
-
-// Run when the extension is enabled
-function enable() {
-    settings = ExtensionUtils.getSettings();
-
-    // Connect the changing of any value to an update function
-    settings.connect('changed::eye-mode', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::eye-position', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::eye-position-weight', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::eye-line-width', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::eye-margin', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::eye-repaint-interval', setEyeRepaintInterval.bind(this));
-
-    settings.connect('changed::mouse-circle-mode', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-size', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-opacity', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-repaint-interval', setMouseCircleRepaintInterval.bind(this));
-    settings.connect('changed::mouse-circle-enable', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-left-click-enable', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-right-click-enable', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-middle-click-enable', setEyePropertyUpdate.bind(this));
-
-    settings.connect('changed::mouse-circle-color', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-left-click-color', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-right-click-color', setEyePropertyUpdate.bind(this));
-    settings.connect('changed::mouse-circle-middle-click-color', setEyePropertyUpdate.bind(this));
-
-    eye = new Eye(settings);
-}
-
-// Run when extension is disabled
-function disable() {
-    if (eye) {
-        eye.destroy();
-        eye = null;
+        this._addIndicator();
+        this._settings.connectObject(
+            'changed::eye-position', () => this._addIndicator(),
+            'changed::eye-position-weight', () => this._addIndicator(),
+            this);
     }
 
-    if (settings) {
-        settings.run_dispose();
-        settings = null;
+    disable() {
+        this._settings?.disconnectObject(this);
+        this._indicator?.destroy();
+        this._indicator = null;
+        this._circle?.destroy();
+        this._circle = null;
+        this._settings = null;
+    }
+
+    _addIndicator() {
+        this._indicator?.destroy();
+        this._indicator = new EyeIndicator(this, this._settings, this._circle);
+        Main.panel.addToStatusArea(this.uuid, this._indicator,
+            this._settings.get_int('eye-position-weight'),
+            this._settings.get_string('eye-position'));
     }
 }

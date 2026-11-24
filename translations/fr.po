@@ -144,3 +144,7 @@ msgstr "Indicateur de souris"
 # File: prefs.js, line: 246
 msgid "Color"
 msgstr "Couleur"
+#
+# File: extension.js
+msgid "Settings"
+msgstr "Paramètres"

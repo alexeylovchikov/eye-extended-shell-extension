@@ -144,3 +144,7 @@ msgstr "Индикатор мыши"
 # File: prefs.js, line: 246
 msgid "Color"
 msgstr "Цвет"
+#
+# File: extension.js
+msgid "Settings"
+msgstr "Настройки"

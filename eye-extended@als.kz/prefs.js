@@ -15,222 +15,152 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-'use strict';
 
-// Import required libraries
-const { GObject, Gdk, Gio, Gtk } = imports.gi;// graphic objects libraries
-const ExtensionUtils = imports.misc.extensionUtils;// access to settings from schema
-const Me = ExtensionUtils.getCurrentExtension();
-const Domain = imports.gettext.domain(Me.metadata['gettext-domain']);
-const _ = Domain.gettext;// tool to get translations
+import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
 
-function init() {
-    ExtensionUtils.initTranslations();
-}
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-// Class to create options and labels in the settings menu
-const EyeExtendedSettings = new GObject.Class({
-    Name: 'EyeExtendedSettings',
-    Extends: Gtk.Grid,
+export default class EyeExtendedPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        const settings = this.getSettings();
+        // Keep settings alive as long as the window
+        window._settings = settings;
 
-    _init: function(params) {
-        this.parent(params);
-
-        // Spacing values
-        this.vexpand = true;
-        this.margin_top = 12;
-        this.margin_bottom = 8;
-        this.row_spacing = 8;
-
-        this.row_pos = -1;// row position on a page
-        this._settings = ExtensionUtils.getSettings();// connect to settings
-    },
-
-    _createLabel(text, style=[], col=0, next_row=false) {
-        let label = new Gtk.Label({
-            hexpand: true,
-            halign: Gtk.Align.START,
-            wrap: true,
-            margin_start: 16
-        });
-        if (style.length > 0) {
-            style.forEach(element => text = "<" + element + ">" + text + "</" + element + ">");
-            label.set_markup(text);
-        } else {
-            label.set_text(text);
-        }
-        if (next_row) {this.row_pos += 1;}
-        this.attach(label, col, this.row_pos, 1, 1);
-    },
-
-    _createColor(property_name, col=0, next_row=false) {
-        let gdk_color = null;
-        let widget = new Gtk.ColorButton({
-            halign: Gtk.Align.END,
-            margin_end: 16
-        });
-        gdk_color = new Gdk.RGBA();
-        if (gdk_color.parse(this._settings.get_string(property_name))) {
-            widget.set_rgba(gdk_color);
-        }
-        widget.connect('color-set', w => {
-            this._settings.set_string(property_name, w.get_rgba().to_string());
-        });
-        if (next_row) {this.row_pos += 1;}
-        this.attach(widget, col, this.row_pos, 1, 1);
-    },
-
-    _createList(property_name, list, col=0, next_row=false) {
-        let widget = new Gtk.ComboBoxText({
-            halign: Gtk.Align.END,
-            margin_end: 16
-        });
-        list.forEach(element => widget.append(element[0], element[1]));
-        this._settings.bind(property_name, widget, 'active-id', Gio.SettingsBindFlags.DEFAULT);
-        if (next_row) {this.row_pos += 1;}
-        this.attach(widget, col, this.row_pos, 1, 1);
-    },
-
-    _createNumber(property_name, decimal=false, range, increments, col=0, next_row=false) {
-        let widget = new Gtk.SpinButton({
-            halign: Gtk.Align.END,
-            margin_end: 16
-        });
-        widget.set_sensitive(true);
-        widget.set_range(range[0], range[1]);
-        widget.set_increments(increments[0], increments[1]);
-        if (decimal) {
-            widget.set_digits(1);
-            widget.set_value(this._settings.get_double(property_name));
-        }
-        else {
-            widget.set_value(this._settings.get_int(property_name));
-        }
-        this._settings.bind(property_name, widget, 'value', Gio.SettingsBindFlags.DEFAULT);
-        if (next_row) {this.row_pos += 1;}
-        this.attach(widget, col, this.row_pos, 1, 1);
-    },
-
-    _createSwitch(property_name, col=0, next_row=false) {
-        let widget = new Gtk.Switch({
-            halign: Gtk.Align.END,
-            margin_end: 16
-        });
-        this._settings.bind(property_name, widget, 'active', Gio.SettingsBindFlags.DEFAULT);
-        if (next_row) {this.row_pos += 1;}
-        this.attach(widget, col, this.row_pos, 1, 1);
+        window.add(this._eyePage(settings));
+        window.add(this._mouseCirclePage(settings));
+        window.add(this._colorPage(settings));
     }
-});
 
-// Page for eye settings
-const EyeSettings = new GObject.Class({
-    Name: 'EyeSettings',
-    Extends: EyeExtendedSettings,
+    _eyePage(settings) {
+        const page = new Adw.PreferencesPage({
+            title: _('Eye'),
+            icon_name: 'view-reveal-symbolic',
+        });
+        const group = new Adw.PreferencesGroup();
+        page.add(group);
 
-    _init: function (params) {
-        this.parent(params);
+        group.add(this._comboRow(settings, 'eye-mode', _('Shape'), [
+            ['bulb', _('Round')],
+            ['lids', _('Eyelid')],
+        ]));
+        group.add(this._comboRow(settings, 'eye-position', _('Location'), [
+            ['left', _('Left')],
+            ['center', _('Center')],
+            ['right', _('Right')],
+        ]));
+        group.add(this._spinRow(settings, 'eye-position-weight', _('Position'), -255, 255, 1));
+        group.add(this._spinRow(settings, 'eye-line-width', _('Line Thickness'), 0, 5, 0.1, 1));
+        group.add(this._spinRow(settings, 'eye-margin', _('Margin'), 0, 5, 0.1, 1));
+        group.add(this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
 
-        this._createLabel(_("Shape"), [], 0, true);
-        this._createList('eye-mode', [
-            ["bulb", _("Round")],
-            ["lids", _("Eyelid")]
-        ], 1);
-
-        this._createLabel(_("Location"), [], 0, true);
-        this._createList('eye-position', [
-            ["left", _("Left")],
-            ["center", _("Center")],
-            ["right", _("Right")]
-        ], 1);
-
-        this._createLabel(_("Position"), [], 0, true);
-        this._createNumber('eye-position-weight',false, [-255, 255], [1, 2], 1);
-
-        this._createLabel(_("Line Thickness"), [], 0, true);
-        this._createNumber('eye-line-width', true, [0.0, 5.0], [0.1, 0.2], 1);
-
-        this._createLabel(_("Margin"), [], 0, true);
-        this._createNumber('eye-margin', true, [0.0, 5.0], [0.1, 0.2], 1);
-
-        this._createLabel(_("Refresh interval (ms)"), [], 0, true);
-        this._createNumber('eye-repaint-interval', false, [1, 1000], [10, 20], 1);
+        return page;
     }
-});
 
-// Page for mouse circle settings
-const MouseCircleSettings = new GObject.Class({
-    Name: 'MouseCircleSettings',
-    Extends: EyeExtendedSettings,
+    _mouseCirclePage(settings) {
+        const page = new Adw.PreferencesPage({
+            title: _('Mouse indicator'),
+            icon_name: 'input-mouse-symbolic',
+        });
+        const group = new Adw.PreferencesGroup({
+            description: _('Click on the eye to turn it on'),
+        });
+        page.add(group);
 
-    _init: function (params) {
-        this.parent(params);
+        group.add(this._switchRow(settings, 'mouse-circle-enable', _('Enable')));
+        group.add(this._spinRow(settings, 'mouse-circle-mode', _('Shape'), 1, 19, 1));
+        group.add(this._spinRow(settings, 'mouse-circle-size', _('Size'), 1, 500, 10));
+        group.add(this._spinRow(settings, 'mouse-circle-opacity', _('Opacity'), 1, 255, 10));
+        group.add(this._spinRow(settings, 'mouse-circle-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
+        group.add(this._switchRow(settings, 'mouse-circle-left-click-enable', _('Enable left click coloring')));
+        group.add(this._switchRow(settings, 'mouse-circle-right-click-enable', _('Enable right click coloring')));
+        group.add(this._switchRow(settings, 'mouse-circle-middle-click-enable', _('Enable middle click coloring')));
 
-        this._createLabel(_("Click on the eye to turn it on"),['b', 'i'], 0, true);
-
-        this._createLabel(_("Enable"), [], 0, true);
-        this._createSwitch('mouse-circle-enable', 1);
-
-        this._createLabel(_("Shape"), [], 0, true);
-        this._createNumber('mouse-circle-mode', false, [1, 19], [1, 2], 1);
-
-        this._createLabel(_("Size"), [], 0, true);
-        this._createNumber('mouse-circle-size', false, [1, 500], [10, 20], 1);
-
-        this._createLabel(_("Opacity"), [], 0, true);
-        this._createNumber('mouse-circle-opacity', false, [1, 255], [10, 20], 1);
-
-        this._createLabel(_("Refresh interval (ms)"), [], 0, true);
-        this._createNumber('mouse-circle-repaint-interval', false, [1, 1000], [10, 20], 1);
-
-        this._createLabel(_("Enable left click coloring"), [], 0, true);
-        this._createSwitch('mouse-circle-left-click-enable', 1);
-
-        this._createLabel(_("Enable right click coloring"), [], 0, true);
-        this._createSwitch('mouse-circle-right-click-enable', 1);
-
-        this._createLabel(_("Enable middle click coloring"), [], 0, true);
-        this._createSwitch('mouse-circle-middle-click-enable', 1);
+        return page;
     }
-});
 
-// Page color  eye settings
-const ColorSettings = new GObject.Class({
-    Name: 'ColorSettings',
-    Extends: EyeExtendedSettings,
+    _colorPage(settings) {
+        const page = new Adw.PreferencesPage({
+            title: _('Color'),
+            icon_name: 'applications-graphics-symbolic',
+        });
+        const group = new Adw.PreferencesGroup();
+        page.add(group);
 
-    _init: function (params) {
-        this.parent(params);
+        group.add(this._colorRow(settings, 'mouse-circle-color', _('Default')));
+        group.add(this._colorRow(settings, 'mouse-circle-left-click-color', _('Left click')));
+        group.add(this._colorRow(settings, 'mouse-circle-right-click-color', _('Right click')));
+        group.add(this._colorRow(settings, 'mouse-circle-middle-click-color', _('Middle click')));
 
-        this._createLabel(_("Default"), [], 0, true);
-        this._createColor('mouse-circle-color', 1);
-
-        this._createLabel(_("Left click"), [], 0, true);
-        this._createColor('mouse-circle-left-click-color', 1);
-
-        this._createLabel(_("Right click"), [], 0, true);
-        this._createColor('mouse-circle-right-click-color', 1);
-
-        this._createLabel(_("Middle click"), [], 0, true);
-        this._createColor('mouse-circle-middle-click-color', 1);
+        return page;
     }
-});
 
-// Settings Menu
-const Notebook =  new GObject.Class({
-    Name: 'Notebook',
-    Extends: Gtk.Notebook,
+    _comboRow(settings, key, title, items) {
+        const row = new Adw.ComboRow({
+            title,
+            model: Gtk.StringList.new(items.map(item => item[1])),
+        });
+        const ids = items.map(item => item[0]);
 
-    _init(params) {
-        this.parent(params);
+        const sync = () => {
+            const index = ids.indexOf(settings.get_string(key));
+            row.selected = index >= 0 ? index : 0;
+        };
+        sync();
+        settings.connect(`changed::${key}`, sync);
+        row.connect('notify::selected', () => {
+            const id = ids[row.selected];
+            if (id !== undefined && id !== settings.get_string(key))
+                settings.set_string(key, id);
+        });
 
-        this.append_page(new EyeSettings, new Gtk.Label({ label: _("Eye") }));
-        this.append_page(new MouseCircleSettings, new Gtk.Label({ label: _("Mouse indicator") }));
-        this.append_page(new ColorSettings, new Gtk.Label({ label: _("Color") }));
+        return row;
     }
-});
 
-// Insert the menu in the preference window
-function buildPrefsWidget() {
-    let widget = new Notebook();
-    return widget;
+    _spinRow(settings, key, title, min, max, step, digits = 0) {
+        const row = new Adw.SpinRow({
+            title,
+            digits,
+            adjustment: new Gtk.Adjustment({
+                lower: min,
+                upper: max,
+                step_increment: step,
+                page_increment: step * 2,
+            }),
+        });
+        settings.bind(key, row, 'value', Gio.SettingsBindFlags.DEFAULT);
+        return row;
+    }
+
+    _switchRow(settings, key, title) {
+        const row = new Adw.SwitchRow({title});
+        settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+        return row;
+    }
+
+    _colorRow(settings, key, title) {
+        const button = new Gtk.ColorDialogButton({
+            dialog: new Gtk.ColorDialog(),
+            valign: Gtk.Align.CENTER,
+        });
+
+        const sync = () => {
+            const rgba = new Gdk.RGBA();
+            if (rgba.parse(settings.get_string(key)) && !rgba.equal(button.rgba))
+                button.rgba = rgba;
+        };
+        sync();
+        settings.connect(`changed::${key}`, sync);
+        button.connect('notify::rgba', () => {
+            const value = button.rgba.to_string();
+            if (value !== settings.get_string(key))
+                settings.set_string(key, value);
+        });
+
+        const row = new Adw.ActionRow({title, activatable_widget: button});
+        row.add_suffix(button);
+        return row;
+    }
 }

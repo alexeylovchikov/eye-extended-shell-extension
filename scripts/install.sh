@@ -1,20 +1,18 @@
 #!/bin/bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+UUID="eye-extended@als.kz"
+ZIP="$ROOT/$UUID.shell-extension.zip"
 
 echo "Packing the extension..."
-rm ../eye-extended@als.kz.shell-extension.zip -v
-gnome-extensions pack ../eye-extended@als.kz \
-    --podir="../translations" \
+rm -f "$ZIP"
+gnome-extensions pack "$ROOT/$UUID" \
+    --podir="$ROOT/translations" \
     --extra-source="circle" \
-    --out-dir="../"
-
-echo "Uninstalling old extension..."
-gnome-extensions uninstall eye-extended@als.kz
-rm -rfv ~/.local/share/gnome-shell/extensions/eye-extended@als.kz
+    --out-dir="$ROOT"
 
 echo "Installing the extension..."
-gnome-extensions install ../eye-extended@als.kz.shell-extension.zip
+gnome-extensions install --force "$ZIP"
 
-echo "Cleaning up..."
-#rm ../eye-extended@als.kz.shell-extension.zip
-
-echo "Done! Now restart your session."
+echo "Done! Log out and back in, then enable it: gnome-extensions enable $UUID"
