@@ -29,9 +29,6 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-// Panel.PANEL_ICON_SIZE was removed in GNOME Shell 49
-const PANEL_ICON_SIZE = 16;
-
 // Clutter.Color was replaced by Cogl.Color in GNOME Shell 47
 const ColorClass = Clutter.Color ?? Cogl.Color;
 
@@ -313,7 +310,10 @@ class EyeIndicator extends PanelMenu.Button {
         this._lastX = undefined;
         this._lastY = undefined;
 
-        this._area = new St.DrawingArea();
+        this._area = new St.DrawingArea({
+            y_expand: true,
+            y_align: Clutter.ActorAlign.FILL,
+        });
         this._area.connect('repaint', area => this._draw(area));
         this.add_child(this._area);
 
@@ -326,6 +326,7 @@ class EyeIndicator extends PanelMenu.Button {
 
         this._settings.connectObject(
             'changed::eye-mode', () => this._loadSettings(),
+            'changed::eye-size', () => this._loadSettings(),
             'changed::eye-line-width', () => this._loadSettings(),
             'changed::eye-margin', () => this._loadSettings(),
             'changed::eye-repaint-interval', () => {
@@ -355,12 +356,15 @@ class EyeIndicator extends PanelMenu.Button {
 
     _loadSettings() {
         this._mode = this._settings.get_string('eye-mode') === 'lids' ? 'lids' : 'bulb';
+        this._size = this._settings.get_int('eye-size');
         this._lineWidth = this._settings.get_double('eye-line-width');
         this._margin = this._settings.get_double('eye-margin');
         this._interval = this._settings.get_int('eye-repaint-interval');
 
-        this._area.set_width(PANEL_ICON_SIZE * 2 - 2 * this._margin);
-        this._area.set_height(PANEL_ICON_SIZE - 2 * this._margin);
+        // The eye is drawn inside a fixed box; the margin only adds space on
+        // the sides, so it never changes the panel button height.
+        this._boxWidth = this._mode === 'lids' ? this._size * 1.5 : this._size;
+        this._area.set_width(Math.round(this._boxWidth + 2 * this._margin));
         this._area.queue_repaint();
     }
 
@@ -385,23 +389,34 @@ class EyeIndicator extends PanelMenu.Button {
 
     _draw(area) {
         const [areaWidth, areaHeight] = area.get_surface_size();
+        // Nothing to draw before the area gets a real size
+        if (areaWidth <= 0 || areaHeight <= 0)
+            return;
         const [areaX, areaY] = area.get_transformed_position();
 
         const [pointerX, pointerY] = global.get_pointer();
-        const mouseX = pointerX - areaX - areaWidth / 2;
-        const mouseY = pointerY - areaY - areaHeight / 2;
+        let mouseX = pointerX - areaX - areaWidth / 2;
+        let mouseY = pointerY - areaY - areaHeight / 2;
+        // The transformed position is NaN until the panel is laid out
+        if (!Number.isFinite(mouseX) || !Number.isFinite(mouseY))
+            mouseX = mouseY = 0;
 
         const mouseAng = Math.atan2(mouseY, mouseX);
         let mouseRad = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
 
+        // Fit the eye with its outline into the box
+        const boxW = Math.min(this._boxWidth, areaWidth) - this._lineWidth;
+        const boxH = Math.min(this._size, areaHeight) - this._lineWidth;
+
         let eyeRad, irisRad, pupilRad, maxRad;
         if (this._mode === 'lids') {
-            eyeRad = areaHeight / 2;
+            // The lids rise to 0.6 of the eye radius
+            eyeRad = Math.min(boxW / 2, boxH / 2 / 0.6);
             irisRad = eyeRad * 0.5;
             pupilRad = irisRad * 0.4;
             maxRad = eyeRad * (Math.pow(Math.cos(mouseAng), 4) * 0.5 + 0.25);
         } else {
-            eyeRad = areaHeight / 2.3;
+            eyeRad = Math.min(boxW, boxH) / 2;
             irisRad = eyeRad * 0.6;
             pupilRad = irisRad * 0.4;
             maxRad = eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - this._lineWidth;

@@ -52,6 +52,7 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
             ['right', _('Right')],
         ]));
         group.add(this._spinRow(settings, 'eye-position-weight', _('Position'), -255, 255, 1));
+        group.add(this._spinRow(settings, 'eye-size', _('Size'), 8, 64, 1));
         group.add(this._spinRow(settings, 'eye-line-width', _('Line Thickness'), 0, 5, 0.1, 1));
         group.add(this._spinRow(settings, 'eye-margin', _('Margin'), 0, 5, 0.1, 1));
         group.add(this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
