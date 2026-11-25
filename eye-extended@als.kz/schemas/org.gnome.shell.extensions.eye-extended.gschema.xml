@@ -70,19 +70,19 @@
     </key>
 
     <key name="mouse-circle-color" type="s">
-      <default>"#ffc107"</default>
+      <default>"#62a0ea"</default>
       <summary>Mouse circle color</summary>
     </key>
     <key name="mouse-circle-left-click-color" type="s">
-      <default>"#ffc107"</default>
+      <default>"#57e389"</default>
       <summary>Mouse circle left click color</summary>
     </key>
     <key name="mouse-circle-right-click-color" type="s">
-      <default>"#ffc107"</default>
+      <default>"#f8e45c"</default>
       <summary>Mouse circle right click color</summary>
     </key>
     <key name="mouse-circle-middle-click-color" type="s">
-      <default>"#ffc107"</default>
+      <default>"#ffa348"</default>
       <summary>Mouse circle middle click color</summary>
     </key>
 
