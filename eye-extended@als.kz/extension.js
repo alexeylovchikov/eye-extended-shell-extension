@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import Atspi from 'gi://Atspi';
+import Cairo from 'cairo';
 import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import Gio from 'gi://Gio';
@@ -36,6 +36,10 @@ const PANEL_ICON_SIZE = 16;
 const ColorClass = Clutter.Color ?? Cogl.Color;
 
 const CLICK_ANIMATION_DURATION = 500;
+
+const BUTTONS_MASK = Clutter.ModifierType.BUTTON1_MASK |
+    Clutter.ModifierType.BUTTON2_MASK |
+    Clutter.ModifierType.BUTTON3_MASK;
 
 const CIRCLE_KEYS = [
     'mouse-circle-mode',
@@ -67,6 +71,31 @@ function setSourceColor(cr, color) {
     cr.setSourceRGBA(color.red / 255, color.green / 255, color.blue / 255, color.alpha / 255);
 }
 
+// Returns an icon with a copy of the shape SVG colored and cached on disk
+function createShapeIcon(extension, mode, color) {
+    const dir = GLib.build_filenamev([
+        GLib.get_user_cache_dir(), extension.metadata['gettext-domain'], 'icons',
+    ]);
+    if (GLib.mkdir_with_parents(dir, 0o755) !== 0)
+        throw new Error(`Failed to create cache dir at ${dir}`);
+
+    const hash = GLib.compute_checksum_for_string(GLib.ChecksumType.MD5, color, -1);
+    const path = GLib.build_filenamev([dir, `${mode}_${hash}.svg`]);
+    const dest = Gio.File.new_for_path(path);
+
+    if (!dest.query_exists(null)) {
+        const source = Gio.File.new_for_path(
+            GLib.build_filenamev([extension.path, 'circle', `${mode}.svg`]));
+        const [, bytes] = source.load_contents(null);
+        const contents = new TextDecoder().decode(bytes)
+            .replace('fill="#000000"', `fill="${color}"`);
+        dest.replace_contents(new TextEncoder().encode(contents), null, false,
+            Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+    }
+
+    return Gio.icon_new_for_string(path);
+}
+
 // Mouse indicator that follows the pointer and highlights clicks
 class MouseCircle {
     constructor(extension, settings, onStateChanged) {
@@ -77,17 +106,8 @@ class MouseCircle {
         this._active = false;
         this._pointer = null;
         this._timeoutId = 0;
-        this._listening = false;
+        this._buttons = 0;
         this._animations = new Set();
-
-        this._iconDir = GLib.build_filenamev([
-            GLib.get_user_cache_dir(), extension.metadata['gettext-domain'], 'icons',
-        ]);
-        if (GLib.mkdir_with_parents(this._iconDir, 0o755) !== 0)
-            throw new Error(`Failed to create cache dir at ${this._iconDir}`);
-
-        Atspi.init();
-        this._listener = Atspi.EventListener.new(event => this._onClick(event));
 
         this._loadSettings();
         this._settings.connectObject('changed', (s, key) => {
@@ -121,13 +141,10 @@ class MouseCircle {
             });
             Main.uiGroup.add_child(this._pointer);
             this._updatePointer();
+            this._buttons = global.get_pointer()[2] & BUTTONS_MASK;
             this._startTimer();
-
-            this._listener.register('mouse');
-            this._listening = true;
         } else {
             this._stopTimer();
-            this._stopListening();
             this._pointer?.destroy();
             this._pointer = null;
         }
@@ -138,13 +155,11 @@ class MouseCircle {
     destroy() {
         this._settings.disconnectObject(this);
         this.setActive(false);
-        this._stopListening();
         for (const actor of this._animations) {
             actor.remove_all_transitions();
             actor.destroy();
         }
         this._animations.clear();
-        this._listener = null;
     }
 
     _loadSettings() {
@@ -156,18 +171,15 @@ class MouseCircle {
         this._enabled = s.get_boolean('mouse-circle-enable');
         this._color = s.get_string('mouse-circle-color');
         this._clicks = {
-            'mouse:button:1p': {
-                name: 'left_click',
+            [Clutter.ModifierType.BUTTON1_MASK]: {
                 enabled: s.get_boolean('mouse-circle-left-click-enable'),
                 color: s.get_string('mouse-circle-left-click-color'),
             },
-            'mouse:button:2p': {
-                name: 'middle_click',
+            [Clutter.ModifierType.BUTTON2_MASK]: {
                 enabled: s.get_boolean('mouse-circle-middle-click-enable'),
                 color: s.get_string('mouse-circle-middle-click-color'),
             },
-            'mouse:button:3p': {
-                name: 'right_click',
+            [Clutter.ModifierType.BUTTON3_MASK]: {
                 enabled: s.get_boolean('mouse-circle-right-click-enable'),
                 color: s.get_string('mouse-circle-right-click-color'),
             },
@@ -189,23 +201,8 @@ class MouseCircle {
         this._onStateChanged();
     }
 
-    // Creates a colored copy of the shape SVG in the cache dir
     _createIcon(color) {
-        const hash = GLib.compute_checksum_for_string(GLib.ChecksumType.MD5, color, -1);
-        const path = GLib.build_filenamev([this._iconDir, `${this._mode}_${hash}.svg`]);
-        const dest = Gio.File.new_for_path(path);
-
-        if (!dest.query_exists(null)) {
-            const source = Gio.File.new_for_path(
-                GLib.build_filenamev([this._extension.path, 'circle', `${this._mode}.svg`]));
-            const [, bytes] = source.load_contents(null);
-            const contents = new TextDecoder().decode(bytes)
-                .replace('fill="#000000"', `fill="${color}"`);
-            dest.replace_contents(new TextEncoder().encode(contents), null, false,
-                Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-        }
-
-        return Gio.icon_new_for_string(path);
+        return createShapeIcon(this._extension, this._mode, color);
     }
 
     _updatePointer() {
@@ -220,18 +217,40 @@ class MouseCircle {
     }
 
     _movePointer() {
+        if (!this._pointer)
+            return;
         const [x, y] = global.get_pointer();
         this._pointer.set_position(x - this._size / 2, y - this._size / 2);
     }
 
     _startTimer() {
-        if (this._timeoutId || !this._enabled)
+        if (this._timeoutId)
             return;
 
         this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._interval, () => {
-            this._movePointer();
+            this._poll();
             return GLib.SOURCE_CONTINUE;
         });
+    }
+
+    // On Wayland mutter forwards clicks on client windows straight to the
+    // client, so neither Clutter event filters nor AT-SPI see them. Polling
+    // the pointer button state works for windows, the shell UI and on X11.
+    _poll() {
+        const [x, y, mods] = global.get_pointer();
+        if (this._pointer && this._enabled)
+            this._pointer.set_position(x - this._size / 2, y - this._size / 2);
+
+        const buttons = mods & BUTTONS_MASK;
+        const pressed = buttons & ~this._buttons;
+        this._buttons = buttons;
+        if (!pressed)
+            return;
+
+        for (const [mask, click] of Object.entries(this._clicks)) {
+            if (pressed & Number(mask))
+                this._onClick(click, x, y);
+        }
     }
 
     _stopTimer() {
@@ -241,19 +260,10 @@ class MouseCircle {
         }
     }
 
-    _stopListening() {
-        if (this._listening) {
-            this._listener.deregister('mouse');
-            this._listening = false;
-        }
-    }
-
-    _onClick(event) {
-        const click = this._clicks[event.type];
-        if (!this._active || !click?.enabled)
+    _onClick(click, x, y) {
+        if (!click.enabled)
             return;
 
-        const [x, y] = global.get_pointer();
         const scale = this._size > 20 ? 1.5 : 3;
 
         if (this._pointer)
