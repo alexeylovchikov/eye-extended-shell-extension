@@ -2,13 +2,12 @@
 # Copyright (C) 2020 Alexey
 # This file is distributed under the same license as the Eye and Mouse Extended extension.
 # Philippe-André Akue <pakueamb@gmail.com>, 2022.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: EyeExtendedExtension\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-27 23:22-0500\n"
-"PO-Revision-Date: 2022-11-28 14:43-0500\n"
+"PO-Revision-Date: 2026-11-25 10:30+0500\n"
 "Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -18,133 +17,140 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#
-# File: prefs.js, line: 151
-# File: prefs.js, line: 191
-msgid "Shape"
-msgstr "Forme"
+#: eye-extended@als.kz/extension.js:606
+msgid "Settings"
+msgstr "Paramètres"
 
-#
-# File: prefs.js, line: 153
-msgid "Round"
-msgstr "Cercle"
-
-#
-# File: prefs.js, line: 154
-msgid "Eyelid"
-msgstr "Paupière"
-
-#
-# File: prefs.js, line: 157
-msgid "Location"
-msgstr "Emplacement"
-
-#
-# File: prefs.js, line: 159
-msgid "Left"
-msgstr "Gauche"
-
-#
-# File: prefs.js, line: 160
-msgid "Center"
-msgstr "Centre"
-
-#
-# File: prefs.js, line: 161
-msgid "Right"
-msgstr "Droit"
-
-#
-# File: prefs.js, line: 164
-msgid "Position"
-msgstr "Position"
-
-#
-# File: prefs.js, line: 167
-msgid "Line Thickness"
-msgstr "Épaisseur des lignes"
-
-#
-# File: prefs.js, line: 170
-msgid "Margin"
-msgstr "Marge"
-
-#
-# File: prefs.js, line: 173
-# File: prefs.js, line: 200
-msgid "Refresh interval (ms)"
-msgstr "Intervalle de rafraîchissement (ms)"
-
-#
-# File: prefs.js, line: 186
-msgid "Click on the eye to turn it on"
-msgstr "Cliquez sur l'œil pour l'allumer"
-
-#
-# File: prefs.js, line: 188
-msgid "Enable"
-msgstr "Activer"
-
-#
-# File: prefs.js, line: 194
-msgid "Size"
-msgstr "Taille"
-
-#
-# File: prefs.js, line: 197
-msgid "Opacity"
-msgstr "Opacité"
-
-#
-# File: prefs.js, line: 203
-msgid "Enable left click coloring"
-msgstr "Activer la coloration du clic gauche"
-
-#
-# File: prefs.js, line: 206
-msgid "Enable right click coloring"
-msgstr "Activer la coloration du clic droit"
-
-#
-# File: prefs.js, line: 209
-msgid "Enable middle click coloring"
-msgstr "Activer la coloration du clic du milieu"
-
-#
-# File: prefs.js, line: 222
-msgid "Default"
-msgstr "Défaut"
-
-#
-# File: prefs.js, line: 225
-msgid "Left click"
-msgstr "Clic gauche"
-
-#
-# File: prefs.js, line: 228
-msgid "Right click"
-msgstr "Clic droit"
-
-#
-# File: prefs.js, line: 231
-msgid "Middle click"
-msgstr "Clic du milieu"
-
-#
-# File: prefs.js, line: 244
+#: eye-extended@als.kz/prefs.js:38
 msgid "Eye"
 msgstr "Œil"
 
-#
-# File: prefs.js, line: 245
+#: eye-extended@als.kz/prefs.js:44 eye-extended@als.kz/prefs.js:73
+#: eye-extended@als.kz/prefs.js:98
+msgid "Shape"
+msgstr "Forme"
+
+#: eye-extended@als.kz/prefs.js:45
+msgid "Round"
+msgstr "Rond"
+
+#: eye-extended@als.kz/prefs.js:46
+msgid "Eyelid"
+msgstr "Paupière"
+
+#: eye-extended@als.kz/prefs.js:48
+msgid "Location"
+msgstr "Emplacement"
+
+#: eye-extended@als.kz/prefs.js:49
+msgid "Left"
+msgstr "Gauche"
+
+#: eye-extended@als.kz/prefs.js:50
+msgid "Center"
+msgstr "Centre"
+
+#: eye-extended@als.kz/prefs.js:51
+msgid "Right"
+msgstr "Droite"
+
+#: eye-extended@als.kz/prefs.js:53
+msgid "Position"
+msgstr "Position"
+
+#: eye-extended@als.kz/prefs.js:54 eye-extended@als.kz/prefs.js:74
+#: eye-extended@als.kz/prefs.js:100
+msgid "Size"
+msgstr "Taille"
+
+#: eye-extended@als.kz/prefs.js:55 eye-extended@als.kz/prefs.js:101
+msgid "Line Thickness"
+msgstr "Épaisseur des lignes"
+
+#: eye-extended@als.kz/prefs.js:56
+msgid "Margin"
+msgstr "Marge"
+
+#: eye-extended@als.kz/prefs.js:57 eye-extended@als.kz/prefs.js:76
+msgid "Refresh interval (ms)"
+msgstr "Intervalle de rafraîchissement (ms)"
+
+#: eye-extended@als.kz/prefs.js:64
 msgid "Mouse indicator"
 msgstr "Indicateur de souris"
 
-#
-# File: prefs.js, line: 246
+#: eye-extended@als.kz/prefs.js:68
+msgid "Click on the eye to turn it on"
+msgstr "Cliquez sur l’œil pour l’activer"
+
+#: eye-extended@als.kz/prefs.js:72 eye-extended@als.kz/prefs.js:91
+msgid "Enable"
+msgstr "Activer"
+
+#: eye-extended@als.kz/prefs.js:75
+msgid "Opacity"
+msgstr "Opacité"
+
+#: eye-extended@als.kz/prefs.js:77
+msgid "Enable left click coloring"
+msgstr "Activer la coloration du clic gauche"
+
+#: eye-extended@als.kz/prefs.js:78
+msgid "Enable right click coloring"
+msgstr "Activer la coloration du clic droit"
+
+#: eye-extended@als.kz/prefs.js:79
+msgid "Enable middle click coloring"
+msgstr "Activer la coloration du clic du milieu"
+
+#: eye-extended@als.kz/prefs.js:80
+msgid "Default"
+msgstr "Par défaut"
+
+#: eye-extended@als.kz/prefs.js:81
+msgid "Left click"
+msgstr "Clic gauche"
+
+#: eye-extended@als.kz/prefs.js:82
+msgid "Right click"
+msgstr "Clic droit"
+
+#: eye-extended@als.kz/prefs.js:83
+msgid "Middle click"
+msgstr "Clic du milieu"
+
+#: eye-extended@als.kz/prefs.js:86
+msgid "Ctrl trail"
+msgstr "Traînée Ctrl"
+
+#: eye-extended@als.kz/prefs.js:87
+msgid "Hold Ctrl and move the mouse"
+msgstr "Maintenez Ctrl et déplacez la souris"
+
+#: eye-extended@als.kz/prefs.js:92
+msgid "Animation"
+msgstr "Animation"
+
+#: eye-extended@als.kz/prefs.js:93
+msgid "Water ripples"
+msgstr "Ondes sur l’eau"
+
+#: eye-extended@als.kz/prefs.js:94
+msgid "Pointer line"
+msgstr "Ligne du pointeur"
+
+#: eye-extended@als.kz/prefs.js:95
+msgid "Comet tail"
+msgstr "Queue de comète"
+
+#: eye-extended@als.kz/prefs.js:96
+msgid "Sparkles"
+msgstr "Étincelles"
+
+#: eye-extended@als.kz/prefs.js:102
+msgid "Duration (ms)"
+msgstr "Durée (ms)"
+
+#: eye-extended@als.kz/prefs.js:103
 msgid "Color"
 msgstr "Couleur"
-#
-# File: extension.js
-msgid "Settings"
-msgstr "Paramètres"
