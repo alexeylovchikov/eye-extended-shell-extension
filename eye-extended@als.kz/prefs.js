@@ -31,7 +31,6 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
 
         window.add(this._eyePage(settings));
         window.add(this._mouseCirclePage(settings));
-        window.add(this._colorPage(settings));
     }
 
     _eyePage(settings) {
@@ -78,18 +77,6 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._switchRow(settings, 'mouse-circle-left-click-enable', _('Enable left click coloring')));
         group.add(this._switchRow(settings, 'mouse-circle-right-click-enable', _('Enable right click coloring')));
         group.add(this._switchRow(settings, 'mouse-circle-middle-click-enable', _('Enable middle click coloring')));
-
-        return page;
-    }
-
-    _colorPage(settings) {
-        const page = new Adw.PreferencesPage({
-            title: _('Color'),
-            icon_name: 'applications-graphics-symbolic',
-        });
-        const group = new Adw.PreferencesGroup();
-        page.add(group);
-
         group.add(this._colorRow(settings, 'mouse-circle-color', _('Default')));
         group.add(this._colorRow(settings, 'mouse-circle-left-click-color', _('Left click')));
         group.add(this._colorRow(settings, 'mouse-circle-right-click-color', _('Right click')));
