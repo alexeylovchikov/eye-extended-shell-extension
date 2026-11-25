@@ -169,9 +169,12 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         sync();
         settings.connect(`changed::${key}`, sync);
         button.connect('notify::rgba', () => {
-            const value = button.rgba.to_string();
-            if (value !== settings.get_string(key))
-                settings.set_string(key, value);
+            // Compare colors, not strings: "#62a0ea" and "rgb(98,160,234)" are
+            // the same color and must not overwrite the stored value
+            const current = new Gdk.RGBA();
+            if (current.parse(settings.get_string(key)) && current.equal(button.rgba))
+                return;
+            settings.set_string(key, button.rgba.to_string());
         });
 
         const row = new Adw.ActionRow({title, activatable_widget: button});

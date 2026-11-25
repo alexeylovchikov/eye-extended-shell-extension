@@ -30,6 +30,9 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+Gio._promisify(Gio.File.prototype, 'load_contents_async');
+Gio._promisify(Gio.File.prototype, 'replace_contents_bytes_async', 'replace_contents_finish');
+
 // Clutter.Color was replaced by Cogl.Color in GNOME Shell 47
 const ColorClass = Clutter.Color ?? Cogl.Color;
 
@@ -65,12 +68,19 @@ function parseColor(str) {
     return null;
 }
 
+// St scales icon sizes and CSS lengths by this factor on HiDPI screens,
+// while actor positions and sizes set from code are in stage pixels.
+function getScaleFactor() {
+    return St.ThemeContext.get_for_stage(global.stage).scale_factor;
+}
+
 function setSourceColor(cr, color) {
     cr.setSourceRGBA(color.red / 255, color.green / 255, color.blue / 255, color.alpha / 255);
 }
 
-// Returns an icon with a copy of the shape SVG colored and cached on disk
-function createShapeIcon(extension, mode, color) {
+// Resolves to an icon with a copy of the shape SVG colored and cached on disk.
+// File IO is async so that the shell never blocks on disk access.
+async function createShapeIcon(extension, mode, color) {
     const dir = GLib.build_filenamev([
         GLib.get_user_cache_dir(), extension.metadata['gettext-domain'], 'icons',
     ]);
@@ -84,10 +94,11 @@ function createShapeIcon(extension, mode, color) {
     if (!dest.query_exists(null)) {
         const source = Gio.File.new_for_path(
             GLib.build_filenamev([extension.path, 'circle', `${mode}.svg`]));
-        const [, bytes] = source.load_contents(null);
+        const [bytes] = await source.load_contents_async(null);
         const contents = new TextDecoder().decode(bytes)
             .replace('fill="#000000"', `fill="${color}"`);
-        dest.replace_contents(new TextEncoder().encode(contents), null, false,
+        await dest.replace_contents_bytes_async(
+            new GLib.Bytes(new TextEncoder().encode(contents)), null, false,
             Gio.FileCreateFlags.REPLACE_DESTINATION, null);
     }
 
@@ -100,6 +111,8 @@ class MouseCircle {
         this._extension = extension;
         this._settings = settings;
         this._onStateChanged = onStateChanged;
+        this._iconSerial = 0;
+        this._defaultIcon = null;
 
         this._active = false;
         this._pointer = null;
@@ -124,6 +137,11 @@ class MouseCircle {
 
     toggle() {
         this.setActive(!this._active);
+    }
+
+    // Size of the shape on the stage
+    get _pixelSize() {
+        return this._size * getScaleFactor();
     }
 
     setActive(active) {
@@ -152,6 +170,8 @@ class MouseCircle {
 
     destroy() {
         this._settings.disconnectObject(this);
+        // Drop icons that are still being loaded
+        this._iconSerial++;
         this.setActive(false);
         for (const actor of this._animations) {
             actor.remove_all_transitions();
@@ -165,7 +185,7 @@ class MouseCircle {
         this._mode = s.get_int('mouse-circle-mode');
         this._size = s.get_int('mouse-circle-size');
         this._opacity = s.get_int('mouse-circle-opacity');
-        this._interval = s.get_int('mouse-circle-repaint-interval');
+        this._interval = Math.max(1, s.get_int('mouse-circle-repaint-interval'));
         this._enabled = s.get_boolean('mouse-circle-enable');
         this._color = s.get_string('mouse-circle-color');
         this._clicks = {
@@ -183,9 +203,24 @@ class MouseCircle {
             },
         };
 
-        this._defaultIcon = this._createIcon(this._color);
-        for (const click of Object.values(this._clicks))
-            click.icon = this._createIcon(click.color);
+        this._loadIcons().catch(e => logError(e, 'Eye Extended: cannot load mouse indicator shape'));
+    }
+
+    async _loadIcons() {
+        const serial = ++this._iconSerial;
+        const clicks = Object.values(this._clicks);
+        const [defaultIcon, ...clickIcons] = await Promise.all(
+            [this._color, ...clicks.map(click => click.color)]
+                .map(color => createShapeIcon(this._extension, this._mode, color)));
+
+        // Settings changed or the extension was disabled while loading
+        if (serial !== this._iconSerial)
+            return;
+
+        this._defaultIcon = defaultIcon;
+        clicks.forEach((click, i) => (click.icon = clickIcons[i]));
+        if (this._pointer)
+            this._pointer.gicon = defaultIcon;
     }
 
     _reload() {
@@ -197,10 +232,6 @@ class MouseCircle {
         this._stopTimer();
         this._startTimer();
         this._onStateChanged();
-    }
-
-    _createIcon(color) {
-        return createShapeIcon(this._extension, this._mode, color);
     }
 
     _updatePointer() {
@@ -218,7 +249,8 @@ class MouseCircle {
         if (!this._pointer)
             return;
         const [x, y] = global.get_pointer();
-        this._pointer.set_position(x - this._size / 2, y - this._size / 2);
+        const half = this._pixelSize / 2;
+        this._pointer.set_position(x - half, y - half);
     }
 
     _startTimer() {
@@ -236,8 +268,10 @@ class MouseCircle {
     // the pointer button state works for windows, the shell UI and on X11.
     _poll() {
         const [x, y, mods] = global.get_pointer();
-        if (this._pointer && this._enabled)
-            this._pointer.set_position(x - this._size / 2, y - this._size / 2);
+        if (this._pointer && this._enabled) {
+            const half = this._pixelSize / 2;
+            this._pointer.set_position(x - half, y - half);
+        }
 
         const buttons = mods & BUTTONS_MASK;
         const pressed = buttons & ~this._buttons;
@@ -263,13 +297,18 @@ class MouseCircle {
             return;
 
         const scale = this._size > 20 ? 1.5 : 3;
+        const pixelSize = this._pixelSize;
+
+        // The shape is still being loaded
+        if (!click.icon)
+            return;
 
         if (this._pointer)
             this._pointer.gicon = click.icon;
 
         const actor = new St.Icon({
-            x: x - this._size / 2,
-            y: y - this._size / 2,
+            x: x - pixelSize / 2,
+            y: y - pixelSize / 2,
             reactive: false,
             can_focus: false,
             track_hover: false,
@@ -281,8 +320,8 @@ class MouseCircle {
         this._animations.add(actor);
 
         actor.ease({
-            x: x - this._size * scale / 2,
-            y: y - this._size * scale / 2,
+            x: x - pixelSize * scale / 2,
+            y: y - pixelSize * scale / 2,
             scale_x: scale,
             scale_y: scale,
             opacity: 0,
@@ -327,6 +366,7 @@ class PointerTrail {
         this._area = null;
         this._lastX = undefined;
         this._lastY = undefined;
+        this._iconSerial = 0;
 
         this._loadSettings();
         this._settings.connectObject('changed', (s, key) => {
@@ -337,6 +377,7 @@ class PointerTrail {
 
     destroy() {
         this._settings.disconnectObject(this);
+        this._iconSerial++;
         this._stopTimer();
         this._clear();
     }
@@ -351,21 +392,22 @@ class PointerTrail {
         this._color = s.get_string('water-ripple-color');
         this._rgba = parseColor(this._color);
         this._mode = s.get_int('water-ripple-mode');
+        // Plain rings and dots are used until the shape is loaded
         this._icon = null;
+        const serial = ++this._iconSerial;
         if (this._mode > 0 && this._effect !== 'line') {
-            try {
-                this._icon = createShapeIcon(this._extension, this._mode, this._color);
-            } catch (e) {
-                logError(e, `Eye Extended: cannot load trail shape ${this._mode}`);
-            }
+            createShapeIcon(this._extension, this._mode, this._color).then(icon => {
+                if (serial === this._iconSerial)
+                    this._icon = icon;
+            }).catch(e => logError(e, `Eye Extended: cannot load trail shape ${this._mode}`));
         }
 
         // Distance the pointer has to move before the next piece is added
-        this._spacing = {
+        this._spacing = ({
             ripples: Math.max(4, this._size / 4),
             comet: Math.max(2, this._size / 16),
             sparkles: Math.max(4, this._size / 6),
-        }[this._effect] ?? 2;
+        }[this._effect] ?? 2) * getScaleFactor();
 
         // Do not mix pieces of the old and the new effect
         this._clear();
@@ -398,8 +440,7 @@ class PointerTrail {
         }
         this._actors.clear();
         this._points = [];
-        this._area?.destroy();
-        this._area = null;
+        this._destroyArea();
         this._lastX = undefined;
     }
 
@@ -446,11 +487,13 @@ class PointerTrail {
         if (this._actors.size >= TRAIL_MAX_ACTORS)
             return null;
 
+        // The actor box is in stage pixels; icon_size and CSS are scaled by St
+        const pixelSize = size * getScaleFactor();
         const params = {
-            x: x - size / 2,
-            y: y - size / 2,
-            width: size,
-            height: size,
+            x: x - pixelSize / 2,
+            y: y - pixelSize / 2,
+            width: pixelSize,
+            height: pixelSize,
             reactive: false,
             can_focus: false,
             track_hover: false,
@@ -504,7 +547,7 @@ class PointerTrail {
             if (!actor)
                 return;
             const angle = Math.random() * 2 * Math.PI;
-            const distance = this._size / 2 * (0.4 + Math.random() * 0.6);
+            const distance = this._size * getScaleFactor() / 2 * (0.4 + Math.random() * 0.6);
             this._fade(actor, {
                 translation_x: Math.cos(angle) * distance,
                 translation_y: Math.sin(angle) * distance,
@@ -539,21 +582,42 @@ class PointerTrail {
 
         if (this._points.length) {
             if (!this._area) {
-                this._area = new St.DrawingArea({
-                    reactive: false,
-                    x: 0,
-                    y: 0,
-                    width: global.stage.width,
-                    height: global.stage.height,
-                });
-                this._area.connect('repaint', area => this._drawLine(area));
+                this._area = new St.DrawingArea({reactive: false});
+                this._areaRepaintId = this._area.connect('repaint', area => this._drawLine(area));
                 Main.uiGroup.add_child(this._area);
             }
+            this._layoutArea();
             this._area.queue_repaint();
-        } else if (this._area) {
-            this._area.destroy();
-            this._area = null;
+        } else {
+            this._destroyArea();
         }
+    }
+
+    // Keep the drawing area just around the line: repainting a surface
+    // the size of the whole stage is slow with several monitors
+    _layoutArea() {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const p of this._points) {
+            minX = Math.min(minX, p.x);
+            minY = Math.min(minY, p.y);
+            maxX = Math.max(maxX, p.x);
+            maxY = Math.max(maxY, p.y);
+        }
+        const pad = Math.ceil(this._lineWidth * getScaleFactor()) + 2;
+        this._areaX = Math.floor(minX - pad);
+        this._areaY = Math.floor(minY - pad);
+        this._area.set_position(this._areaX, this._areaY);
+        this._area.set_size(
+            Math.ceil(maxX + pad) - this._areaX,
+            Math.ceil(maxY + pad) - this._areaY);
+    }
+
+    _destroyArea() {
+        if (!this._area)
+            return;
+        this._area.disconnect(this._areaRepaintId);
+        this._area.destroy();
+        this._area = null;
     }
 
     _drawLine(area) {
@@ -564,7 +628,10 @@ class PointerTrail {
             ? [c.red / 255, c.green / 255, c.blue / 255, c.alpha / 255]
             : [1, 0, 0, 1];
 
+        const lineWidth = this._lineWidth * getScaleFactor();
         cr.setLineCap(Cairo.LineCap.ROUND);
+        // Points are in stage coordinates, the area starts at its own origin
+        cr.translate(-this._areaX, -this._areaY);
         for (let i = 1; i < this._points.length; i++) {
             const p0 = this._points[i - 1];
             const p1 = this._points[i];
@@ -574,7 +641,7 @@ class PointerTrail {
             if (life <= 0)
                 continue;
             cr.setSourceRGBA(r, g, b, a * life);
-            cr.setLineWidth(this._lineWidth * (0.3 + 0.7 * life));
+            cr.setLineWidth(lineWidth * (0.3 + 0.7 * life));
             cr.moveTo(p0.x, p0.y);
             cr.lineTo(p1.x, p1.y);
             cr.stroke();
@@ -622,7 +689,13 @@ class EyeIndicator extends PanelMenu.Button {
             },
             this);
 
+        // Also covers the actor being destroyed by the shell itself
         this.connect('destroy', () => this._stopTimer());
+    }
+
+    destroy() {
+        this._stopTimer();
+        super.destroy();
     }
 
     queueRepaint() {
@@ -645,7 +718,7 @@ class EyeIndicator extends PanelMenu.Button {
         this._size = this._settings.get_int('eye-size');
         this._lineWidth = this._settings.get_double('eye-line-width');
         this._margin = this._settings.get_double('eye-margin');
-        this._interval = this._settings.get_int('eye-repaint-interval');
+        this._interval = Math.max(1, this._settings.get_int('eye-repaint-interval'));
 
         // The eye is drawn inside a fixed box; the margin only adds space on
         // the sides, so it never changes the panel button height.
@@ -707,6 +780,8 @@ class EyeIndicator extends PanelMenu.Button {
             pupilRad = irisRad * 0.4;
             maxRad = eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - this._lineWidth;
         }
+        // A thick outline on a small eye leaves no room to move
+        maxRad = Math.max(0, maxRad);
 
         if (mouseRad > maxRad)
             mouseRad = maxRad;
