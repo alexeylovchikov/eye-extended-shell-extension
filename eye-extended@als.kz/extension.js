@@ -22,6 +22,7 @@ import Cogl from 'gi://Cogl';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
+import Graphene from 'gi://Graphene';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -298,6 +299,291 @@ class MouseCircle {
     }
 }
 
+const TRAIL_KEYS = [
+    'water-ripple-enable',
+    'water-ripple-effect',
+    'water-ripple-line-width',
+    'water-ripple-mode',
+    'water-ripple-size',
+    'water-ripple-duration',
+    'water-ripple-color',
+];
+const TRAIL_POLL_INTERVAL = 16;
+const TRAIL_MAX_ACTORS = 150;
+const TRAIL_MAX_POINTS = 2000;
+// Ripples start at the set size, like the mouse indicator, and spread out
+const RIPPLE_END_SCALE = 2;
+const SPARKLES_PER_STEP = 3;
+
+// Animation behind the pointer while Ctrl is held: water ripples,
+// a fading laser-pointer line, a comet tail or sparkles
+class PointerTrail {
+    constructor(extension, settings) {
+        this._extension = extension;
+        this._settings = settings;
+        this._timeoutId = 0;
+        this._actors = new Set();
+        this._points = [];
+        this._area = null;
+        this._lastX = undefined;
+        this._lastY = undefined;
+
+        this._loadSettings();
+        this._settings.connectObject('changed', (s, key) => {
+            if (TRAIL_KEYS.includes(key))
+                this._loadSettings();
+        }, this);
+    }
+
+    destroy() {
+        this._settings.disconnectObject(this);
+        this._stopTimer();
+        this._clear();
+    }
+
+    _loadSettings() {
+        const s = this._settings;
+        this._enabled = s.get_boolean('water-ripple-enable');
+        this._effect = s.get_string('water-ripple-effect');
+        this._lineWidth = s.get_double('water-ripple-line-width');
+        this._size = s.get_int('water-ripple-size');
+        this._duration = s.get_int('water-ripple-duration');
+        this._color = s.get_string('water-ripple-color');
+        this._rgba = parseColor(this._color);
+        this._mode = s.get_int('water-ripple-mode');
+        this._icon = null;
+        if (this._mode > 0 && this._effect !== 'line') {
+            try {
+                this._icon = createShapeIcon(this._extension, this._mode, this._color);
+            } catch (e) {
+                logError(e, `Eye Extended: cannot load trail shape ${this._mode}`);
+            }
+        }
+
+        // Distance the pointer has to move before the next piece is added
+        this._spacing = {
+            ripples: Math.max(4, this._size / 4),
+            comet: Math.max(2, this._size / 16),
+            sparkles: Math.max(4, this._size / 6),
+        }[this._effect] ?? 2;
+
+        // Do not mix pieces of the old and the new effect
+        this._clear();
+        if (this._enabled)
+            this._startTimer();
+        else
+            this._stopTimer();
+    }
+
+    _startTimer() {
+        if (this._timeoutId)
+            return;
+        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, TRAIL_POLL_INTERVAL, () => {
+            this._poll();
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _stopTimer() {
+        if (this._timeoutId) {
+            GLib.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
+    }
+
+    _clear() {
+        for (const actor of this._actors) {
+            actor.remove_all_transitions();
+            actor.destroy();
+        }
+        this._actors.clear();
+        this._points = [];
+        this._area?.destroy();
+        this._area = null;
+        this._lastX = undefined;
+    }
+
+    // Keyboard modifiers are polled for the same reason as mouse buttons:
+    // on Wayland the shell does not see input sent to client windows.
+    _poll() {
+        const [x, y, mods] = global.get_pointer();
+        const ctrl = (mods & Clutter.ModifierType.CONTROL_MASK) !== 0;
+
+        if (this._effect === 'line') {
+            this._pollLine(x, y, ctrl);
+            return;
+        }
+
+        if (!ctrl) {
+            this._lastX = undefined;
+            return;
+        }
+
+        if (this._lastX === undefined) {
+            this._lastX = x;
+            this._lastY = y;
+            return;
+        }
+
+        const dx = x - this._lastX;
+        const dy = y - this._lastY;
+        if (dx * dx + dy * dy < this._spacing * this._spacing)
+            return;
+
+        this._lastX = x;
+        this._lastY = y;
+
+        if (this._effect === 'comet')
+            this._spawnComet(x, y);
+        else if (this._effect === 'sparkles')
+            this._spawnSparkles(x, y);
+        else
+            this._spawnRipple(x, y);
+    }
+
+    // A shape centered at (x, y): the selected SVG, a ring or a dot
+    _addActor(x, y, size, filled) {
+        if (this._actors.size >= TRAIL_MAX_ACTORS)
+            return null;
+
+        const params = {
+            x: x - size / 2,
+            y: y - size / 2,
+            width: size,
+            height: size,
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+            pivot_point: new Graphene.Point({x: 0.5, y: 0.5}),
+        };
+        const radius = `border-radius: ${size / 2}px;`;
+        let actor;
+        if (this._icon)
+            actor = new St.Icon({...params, gicon: this._icon, icon_size: size});
+        else if (filled)
+            actor = new St.Widget({...params, style: `background-color: ${this._color}; ${radius}`});
+        else
+            actor = new St.Widget({...params, style: `border: ${this._lineWidth}px solid ${this._color}; ${radius}`});
+
+        Main.uiGroup.add_child(actor);
+        this._actors.add(actor);
+        return actor;
+    }
+
+    _fade(actor, props, mode = Clutter.AnimationMode.EASE_OUT_CUBIC) {
+        actor.ease({
+            ...props,
+            opacity: 0,
+            duration: this._duration,
+            mode,
+            onComplete: () => {
+                if (this._actors.delete(actor))
+                    actor.destroy();
+            },
+        });
+    }
+
+    _spawnRipple(x, y) {
+        const actor = this._addActor(x, y, this._size, false);
+        if (actor)
+            this._fade(actor, {scale_x: RIPPLE_END_SCALE, scale_y: RIPPLE_END_SCALE});
+    }
+
+    // Dots along the path that shrink away
+    _spawnComet(x, y) {
+        const actor = this._addActor(x, y, Math.max(2, Math.round(this._size / 4)), true);
+        if (actor)
+            this._fade(actor, {scale_x: 0, scale_y: 0}, Clutter.AnimationMode.EASE_IN_QUAD);
+    }
+
+    // Small pieces that scatter around the pointer
+    _spawnSparkles(x, y) {
+        const size = Math.max(3, Math.round(this._size / 8));
+        for (let i = 0; i < SPARKLES_PER_STEP; i++) {
+            const actor = this._addActor(x, y, size, true);
+            if (!actor)
+                return;
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = this._size / 2 * (0.4 + Math.random() * 0.6);
+            this._fade(actor, {
+                translation_x: Math.cos(angle) * distance,
+                translation_y: Math.sin(angle) * distance,
+                scale_x: 0.3,
+                scale_y: 0.3,
+                rotation_angle_z: (Math.random() - 0.5) * 360,
+            }, Clutter.AnimationMode.EASE_OUT_QUAD);
+        }
+    }
+
+    // Laser pointer: a line through recent pointer positions that fades
+    // and thins with age
+    _pollLine(x, y, ctrl) {
+        const now = GLib.get_monotonic_time() / 1000;
+
+        if (ctrl) {
+            const start = this._lastX === undefined;
+            const dx = x - this._lastX;
+            const dy = y - this._lastY;
+            if (start || dx * dx + dy * dy >= this._spacing * this._spacing) {
+                this._points.push({x, y, t: now, start});
+                this._lastX = x;
+                this._lastY = y;
+            }
+        } else {
+            this._lastX = undefined;
+        }
+
+        while (this._points.length &&
+            (now - this._points[0].t > this._duration || this._points.length > TRAIL_MAX_POINTS))
+            this._points.shift();
+
+        if (this._points.length) {
+            if (!this._area) {
+                this._area = new St.DrawingArea({
+                    reactive: false,
+                    x: 0,
+                    y: 0,
+                    width: global.stage.width,
+                    height: global.stage.height,
+                });
+                this._area.connect('repaint', area => this._drawLine(area));
+                Main.uiGroup.add_child(this._area);
+            }
+            this._area.queue_repaint();
+        } else if (this._area) {
+            this._area.destroy();
+            this._area = null;
+        }
+    }
+
+    _drawLine(area) {
+        const cr = area.get_context();
+        const now = GLib.get_monotonic_time() / 1000;
+        const c = this._rgba;
+        const [r, g, b, a] = c
+            ? [c.red / 255, c.green / 255, c.blue / 255, c.alpha / 255]
+            : [1, 0, 0, 1];
+
+        cr.setLineCap(Cairo.LineCap.ROUND);
+        for (let i = 1; i < this._points.length; i++) {
+            const p0 = this._points[i - 1];
+            const p1 = this._points[i];
+            if (p1.start)
+                continue;
+            const life = 1 - (now - p1.t) / this._duration;
+            if (life <= 0)
+                continue;
+            cr.setSourceRGBA(r, g, b, a * life);
+            cr.setLineWidth(this._lineWidth * (0.3 + 0.7 * life));
+            cr.moveTo(p0.x, p0.y);
+            cr.lineTo(p1.x, p1.y);
+            cr.stroke();
+        }
+
+        cr.$dispose();
+    }
+}
+
 // Eye in the top panel
 const EyeIndicator = GObject.registerClass(
 class EyeIndicator extends PanelMenu.Button {
@@ -485,6 +771,7 @@ export default class EyeExtendedExtension extends Extension {
         this._settings = this.getSettings();
         this._circle = new MouseCircle(this, this._settings,
             () => this._indicator?.queueRepaint());
+        this._trail = new PointerTrail(this, this._settings);
 
         this._addIndicator();
         this._settings.connectObject(
@@ -499,6 +786,8 @@ export default class EyeExtendedExtension extends Extension {
         this._indicator = null;
         this._circle?.destroy();
         this._circle = null;
+        this._trail?.destroy();
+        this._trail = null;
         this._settings = null;
     }
 

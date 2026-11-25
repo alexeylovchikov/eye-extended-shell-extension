@@ -86,5 +86,48 @@
       <summary>Mouse circle middle click color</summary>
     </key>
 
+    <key name="water-ripple-enable" type="b">
+      <default>true</default>
+      <summary>Water ripple enable</summary>
+      <description>Draw ripples behind the pointer while Ctrl is held</description>
+    </key>
+    <key name="water-ripple-effect" type="s">
+      <choices>
+        <choice value="ripples"/>
+        <choice value="line"/>
+        <choice value="comet"/>
+        <choice value="sparkles"/>
+      </choices>
+      <default>"ripples"</default>
+      <summary>Ctrl trail effect</summary>
+      <description>Animation drawn behind the pointer while Ctrl is held</description>
+    </key>
+    <key name="water-ripple-line-width" type="d">
+      <range min="1" max="30"/>
+      <default>3</default>
+      <summary>Ctrl trail line thickness</summary>
+      <description>Ring border for ripples and line width for the line effect</description>
+    </key>
+    <key name="water-ripple-mode" type="i">
+      <range min="0" max="19"/>
+      <default>0</default>
+      <summary>Water ripple shape</summary>
+      <description>0 is a plain ring, 1-19 use the mouse indicator shapes</description>
+    </key>
+    <key name="water-ripple-size" type="i">
+      <range min="1" max="500"/>
+      <default>80</default>
+      <summary>Water ripple size</summary>
+    </key>
+    <key name="water-ripple-duration" type="i">
+      <range min="100" max="5000"/>
+      <default>900</default>
+      <summary>Water ripple duration (ms)</summary>
+    </key>
+    <key name="water-ripple-color" type="s">
+      <default>"#99c1f1"</default>
+      <summary>Water ripple color</summary>
+    </key>
+
   </schema>
 </schemalist>

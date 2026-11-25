@@ -82,6 +82,33 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._colorRow(settings, 'mouse-circle-right-click-color', _('Right click')));
         group.add(this._colorRow(settings, 'mouse-circle-middle-click-color', _('Middle click')));
 
+        const trailGroup = new Adw.PreferencesGroup({
+            title: _('Ctrl trail'),
+            description: _('Hold Ctrl and move the mouse'),
+        });
+        page.add(trailGroup);
+
+        trailGroup.add(this._switchRow(settings, 'water-ripple-enable', _('Enable')));
+        trailGroup.add(this._comboRow(settings, 'water-ripple-effect', _('Animation'), [
+            ['ripples', _('Water ripples')],
+            ['line', _('Pointer line')],
+            ['comet', _('Comet tail')],
+            ['sparkles', _('Sparkles')],
+        ]));
+        const shapeRow = this._spinRow(settings, 'water-ripple-mode', _('Shape'), 0, 19, 1);
+        trailGroup.add(shapeRow);
+        trailGroup.add(this._spinRow(settings, 'water-ripple-size', _('Size'), 1, 500, 10));
+        trailGroup.add(this._spinRow(settings, 'water-ripple-line-width', _('Line Thickness'), 1, 30, 1, 1));
+        trailGroup.add(this._spinRow(settings, 'water-ripple-duration', _('Duration (ms)'), 100, 5000, 100));
+        trailGroup.add(this._colorRow(settings, 'water-ripple-color', _('Color')));
+
+        // The line effect has no shape
+        const syncShape = () => {
+            shapeRow.sensitive = settings.get_string('water-ripple-effect') !== 'line';
+        };
+        syncShape();
+        settings.connect('changed::water-ripple-effect', syncShape);
+
         return page;
     }
 
