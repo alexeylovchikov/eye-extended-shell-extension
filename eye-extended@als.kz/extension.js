@@ -358,6 +358,12 @@ const SPARKLES_PER_STEP = 3;
 // Length of the straight pieces a smoothed line is drawn with, in pixels
 const LINE_STEP = 4;
 const LINE_MAX_STEPS = 24;
+// A long line is drawn with longer pieces to keep repainting fast
+const LINE_MAX_SAMPLES = 600;
+// Pause between repaints of the line, in multiples of the time one takes
+const LINE_REPAINT_PAUSE = 3;
+// Number of steps the line fades and thins in
+const LINE_SHADES = 48;
 
 // Turns the polled pointer positions of one stroke into a smooth curve:
 // corners are rounded with quadratic Bezier curves between the midpoints of
@@ -368,12 +374,17 @@ function smoothStroke(points) {
     if (n < 3)
         return points;
 
+    let total = 0;
+    for (let i = 1; i < n; i++)
+        total += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+    const step = Math.max(LINE_STEP, total / LINE_MAX_SAMPLES);
+
     const mid = (a, b) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, t: (a.t + b.t) / 2});
     const samples = [points[0]];
     const addCurve = (from, ctrl, to) => {
         const length = Math.hypot(ctrl.x - from.x, ctrl.y - from.y) +
             Math.hypot(to.x - ctrl.x, to.y - ctrl.y);
-        const steps = Math.min(LINE_MAX_STEPS, Math.max(1, Math.ceil(length / LINE_STEP)));
+        const steps = Math.min(LINE_MAX_STEPS, Math.max(1, Math.ceil(length / step)));
         for (let i = 1; i <= steps; i++) {
             const u = i / steps;
             const a = (1 - u) * (1 - u);
@@ -409,6 +420,7 @@ class PointerTrail {
         this._actors = new Set();
         this._points = [];
         this._area = null;
+        this._nextRepaint = 0;
         this._lastX = undefined;
         this._lastY = undefined;
         this._iconSerial = 0;
@@ -633,8 +645,12 @@ class PointerTrail {
                 this._areaRepaintId = this._area.connect('repaint', area => this._drawLine(area));
                 Main.uiGroup.add_child(this._area);
             }
-            this._layoutArea();
-            this._area.queue_repaint();
+            // A very long line takes a while to draw: repaint it less
+            // often rather than keep the shell busy with nothing else
+            if (now >= this._nextRepaint) {
+                this._layoutArea();
+                this._area.queue_repaint();
+            }
         } else {
             this._destroyArea();
         }
@@ -677,6 +693,7 @@ class PointerTrail {
 
         const lineWidth = this._lineWidth * getScaleFactor();
         cr.setLineCap(Cairo.LineCap.ROUND);
+        cr.setLineJoin(Cairo.LineJoin.ROUND);
         // Segments are translucent and their round caps overlap: replace the
         // pixels instead of blending them, or every joint shows up as a dot
         cr.setOperator(Cairo.Operator.SOURCE);
@@ -696,19 +713,33 @@ class PointerTrail {
 
         for (const points of strokes) {
             const samples = smoothStroke(points);
+            // Stroking every piece on its own is far too slow for a long
+            // line: pieces of the same shade are drawn as one path
+            let shade = 0;
             for (let i = 1; i < samples.length; i++) {
-                const p0 = samples[i - 1];
-                const p1 = samples[i];
-                const life = 1 - (now - p1.t) / this._duration;
-                if (life <= 0)
-                    continue;
-                cr.setSourceRGBA(r, g, b, a * life);
-                cr.setLineWidth(lineWidth * (0.3 + 0.7 * life));
-                cr.moveTo(p0.x, p0.y);
-                cr.lineTo(p1.x, p1.y);
-                cr.stroke();
+                const life = 1 - (now - samples[i].t) / this._duration;
+                const next = life > 0 ? Math.ceil(life * LINE_SHADES) : 0;
+                if (next !== shade) {
+                    if (shade)
+                        cr.stroke();
+                    shade = next;
+                    if (shade) {
+                        const level = shade / LINE_SHADES;
+                        cr.setSourceRGBA(r, g, b, a * level);
+                        cr.setLineWidth(lineWidth * (0.3 + 0.7 * level));
+                        cr.moveTo(samples[i - 1].x, samples[i - 1].y);
+                    }
+                }
+                if (shade)
+                    cr.lineTo(samples[i].x, samples[i].y);
             }
+            if (shade)
+                cr.stroke();
         }
+
+        // Spend at most a quarter of the time on drawing the line
+        const end = GLib.get_monotonic_time() / 1000;
+        this._nextRepaint = end + (end - now) * LINE_REPAINT_PAUSE;
 
         cr.$dispose();
     }
