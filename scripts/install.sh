@@ -10,6 +10,8 @@ rm -f "$ZIP"
 gnome-extensions pack "$ROOT/$UUID" \
     --podir="$ROOT/translations" \
     --extra-source="circle" \
+    --extra-source="cat" \
+    --extra-source="catBrain.js" \
     --out-dir="$ROOT"
 
 echo "Installing the extension..."

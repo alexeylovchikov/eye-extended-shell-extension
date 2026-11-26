@@ -5,8 +5,9 @@
 # Eye and Mouse Extended
 
 **A GNOME Shell extension that keeps the cursor easy to find**: an eye in the top panel
-that follows the pointer, a mouse indicator that highlights clicks, and pointer
-animations that follow the pointer, always or only while <kbd>Ctrl</kbd> is held.<br>
+that follows the pointer, a mouse indicator that highlights clicks, pointer
+animations that follow the pointer, always or only while <kbd>Ctrl</kbd> is held,
+and a cat that runs after the cursor.<br>
 Made for screen recordings, presentations, screen sharing and large monitors.
 
 [![GNOME Shell 45–51](https://img.shields.io/badge/GNOME%20Shell-45%E2%80%9351-4a86cf?logo=gnome&logoColor=white)](#compatibility)
@@ -62,6 +63,18 @@ and between the animations.
 
 ![Demo: the pointer trail is turned on in the settings, switched from While Ctrl is held to Always, and changed from a pointer line to water ripples with a gear shape](assets/video3.gif)
 
+### Cat
+
+A ginger cat lives on the desktop. It is off by default; turn it on with the **Cat**
+switch in the menu of the eye.
+
+- It runs after the cursor in twelve directions, sits down next to it, grooms itself and falls asleep.
+- Click the cat and it swipes a paw, tumbles, rolls over or jumps.
+- Hold the left button on the cat to pick it up by the scruff, carry it and throw it.
+- Shake the cursor next to the cat, or throw it, and it runs away, sulks and avoids the cursor for a minute.
+
+Only the body of the cat takes clicks; clicks next to it reach the window underneath.
+
 ## Installation
 
 1. Clone the repository:
@@ -90,7 +103,7 @@ To update, pull the latest changes and repeat steps 2 and 3.
 
 To open the settings, do one of the following:
 
-1. Click the eye and choose **Settings**. The menu also has the **Mouse indicator** and **Pointer trail** switches; the trail switch reminds you to hold <kbd>Ctrl</kbd> when the trail is set to appear only with it.
+1. Click the eye and choose **Settings**. The menu also has the **Mouse indicator**, **Pointer trail** and **Cat** switches; the trail switch reminds you to hold <kbd>Ctrl</kbd> when the trail is set to appear only with it.
 2. Open the Extensions app and click the gear next to **Eye and Mouse Extended**.
 3. Run:
 
@@ -154,6 +167,14 @@ It is off after you log in.
 | Line thickness | 15 | Ring outline for **Water ripples** and line width for **Pointer line**, in pixels. |
 | Duration (ms) | 400 | How long each piece of the trail takes to fade away. |
 | Color | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Trail color. |
+
+### Cat tab
+
+| Setting | Default | Description |
+|---|---|---|
+| Enable | Off | Shows the cat. The same switch is in the menu of the eye. |
+| Size | 128 | Size of the cat in pixels, from 48 to 192. Its speed grows with it. |
+| Distance to the cursor | 60 | How far from the cursor the cat stops and sits down, in pixels, from 0 to 500. With a small value the cursor ends up on the cat, and clicks go to the cat instead of the window. |
 
 ### Settings from the command line
 

@@ -17,333 +17,381 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: eye-extended@als.kz/extension.js:975 eye-extended@als.kz/extension.js:1024
-#: eye-extended@als.kz/prefs.js:223
+#: eye-extended@als.kz/extension.js:1198 eye-extended@als.kz/extension.js:1260
+#: eye-extended@als.kz/prefs.js:226
 msgid "Pointer trail"
 msgstr "Traînée du pointeur"
 
-#: eye-extended@als.kz/extension.js:981 eye-extended@als.kz/prefs.js:160
+#: eye-extended@als.kz/extension.js:1204 eye-extended@als.kz/prefs.js:163
 msgid "Mouse indicator"
 msgstr "Indicateur de souris"
 
-#: eye-extended@als.kz/extension.js:989
+#: eye-extended@als.kz/extension.js:1213 eye-extended@als.kz/prefs.js:276
+msgid "Cat"
+msgstr "Chat"
+
+#: eye-extended@als.kz/extension.js:1223
 msgid "Settings"
 msgstr "Paramètres"
 
-#: eye-extended@als.kz/extension.js:1025
+#: eye-extended@als.kz/extension.js:1261
 msgid "Pointer trail (hold Ctrl)"
 msgstr "Traînée du pointeur (maintenir Ctrl)"
 
-#: eye-extended@als.kz/prefs.js:55
+#: eye-extended@als.kz/prefs.js:58
 msgid "Reset to defaults"
 msgstr "Rétablir les valeurs par défaut"
 
-#: eye-extended@als.kz/prefs.js:62
+#: eye-extended@als.kz/prefs.js:65
 msgid "Support the project on Ko-fi"
 msgstr "Soutenir le projet sur Ko-fi"
 
-#: eye-extended@als.kz/prefs.js:71
+#: eye-extended@als.kz/prefs.js:74
 msgid "Reset all settings?"
 msgstr "Réinitialiser tous les paramètres ?"
 
-#: eye-extended@als.kz/prefs.js:72
+#: eye-extended@als.kz/prefs.js:75
 msgid "All settings of the extension will be returned to their default values."
 msgstr "Tous les paramètres de l’extension reprendront leurs valeurs par défaut."
 
-#: eye-extended@als.kz/prefs.js:78
+#: eye-extended@als.kz/prefs.js:81
 msgid "Cancel"
 msgstr "Annuler"
 
-#: eye-extended@als.kz/prefs.js:79
+#: eye-extended@als.kz/prefs.js:82
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: eye-extended@als.kz/prefs.js:98
+#: eye-extended@als.kz/prefs.js:101
 msgid "Eye"
 msgstr "Œil"
 
-#: eye-extended@als.kz/prefs.js:104 eye-extended@als.kz/prefs.js:172
-#: eye-extended@als.kz/prefs.js:245
+#: eye-extended@als.kz/prefs.js:107 eye-extended@als.kz/prefs.js:175
+#: eye-extended@als.kz/prefs.js:248
 msgid "Shape"
 msgstr "Forme"
 
-#: eye-extended@als.kz/prefs.js:105
+#: eye-extended@als.kz/prefs.js:108
 msgid "Round"
 msgstr "Rond"
 
-#: eye-extended@als.kz/prefs.js:106
+#: eye-extended@als.kz/prefs.js:109
 msgid "Eyelid"
 msgstr "Avec paupières"
 
-#: eye-extended@als.kz/prefs.js:107
+#: eye-extended@als.kz/prefs.js:110
 msgid "Cat eye"
 msgstr "Œil de chat"
 
-#: eye-extended@als.kz/prefs.js:108
+#: eye-extended@als.kz/prefs.js:111
 msgid "Pair of eyes"
 msgstr "Paire d’yeux"
 
-#: eye-extended@als.kz/prefs.js:109
+#: eye-extended@als.kz/prefs.js:112
 msgid "Cartoon"
 msgstr "Dessin animé"
 
-#: eye-extended@als.kz/prefs.js:110
+#: eye-extended@als.kz/prefs.js:113
 msgid "Lens"
 msgstr "Objectif"
 
-#: eye-extended@als.kz/prefs.js:111
+#: eye-extended@als.kz/prefs.js:114
 msgid "Crosshair"
 msgstr "Viseur"
 
-#: eye-extended@als.kz/prefs.js:113
+#: eye-extended@als.kz/prefs.js:116
 msgid "Place in the panel"
 msgstr "Emplacement dans la barre"
 
-#: eye-extended@als.kz/prefs.js:114
+#: eye-extended@als.kz/prefs.js:117
 msgid "Left"
 msgstr "Gauche"
 
-#: eye-extended@als.kz/prefs.js:115
+#: eye-extended@als.kz/prefs.js:118
 msgid "Center"
 msgstr "Centre"
 
-#: eye-extended@als.kz/prefs.js:116
+#: eye-extended@als.kz/prefs.js:119
 msgid "Right"
 msgstr "Droite"
 
-#: eye-extended@als.kz/prefs.js:117
+#: eye-extended@als.kz/prefs.js:120
 msgid "Part of the top panel the eye is shown in"
 msgstr "Partie de la barre supérieure où l’œil est affiché"
 
-#: eye-extended@als.kz/prefs.js:119
+#: eye-extended@als.kz/prefs.js:122
 msgid "Order in the panel"
 msgstr "Ordre dans la barre"
 
-#: eye-extended@als.kz/prefs.js:120
+#: eye-extended@als.kz/prefs.js:123
 msgid "Order among the other icons in the same part of the panel"
 msgstr "Ordre parmi les autres icônes de la même partie de la barre"
 
-#: eye-extended@als.kz/prefs.js:122 eye-extended@als.kz/prefs.js:175
-#: eye-extended@als.kz/prefs.js:249
+#: eye-extended@als.kz/prefs.js:125 eye-extended@als.kz/prefs.js:178
+#: eye-extended@als.kz/prefs.js:252 eye-extended@als.kz/prefs.js:288
 msgid "Size"
 msgstr "Taille"
 
-#: eye-extended@als.kz/prefs.js:123
+#: eye-extended@als.kz/prefs.js:126
 msgid "Eye height in pixels"
 msgstr "Hauteur de l’œil en pixels"
 
-#: eye-extended@als.kz/prefs.js:125 eye-extended@als.kz/prefs.js:252
+#: eye-extended@als.kz/prefs.js:128 eye-extended@als.kz/prefs.js:255
 msgid "Line thickness"
 msgstr "Épaisseur du trait"
 
-#: eye-extended@als.kz/prefs.js:126
+#: eye-extended@als.kz/prefs.js:129
 msgid "Width of the eye outline"
 msgstr "Largeur du contour de l’œil"
 
-#: eye-extended@als.kz/prefs.js:128
+#: eye-extended@als.kz/prefs.js:131
 msgid "Margin"
 msgstr "Marge"
 
-#: eye-extended@als.kz/prefs.js:129
+#: eye-extended@als.kz/prefs.js:132
 msgid "Empty space on both sides of the eye"
 msgstr "Espace vide de chaque côté de l’œil"
 
-#: eye-extended@als.kz/prefs.js:131 eye-extended@als.kz/prefs.js:181
+#: eye-extended@als.kz/prefs.js:134 eye-extended@als.kz/prefs.js:184
 msgid "Refresh interval (ms)"
 msgstr "Intervalle de rafraîchissement (ms)"
 
-#: eye-extended@als.kz/prefs.js:132 eye-extended@als.kz/prefs.js:182
+#: eye-extended@als.kz/prefs.js:135 eye-extended@als.kz/prefs.js:185
 msgid "Lower is smoother, higher uses less CPU"
 msgstr "Plus bas : plus fluide ; plus haut : moins de processeur"
 
-#: eye-extended@als.kz/prefs.js:135
+#: eye-extended@als.kz/prefs.js:138
 msgid "Behavior"
 msgstr "Comportement"
 
-#: eye-extended@als.kz/prefs.js:136
+#: eye-extended@als.kz/prefs.js:139
 msgid "What the eye does besides following the cursor"
 msgstr "Ce que fait l’œil en plus de suivre le curseur"
 
-#: eye-extended@als.kz/prefs.js:141
+#: eye-extended@als.kz/prefs.js:144
 msgid "Blink"
 msgstr "Cligner"
 
-#: eye-extended@als.kz/prefs.js:142
+#: eye-extended@als.kz/prefs.js:145
 msgid "The eye blinks from time to time"
 msgstr "L’œil cligne de temps en temps"
 
-#: eye-extended@als.kz/prefs.js:144
+#: eye-extended@als.kz/prefs.js:147
 msgid "Blink on click"
 msgstr "Cligner au clic"
 
-#: eye-extended@als.kz/prefs.js:145
+#: eye-extended@als.kz/prefs.js:148
 msgid "The eye blinks when a mouse button is pressed"
 msgstr "L’œil cligne quand un bouton de la souris est enfoncé"
 
-#: eye-extended@als.kz/prefs.js:147
+#: eye-extended@als.kz/prefs.js:150
 msgid "Pupil reacts to the cursor"
 msgstr "La pupille réagit au curseur"
 
-#: eye-extended@als.kz/prefs.js:148
+#: eye-extended@als.kz/prefs.js:151
 msgid "The pupil grows as the cursor comes closer to the eye"
 msgstr "La pupille s’agrandit quand le curseur s’approche de l’œil"
 
-#: eye-extended@als.kz/prefs.js:150
+#: eye-extended@als.kz/prefs.js:153
 msgid "Fall asleep"
 msgstr "S’endormir"
 
-#: eye-extended@als.kz/prefs.js:151
+#: eye-extended@als.kz/prefs.js:154
 msgid "The eye half closes when the mouse has not moved for 30 seconds"
 msgstr "L’œil se ferme à moitié quand la souris n’a pas bougé depuis 30 secondes"
 
-#: eye-extended@als.kz/prefs.js:164
+#: eye-extended@als.kz/prefs.js:167
 msgid "Turn it on from the menu of the eye"
 msgstr "Activez-le depuis le menu de l’œil"
 
-#: eye-extended@als.kz/prefs.js:169
+#: eye-extended@als.kz/prefs.js:172
 msgid "Show the shape around the cursor"
 msgstr "Afficher la forme autour du curseur"
 
-#: eye-extended@als.kz/prefs.js:170
+#: eye-extended@als.kz/prefs.js:173
 msgid "When it is off, only clicks are highlighted"
 msgstr "Si désactivé, seuls les clics sont mis en évidence"
 
-#: eye-extended@als.kz/prefs.js:173
+#: eye-extended@als.kz/prefs.js:176
 msgid "One of the 19 shapes"
 msgstr "L’une des 19 formes"
 
-#: eye-extended@als.kz/prefs.js:176
+#: eye-extended@als.kz/prefs.js:179
 msgid "Shape size in pixels"
 msgstr "Taille de la forme en pixels"
 
-#: eye-extended@als.kz/prefs.js:178
+#: eye-extended@als.kz/prefs.js:181
 msgid "Opacity"
 msgstr "Opacité"
 
-#: eye-extended@als.kz/prefs.js:179
+#: eye-extended@als.kz/prefs.js:182
 msgid "From 1 (almost invisible) to 255 (opaque)"
 msgstr "De 1 (presque invisible) à 255 (opaque)"
 
-#: eye-extended@als.kz/prefs.js:184 eye-extended@als.kz/prefs.js:257
+#: eye-extended@als.kz/prefs.js:187 eye-extended@als.kz/prefs.js:260
 msgid "Color"
 msgstr "Couleur"
 
-#: eye-extended@als.kz/prefs.js:185
+#: eye-extended@als.kz/prefs.js:188
 msgid "Shape color when no button is pressed"
 msgstr "Couleur de la forme quand aucun bouton n’est enfoncé"
 
-#: eye-extended@als.kz/prefs.js:187
+#: eye-extended@als.kz/prefs.js:190
 msgid "Color the eye"
 msgstr "Colorer l’œil"
 
-#: eye-extended@als.kz/prefs.js:188
+#: eye-extended@als.kz/prefs.js:191
 msgid "The eye in the panel takes the color of the indicator while it is on"
 msgstr "L’œil dans la barre prend la couleur de l’indicateur tant qu’il est activé"
 
-#: eye-extended@als.kz/prefs.js:191
+#: eye-extended@als.kz/prefs.js:194
 msgid "Clicks"
 msgstr "Clics"
 
-#: eye-extended@als.kz/prefs.js:192
+#: eye-extended@als.kz/prefs.js:195
 msgid "The shape changes color and flashes on click"
 msgstr "La forme change de couleur et clignote au clic"
 
-#: eye-extended@als.kz/prefs.js:196
+#: eye-extended@als.kz/prefs.js:199
 msgid "Highlight left clicks"
 msgstr "Mettre en évidence les clics gauches"
 
-#: eye-extended@als.kz/prefs.js:197
+#: eye-extended@als.kz/prefs.js:200
 msgid "Highlight middle clicks"
 msgstr "Mettre en évidence les clics du milieu"
 
-#: eye-extended@als.kz/prefs.js:198
+#: eye-extended@als.kz/prefs.js:201
 msgid "Highlight right clicks"
 msgstr "Mettre en évidence les clics droits"
 
-#: eye-extended@als.kz/prefs.js:202
+#: eye-extended@als.kz/prefs.js:205
 msgid "Click colors"
 msgstr "Couleurs des clics"
 
-#: eye-extended@als.kz/prefs.js:203
+#: eye-extended@als.kz/prefs.js:206
 msgid "Left, middle, right"
 msgstr "Gauche, milieu, droit"
 
-#: eye-extended@als.kz/prefs.js:206
+#: eye-extended@als.kz/prefs.js:209
 msgid "Left click"
 msgstr "Clic gauche"
 
-#: eye-extended@als.kz/prefs.js:207
+#: eye-extended@als.kz/prefs.js:210
 msgid "Middle click"
 msgstr "Clic du milieu"
 
-#: eye-extended@als.kz/prefs.js:208
+#: eye-extended@als.kz/prefs.js:211
 msgid "Right click"
 msgstr "Clic droit"
 
-#: eye-extended@als.kz/prefs.js:227
+#: eye-extended@als.kz/prefs.js:230
 msgid "Animation that follows the mouse"
 msgstr "Animation qui suit la souris"
 
-#: eye-extended@als.kz/prefs.js:232
+#: eye-extended@als.kz/prefs.js:235 eye-extended@als.kz/prefs.js:285
 msgid "Enable"
 msgstr "Activer"
 
-#: eye-extended@als.kz/prefs.js:233
+#: eye-extended@als.kz/prefs.js:236 eye-extended@als.kz/prefs.js:286
 msgid "The same switch is in the menu of the eye"
 msgstr "Le même interrupteur se trouve dans le menu de l’œil"
 
-#: eye-extended@als.kz/prefs.js:234
+#: eye-extended@als.kz/prefs.js:237
 msgid "Show"
 msgstr "Afficher"
 
-#: eye-extended@als.kz/prefs.js:235
+#: eye-extended@als.kz/prefs.js:238
 msgid "While Ctrl is held"
 msgstr "Tant que Ctrl est enfoncée"
 
-#: eye-extended@als.kz/prefs.js:236
+#: eye-extended@als.kz/prefs.js:239
 msgid "Always"
 msgstr "Toujours"
 
-#: eye-extended@als.kz/prefs.js:237
+#: eye-extended@als.kz/prefs.js:240
 msgid "When the trail is drawn as the mouse moves"
 msgstr "Quand la traînée est dessinée lorsque la souris bouge"
 
-#: eye-extended@als.kz/prefs.js:238
+#: eye-extended@als.kz/prefs.js:241
 msgid "Animation"
 msgstr "Animation"
 
-#: eye-extended@als.kz/prefs.js:239
+#: eye-extended@als.kz/prefs.js:242
 msgid "Water ripples"
 msgstr "Ondes sur l’eau"
 
-#: eye-extended@als.kz/prefs.js:240
+#: eye-extended@als.kz/prefs.js:243
 msgid "Pointer line"
 msgstr "Ligne du pointeur"
 
-#: eye-extended@als.kz/prefs.js:241
+#: eye-extended@als.kz/prefs.js:244
 msgid "Comet tail"
 msgstr "Queue de comète"
 
-#: eye-extended@als.kz/prefs.js:242
+#: eye-extended@als.kz/prefs.js:245
 msgid "Sparkles"
 msgstr "Étincelles"
 
-#: eye-extended@als.kz/prefs.js:246
+#: eye-extended@als.kz/prefs.js:249
 msgid "0 is a plain ring or dot, 1–19 are the mouse indicator shapes"
 msgstr "0 : simple anneau ou point ; 1–19 : formes de l’indicateur de souris"
 
-#: eye-extended@als.kz/prefs.js:250
+#: eye-extended@als.kz/prefs.js:253
 msgid "Size of each piece of the trail in pixels"
 msgstr "Taille de chaque élément de la traînée en pixels"
 
-#: eye-extended@als.kz/prefs.js:253
+#: eye-extended@als.kz/prefs.js:256
 msgid "Width of the ring outline and of the pointer line"
 msgstr "Largeur du contour de l’anneau et de la ligne du pointeur"
 
-#: eye-extended@als.kz/prefs.js:255
+#: eye-extended@als.kz/prefs.js:258
 msgid "Duration (ms)"
 msgstr "Durée (ms)"
 
-#: eye-extended@als.kz/prefs.js:256
+#: eye-extended@als.kz/prefs.js:259
 msgid "How long the trail takes to fade away"
 msgstr "Temps que met la traînée à disparaître"
+
+#: eye-extended@als.kz/prefs.js:280
+msgid "A cat that runs after the cursor, grooms itself and falls asleep next to it"
+msgstr "Un chat qui court après le curseur, fait sa toilette et s’endort à côté de lui"
+
+#: eye-extended@als.kz/prefs.js:289
+msgid "Size of the cat in pixels"
+msgstr "Taille du chat en pixels"
+
+#: eye-extended@als.kz/prefs.js:291
+msgid "Distance to the cursor"
+msgstr "Distance au curseur"
+
+#: eye-extended@als.kz/prefs.js:292
+msgid "How far from the cursor the cat stops, in pixels. If it is small, the cursor ends up on the cat and clicks go to it."
+msgstr "Distance en pixels à laquelle le chat s’arrête. Si elle est petite, le curseur se retrouve sur le chat et les clics lui sont destinés."
+
+#: eye-extended@als.kz/prefs.js:295
+msgid "How to play"
+msgstr "Comment jouer"
+
+#: eye-extended@als.kz/prefs.js:299
+msgid "Click the cat"
+msgstr "Cliquez sur le chat"
+
+#: eye-extended@als.kz/prefs.js:299
+msgid "It swipes a paw, tumbles, rolls over or jumps"
+msgstr "Il donne un coup de patte, culbute, se roule ou saute"
+
+#: eye-extended@als.kz/prefs.js:300
+msgid "Hold the left button on the cat"
+msgstr "Maintenez le bouton gauche sur le chat"
+
+#: eye-extended@als.kz/prefs.js:300
+msgid "Pick it up by the scruff, carry it and throw it"
+msgstr "Prenez-le par la peau du cou, portez-le et lancez-le"
+
+#: eye-extended@als.kz/prefs.js:301
+msgid "Shake the cursor next to the cat"
+msgstr "Secouez le curseur près du chat"
+
+#: eye-extended@als.kz/prefs.js:301
+msgid "It runs away, sulks and avoids the cursor for a minute"
+msgstr "Il s’enfuit, boude et évite le curseur pendant une minute"

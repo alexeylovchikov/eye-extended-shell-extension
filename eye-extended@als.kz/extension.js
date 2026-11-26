@@ -30,6 +30,8 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {CatBrain, SPRITES as CAT_SPRITES} from './catBrain.js';
+
 Gio._promisify(Gio.File.prototype, 'load_contents_async');
 Gio._promisify(Gio.File.prototype, 'replace_contents_bytes_async', 'replace_contents_finish');
 
@@ -741,6 +743,221 @@ class PointerTrail {
 }
 
 // Eye in the top panel
+const CAT_KEYS = ['cat-enable', 'cat-size', 'cat-stop-distance'];
+const CAT_INTERVAL = 16;
+// A sleeping cat only has to notice that the pointer went away
+const CAT_SLEEP_INTERVAL = 100;
+// The part of the sprite that takes clicks, so that clicks next to the cat
+// still reach the window under it
+const CAT_HIT_SIZE = 0.4;
+
+// A cat that runs after the pointer, grooms itself and falls asleep next to
+// it, reacts to clicks and can be picked up and thrown. How it behaves is
+// decided in catBrain.js; this class only shows it on the stage.
+class DesktopCat {
+    constructor(extension, settings) {
+        this._extension = extension;
+        this._settings = settings;
+        this._timeoutId = 0;
+        this._interval = 0;
+        this._actor = null;
+        this._hit = null;
+        this._brain = null;
+
+        this._settings.connectObject('changed', (s, key) => {
+            if (CAT_KEYS.includes(key))
+                this._reload();
+        }, this);
+        this._reload();
+    }
+
+    destroy() {
+        this._settings.disconnectObject(this);
+        this._stop();
+    }
+
+    _reload() {
+        this._stop();
+        if (!this._settings.get_boolean('cat-enable'))
+            return;
+        // The cat is a toy: it must never take the eye down with it
+        try {
+            this._start();
+        } catch (e) {
+            logError(e, 'Eye Extended: cannot show the cat');
+            this._stop();
+        }
+    }
+
+    _start() {
+        const size = this._settings.get_int('cat-size');
+        // The actor box is in stage pixels; icon_size is scaled by St
+        this._pixelSize = size * getScaleFactor();
+
+        this._actor = new St.Widget({
+            width: this._pixelSize,
+            height: this._pixelSize,
+            layout_manager: new Clutter.BinLayout(),
+            pivot_point: new Graphene.Point({x: 0.5, y: 0.5}),
+            reactive: false,
+            can_focus: false,
+            track_hover: false,
+        });
+        Main.uiGroup.add_child(this._actor);
+
+        // Every frame is its own actor. The hidden ones are transparent
+        // rather than hidden, so that their images are loaded in advance
+        // and a new frame never shows up empty.
+        const dir = this._extension.dir.get_child('cat');
+        this._frames = {};
+        for (const [name, count] of Object.entries(CAT_SPRITES)) {
+            this._frames[name] = [];
+            for (let i = 0; i < count; i++) {
+                const icon = new St.Icon({
+                    gicon: new Gio.FileIcon({file: dir.get_child(`${name}-${i}.png`)}),
+                    icon_size: size,
+                    opacity: 0,
+                });
+                this._actor.add_child(icon);
+                this._frames[name].push(icon);
+            }
+        }
+        this._shownFrame = null;
+
+        const hitSize = Math.round(this._pixelSize * CAT_HIT_SIZE);
+        this._hit = new St.Widget({
+            width: hitSize,
+            height: hitSize,
+            reactive: true,
+        });
+        this._hitPressId = this._hit.connect('button-press-event',
+            (actor, event) => this._onPress(event));
+        Main.layoutManager.addChrome(this._hit, {affectsInputRegion: true});
+
+        const start = this._boundsAt();
+        this._brain = new CatBrain({
+            size: this._pixelSize,
+            stopDistance: this._settings.get_int('cat-stop-distance') * getScaleFactor(),
+            x: (start.left + start.right) / 2,
+            y: (start.top + start.bottom) / 2,
+            boundsAt: (x, y) => this._boundsAt(x, y),
+        });
+
+        this._lastTime = GLib.get_monotonic_time();
+        this._tick();
+        this._schedule(CAT_INTERVAL);
+    }
+
+    _stop() {
+        if (this._timeoutId) {
+            GLib.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
+        this._interval = 0;
+        if (this._hit) {
+            this._hit.disconnect(this._hitPressId);
+            Main.layoutManager.removeChrome(this._hit);
+            this._hit.destroy();
+            this._hit = null;
+        }
+        this._actor?.destroy();
+        this._actor = null;
+        this._frames = null;
+        this._shownFrame = null;
+        this._brain = null;
+    }
+
+    // Where the center of the cat may be on the monitor that contains the
+    // point, or on the primary monitor
+    _boundsAt(x, y) {
+        const layout = Main.layoutManager;
+        const monitor = layout.monitors.find(m =>
+            x >= m.x && x < m.x + m.width && y >= m.y && y < m.y + m.height) ??
+            layout.primaryMonitor ?? layout.monitors[0];
+        const area = layout.getWorkAreaForMonitor(monitor.index);
+        const half = this._pixelSize / 2;
+        return {
+            left: area.x + half,
+            top: area.y + half,
+            right: Math.max(area.x + half, area.x + area.width - half),
+            bottom: Math.max(area.y + half, area.y + area.height - half),
+        };
+    }
+
+    _schedule(interval) {
+        if (this._timeoutId)
+            GLib.source_remove(this._timeoutId);
+        this._interval = interval;
+        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+            this._tick();
+            const wanted = this._brain.state === 'sleep' && !this._brain.pressing
+                ? CAT_SLEEP_INTERVAL
+                : CAT_INTERVAL;
+            if (wanted === this._interval)
+                return GLib.SOURCE_CONTINUE;
+
+            // Replace this source with one that runs at the new pace
+            this._timeoutId = 0;
+            this._schedule(wanted);
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _tick() {
+        const now = GLib.get_monotonic_time();
+        const dt = (now - this._lastTime) / 1000000;
+        this._lastTime = now;
+
+        const [x, y, mods] = global.get_pointer();
+        const cursor = {x, y};
+        // The press comes as an event on the cat; the release is polled,
+        // because by then the pointer may be anywhere on the screen
+        if (this._brain.pressing && !(mods & Clutter.ModifierType.BUTTON1_MASK))
+            this._brain.release(cursor);
+        this._brain.tick(dt, cursor);
+        this._sync();
+    }
+
+    _onPress(event) {
+        if (event.get_button() !== Clutter.BUTTON_PRIMARY)
+            return Clutter.EVENT_PROPAGATE;
+
+        const [x, y] = event.get_coords();
+        this._brain.press({x, y});
+        // Wake up at once: a click can be over before a sleepy tick comes
+        if (this._interval !== CAT_INTERVAL) {
+            this._lastTime = GLib.get_monotonic_time();
+            this._schedule(CAT_INTERVAL);
+        }
+        return Clutter.EVENT_STOP;
+    }
+
+    // Moves the actors to where the brain says the cat is
+    _sync() {
+        const brain = this._brain;
+        const half = this._pixelSize / 2;
+        const x = Math.round(brain.x - half);
+        const y = Math.round(brain.y - half);
+        if (x !== this._actor.x || y !== this._actor.y) {
+            this._actor.set_position(x, y);
+            const hitHalf = this._hit.width / 2;
+            this._hit.set_position(Math.round(brain.x - hitHalf), Math.round(brain.y - hitHalf));
+        }
+
+        const frame = this._frames[brain.sprite][brain.frame];
+        if (frame !== this._shownFrame) {
+            if (this._shownFrame)
+                this._shownFrame.opacity = 0;
+            frame.opacity = 255;
+            this._shownFrame = frame;
+        }
+
+        const scaleX = brain.mirrored ? -1 : 1;
+        if (this._actor.scale_x !== scaleX)
+            this._actor.scale_x = scaleX;
+    }
+}
+
 const EYE_MODES = ['bulb', 'lids', 'cat', 'pair', 'cartoon', 'robot', 'crosshair'];
 const EYE_KEYS = [
     'eye-mode',
@@ -984,6 +1201,13 @@ class EyeIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._circleItem);
         this.menu.addMenuItem(this._trailItem);
         this._syncTrailLabel();
+        this._catItem = new PopupMenu.PopupSwitchMenuItem(_('Cat'),
+            this._settings.get_boolean('cat-enable'));
+        this._catItem.connect('toggled', (item, state) => {
+            if (this._settings.get_boolean('cat-enable') !== state)
+                this._settings.set_boolean('cat-enable', state);
+        });
+        this.menu.addMenuItem(this._catItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         const settingsItem = new PopupMenu.PopupMenuItem(_('Settings'));
@@ -1004,6 +1228,8 @@ class EyeIndicator extends PanelMenu.Button {
             'changed::water-ripple-enable', () => this._trailItem.setToggleState(
                 this._settings.get_boolean('water-ripple-enable')),
             'changed::water-ripple-trigger', () => this._syncTrailLabel(),
+            'changed::cat-enable', () => this._catItem.setToggleState(
+                this._settings.get_boolean('cat-enable')),
             this);
 
         St.ThemeContext.get_for_stage(global.stage).connectObject(
@@ -1235,6 +1461,7 @@ export default class EyeExtendedExtension extends Extension {
         this._circle = new MouseCircle(this, this._settings,
             () => this._indicator?.circleChanged());
         this._trail = new PointerTrail(this, this._settings);
+        this._cat = new DesktopCat(this, this._settings);
 
         this._addIndicator();
         this._settings.connectObject(
@@ -1251,6 +1478,8 @@ export default class EyeExtendedExtension extends Extension {
         this._circle = null;
         this._trail?.destroy();
         this._trail = null;
+        this._cat?.destroy();
+        this._cat = null;
         this._settings = null;
     }
 

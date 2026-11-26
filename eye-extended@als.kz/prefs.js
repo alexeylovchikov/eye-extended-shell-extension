@@ -40,6 +40,7 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         window.add(this._eyePage(settings, window));
         window.add(this._mouseCirclePage(settings, window));
         window.add(this._trailPage(settings, window));
+        window.add(this._catPage(settings, window));
     }
 
     // Bottom of every page: a button that resets all settings
@@ -262,6 +263,42 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         };
         syncShape();
         settings.connect('changed::water-ripple-effect', syncShape);
+
+        page.add(this._resetGroup(settings, window));
+
+        return page;
+    }
+
+    _catPage(settings, window) {
+        const page = new Adw.PreferencesPage({
+            title: _('Cat'),
+            icon_name: 'emoji-nature-symbolic',
+        });
+        const group = new Adw.PreferencesGroup({
+            description: _('A cat that runs after the cursor, grooms itself and falls asleep next to it'),
+        });
+        page.add(group);
+
+        group.add(describe(
+            this._switchRow(settings, 'cat-enable', _('Enable')),
+            _('The same switch is in the menu of the eye')));
+        group.add(describe(
+            this._spinRow(settings, 'cat-size', _('Size'), 48, 192, 8),
+            _('Size of the cat in pixels')));
+        group.add(describe(
+            this._spinRow(settings, 'cat-stop-distance', _('Distance to the cursor'), 0, 500, 5),
+            _('How far from the cursor the cat stops, in pixels. If it is small, the cursor ends up on the cat and clicks go to it.')));
+
+        const playGroup = new Adw.PreferencesGroup({
+            title: _('How to play'),
+        });
+        page.add(playGroup);
+        for (const [title, subtitle] of [
+            [_('Click the cat'), _('It swipes a paw, tumbles, rolls over or jumps')],
+            [_('Hold the left button on the cat'), _('Pick it up by the scruff, carry it and throw it')],
+            [_('Shake the cursor next to the cat'), _('It runs away, sulks and avoids the cursor for a minute')],
+        ])
+            playGroup.add(new Adw.ActionRow({title, subtitle}));
 
         page.add(this._resetGroup(settings, window));
 
