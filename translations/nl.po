@@ -48,8 +48,7 @@ msgstr "Alle instellingen herstellen?"
 
 #: eye-extended@als.kz/prefs.js:72
 msgid "All settings of the extension will be returned to their default values."
-msgstr ""
-"Alle instellingen van de extensie worden teruggezet naar de standaardwaarden."
+msgstr "Alle instellingen van de extensie worden teruggezet naar de standaardwaarden."
 
 #: eye-extended@als.kz/prefs.js:78
 msgid "Cancel"
@@ -74,7 +73,7 @@ msgstr "Rond"
 
 #: eye-extended@als.kz/prefs.js:106
 msgid "Eyelid"
-msgstr "Ooglid"
+msgstr "Met oogleden"
 
 #: eye-extended@als.kz/prefs.js:108
 msgid "Place in the panel"
@@ -86,7 +85,7 @@ msgstr "Links"
 
 #: eye-extended@als.kz/prefs.js:110
 msgid "Center"
-msgstr "Gecentreerd"
+msgstr "Midden"
 
 #: eye-extended@als.kz/prefs.js:111
 msgid "Right"

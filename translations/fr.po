@@ -48,8 +48,7 @@ msgstr "Réinitialiser tous les paramètres ?"
 
 #: eye-extended@als.kz/prefs.js:72
 msgid "All settings of the extension will be returned to their default values."
-msgstr ""
-"Tous les paramètres de l’extension reprendront leurs valeurs par défaut."
+msgstr "Tous les paramètres de l’extension reprendront leurs valeurs par défaut."
 
 #: eye-extended@als.kz/prefs.js:78
 msgid "Cancel"
@@ -74,7 +73,7 @@ msgstr "Rond"
 
 #: eye-extended@als.kz/prefs.js:106
 msgid "Eyelid"
-msgstr "Paupière"
+msgstr "Avec paupières"
 
 #: eye-extended@als.kz/prefs.js:108
 msgid "Place in the panel"

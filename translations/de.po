@@ -48,9 +48,7 @@ msgstr "Alle Einstellungen zurücksetzen?"
 
 #: eye-extended@als.kz/prefs.js:72
 msgid "All settings of the extension will be returned to their default values."
-msgstr ""
-"Alle Einstellungen der Erweiterung werden auf ihre Standardwerte "
-"zurückgesetzt."
+msgstr "Alle Einstellungen der Erweiterung werden auf ihre Standardwerte zurückgesetzt."
 
 #: eye-extended@als.kz/prefs.js:78
 msgid "Cancel"
@@ -75,7 +73,7 @@ msgstr "Rund"
 
 #: eye-extended@als.kz/prefs.js:106
 msgid "Eyelid"
-msgstr "Augenlid"
+msgstr "Mit Lidern"
 
 #: eye-extended@als.kz/prefs.js:108
 msgid "Place in the panel"
