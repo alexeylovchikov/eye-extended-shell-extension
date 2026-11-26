@@ -23,6 +23,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Graphene from 'gi://Graphene';
+import Meta from 'gi://Meta';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -187,16 +188,23 @@ class MouseCircle {
         this._interval = Math.max(1, s.get_int('mouse-circle-repaint-interval'));
         this._enabled = s.get_boolean('mouse-circle-enable');
         this._color = s.get_string('mouse-circle-color');
+        // X11 reports the middle button as BUTTON2 and the right one as
+        // BUTTON3; mutter's own Wayland backend has them the other way round
+        const wayland = Meta.is_wayland_compositor();
+        const middleMask = wayland
+            ? Clutter.ModifierType.BUTTON3_MASK : Clutter.ModifierType.BUTTON2_MASK;
+        const rightMask = wayland
+            ? Clutter.ModifierType.BUTTON2_MASK : Clutter.ModifierType.BUTTON3_MASK;
         this._clicks = {
             [Clutter.ModifierType.BUTTON1_MASK]: {
                 enabled: s.get_boolean('mouse-circle-left-click-enable'),
                 color: s.get_string('mouse-circle-left-click-color'),
             },
-            [Clutter.ModifierType.BUTTON2_MASK]: {
+            [middleMask]: {
                 enabled: s.get_boolean('mouse-circle-middle-click-enable'),
                 color: s.get_string('mouse-circle-middle-click-color'),
             },
-            [Clutter.ModifierType.BUTTON3_MASK]: {
+            [rightMask]: {
                 enabled: s.get_boolean('mouse-circle-right-click-enable'),
                 color: s.get_string('mouse-circle-right-click-color'),
             },
