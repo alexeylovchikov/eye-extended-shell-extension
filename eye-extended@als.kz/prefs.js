@@ -83,12 +83,16 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._colorRow(settings, 'mouse-circle-middle-click-color', _('Middle click')));
 
         const trailGroup = new Adw.PreferencesGroup({
-            title: _('Ctrl trail'),
-            description: _('Hold Ctrl and move the mouse'),
+            title: _('Pointer trail'),
+            description: _('Animation that follows the mouse'),
         });
         page.add(trailGroup);
 
         trailGroup.add(this._switchRow(settings, 'water-ripple-enable', _('Enable')));
+        trailGroup.add(this._comboRow(settings, 'water-ripple-trigger', _('Show'), [
+            ['ctrl', _('While Ctrl is held')],
+            ['always', _('Always')],
+        ]));
         trailGroup.add(this._comboRow(settings, 'water-ripple-effect', _('Animation'), [
             ['ripples', _('Water ripples')],
             ['line', _('Pointer line')],

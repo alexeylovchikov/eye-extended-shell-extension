@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EyeExtendedExtension\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-27 23:22-0500\n"
+"POT-Creation-Date: 2026-11-25 10:29+0500\n"
 "PO-Revision-Date: 2026-11-25 10:30+0500\n"
 "Last-Translator: Philippe-André Akue <pakueamb@gmail.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: eye-extended@als.kz/extension.js:606
+#: eye-extended@als.kz/extension.js:676 eye-extended@als.kz/prefs.js:86
+msgid "Pointer trail"
+msgstr "Zeigerspur"
+
+#: eye-extended@als.kz/extension.js:685
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -26,7 +30,7 @@ msgid "Eye"
 msgstr "Auge"
 
 #: eye-extended@als.kz/prefs.js:44 eye-extended@als.kz/prefs.js:73
-#: eye-extended@als.kz/prefs.js:98
+#: eye-extended@als.kz/prefs.js:102
 msgid "Shape"
 msgstr "Form"
 
@@ -59,11 +63,11 @@ msgid "Position"
 msgstr "Position"
 
 #: eye-extended@als.kz/prefs.js:54 eye-extended@als.kz/prefs.js:74
-#: eye-extended@als.kz/prefs.js:100
+#: eye-extended@als.kz/prefs.js:104
 msgid "Size"
 msgstr "Größe"
 
-#: eye-extended@als.kz/prefs.js:55 eye-extended@als.kz/prefs.js:101
+#: eye-extended@als.kz/prefs.js:55 eye-extended@als.kz/prefs.js:105
 msgid "Line Thickness"
 msgstr "Dicke der Linie"
 
@@ -119,38 +123,46 @@ msgstr "Rechtsklick"
 msgid "Middle click"
 msgstr "Mittelklick"
 
-#: eye-extended@als.kz/prefs.js:86
-msgid "Ctrl trail"
-msgstr "Strg-Spur"
-
 #: eye-extended@als.kz/prefs.js:87
-msgid "Hold Ctrl and move the mouse"
-msgstr "Halten Sie Strg gedrückt und bewegen Sie die Maus"
+msgid "Animation that follows the mouse"
+msgstr "Animation, die der Maus folgt"
 
 #: eye-extended@als.kz/prefs.js:92
+msgid "Show"
+msgstr "Anzeigen"
+
+#: eye-extended@als.kz/prefs.js:93
+msgid "While Ctrl is held"
+msgstr "Bei gedrückter Strg-Taste"
+
+#: eye-extended@als.kz/prefs.js:94
+msgid "Always"
+msgstr "Immer"
+
+#: eye-extended@als.kz/prefs.js:96
 msgid "Animation"
 msgstr "Animation"
 
-#: eye-extended@als.kz/prefs.js:93
+#: eye-extended@als.kz/prefs.js:97
 msgid "Water ripples"
 msgstr "Wasserwellen"
 
-#: eye-extended@als.kz/prefs.js:94
+#: eye-extended@als.kz/prefs.js:98
 msgid "Pointer line"
 msgstr "Zeigerlinie"
 
-#: eye-extended@als.kz/prefs.js:95
+#: eye-extended@als.kz/prefs.js:99
 msgid "Comet tail"
 msgstr "Kometenschweif"
 
-#: eye-extended@als.kz/prefs.js:96
+#: eye-extended@als.kz/prefs.js:100
 msgid "Sparkles"
 msgstr "Funken"
 
-#: eye-extended@als.kz/prefs.js:102
+#: eye-extended@als.kz/prefs.js:106
 msgid "Duration (ms)"
 msgstr "Dauer (ms)"
 
-#: eye-extended@als.kz/prefs.js:103
+#: eye-extended@als.kz/prefs.js:107
 msgid "Color"
 msgstr "Farbe"

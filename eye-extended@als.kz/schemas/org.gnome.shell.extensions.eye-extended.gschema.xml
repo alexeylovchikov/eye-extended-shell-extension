@@ -89,7 +89,16 @@
     <key name="water-ripple-enable" type="b">
       <default>true</default>
       <summary>Water ripple enable</summary>
-      <description>Draw ripples behind the pointer while Ctrl is held</description>
+      <description>Draw an animation behind the pointer</description>
+    </key>
+    <key name="water-ripple-trigger" type="s">
+      <choices>
+        <choice value="ctrl"/>
+        <choice value="always"/>
+      </choices>
+      <default>"ctrl"</default>
+      <summary>Pointer trail trigger</summary>
+      <description>Show the trail only while Ctrl is held or whenever the mouse moves</description>
     </key>
     <key name="water-ripple-effect" type="s">
       <choices>
@@ -99,13 +108,13 @@
         <choice value="sparkles"/>
       </choices>
       <default>"ripples"</default>
-      <summary>Ctrl trail effect</summary>
-      <description>Animation drawn behind the pointer while Ctrl is held</description>
+      <summary>Pointer trail effect</summary>
+      <description>Animation drawn behind the pointer</description>
     </key>
     <key name="water-ripple-line-width" type="d">
       <range min="1" max="30"/>
       <default>3</default>
-      <summary>Ctrl trail line thickness</summary>
+      <summary>Pointer trail line thickness</summary>
       <description>Ring border for ripples and line width for the line effect</description>
     </key>
     <key name="water-ripple-mode" type="i">

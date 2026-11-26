@@ -6,7 +6,7 @@
 
 **A GNOME Shell extension that keeps the cursor easy to find**: an eye in the top panel
 that follows the pointer, a mouse indicator that highlights clicks, and pointer
-animations while <kbd>Ctrl</kbd> is held.<br>
+animations that follow the pointer, always or only while <kbd>Ctrl</kbd> is held.<br>
 Made for screen recordings, presentations, screen sharing and large monitors.
 
 [![GNOME Shell 45–51](https://img.shields.io/badge/GNOME%20Shell-45%E2%80%9351-4a86cf?logo=gnome&logoColor=white)](#compatibility)
@@ -37,10 +37,12 @@ While the indicator is on, the eye takes its color.
 
 ![Mouse indicator around the cursor](assets/screenshot1.png)
 
-### Ctrl trail
+### Pointer trail
 
 Hold <kbd>Ctrl</kbd> and move the mouse to point at something on the screen.
-This works anywhere, even when the mouse indicator is off.
+The trail can also be shown all the time, without <kbd>Ctrl</kbd>.
+It works anywhere, even when the mouse indicator is off, and can be turned
+on and off from the right-click menu of the eye.
 
 ![Pointer line drawn while Ctrl is held](assets/screenshot2.png)
 
@@ -79,7 +81,7 @@ To update, pull the latest changes and repeat steps 2 and 3.
 
 To open the settings, do one of the following:
 
-1. Click the eye with the right mouse button and choose **Settings**.
+1. Click the eye with the right mouse button and choose **Settings**. The menu also has a **Pointer trail** switch.
 2. Open the Extensions app and click the gear next to **Eye and Mouse Extended**.
 3. Run:
 
@@ -118,11 +120,12 @@ The indicator is turned on and off by clicking the eye with the left mouse butto
 | Right click | ![#f8e45c](https://img.shields.io/badge/-%23f8e45c-f8e45c) | Color on right click. |
 | Middle click | ![#ffa348](https://img.shields.io/badge/-%23ffa348-ffa348) | Color on middle click. |
 
-### Mouse indicator tab: Ctrl trail
+### Mouse indicator tab: Pointer trail
 
 | Setting | Default | Description |
 |---|---|---|
-| Enable | On | Draws the animation while <kbd>Ctrl</kbd> is held and the mouse moves. |
+| Enable | On | Draws the animation behind the pointer. The same switch is in the right-click menu of the eye. |
+| Show | While Ctrl is held | **While Ctrl is held** draws the trail only when <kbd>Ctrl</kbd> is pressed, **Always** draws it whenever the mouse moves. |
 | Animation | Water ripples | **Water ripples**, **Pointer line**, **Comet tail** or **Sparkles**. |
 | Shape | 0 | 0 draws a plain ring or dot, 1–19 use the mouse indicator shapes. Not used by **Pointer line**. |
 | Size | 80 | Overall size of the effect in pixels. A ripple starts exactly as big as a mouse indicator of the same size, comet dots are a quarter of it, and sparkles fly up to half of it. |

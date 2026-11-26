@@ -340,6 +340,7 @@ class MouseCircle {
 
 const TRAIL_KEYS = [
     'water-ripple-enable',
+    'water-ripple-trigger',
     'water-ripple-effect',
     'water-ripple-line-width',
     'water-ripple-mode',
@@ -354,7 +355,7 @@ const TRAIL_MAX_POINTS = 2000;
 const RIPPLE_END_SCALE = 2;
 const SPARKLES_PER_STEP = 3;
 
-// Animation behind the pointer while Ctrl is held: water ripples,
+// Animation behind the pointer, always or only while Ctrl is held: water ripples,
 // a fading laser-pointer line, a comet tail or sparkles
 class PointerTrail {
     constructor(extension, settings) {
@@ -385,6 +386,7 @@ class PointerTrail {
     _loadSettings() {
         const s = this._settings;
         this._enabled = s.get_boolean('water-ripple-enable');
+        this._always = s.get_string('water-ripple-trigger') === 'always';
         this._effect = s.get_string('water-ripple-effect');
         this._lineWidth = s.get_double('water-ripple-line-width');
         this._size = s.get_int('water-ripple-size');
@@ -448,14 +450,15 @@ class PointerTrail {
     // on Wayland the shell does not see input sent to client windows.
     _poll() {
         const [x, y, mods] = global.get_pointer();
-        const ctrl = (mods & Clutter.ModifierType.CONTROL_MASK) !== 0;
+        const active = this._always ||
+            (mods & Clutter.ModifierType.CONTROL_MASK) !== 0;
 
         if (this._effect === 'line') {
-            this._pollLine(x, y, ctrl);
+            this._pollLine(x, y, active);
             return;
         }
 
-        if (!ctrl) {
+        if (!active) {
             this._lastX = undefined;
             return;
         }
@@ -560,10 +563,10 @@ class PointerTrail {
 
     // Laser pointer: a line through recent pointer positions that fades
     // and thins with age
-    _pollLine(x, y, ctrl) {
+    _pollLine(x, y, active) {
         const now = GLib.get_monotonic_time() / 1000;
 
-        if (ctrl) {
+        if (active) {
             const start = this._lastX === undefined;
             const dx = x - this._lastX;
             const dy = y - this._lastY;
@@ -670,6 +673,15 @@ class EyeIndicator extends PanelMenu.Button {
         this._area.connect('repaint', area => this._draw(area));
         this.add_child(this._area);
 
+        this._trailItem = new PopupMenu.PopupSwitchMenuItem(_('Pointer trail'),
+            this._settings.get_boolean('water-ripple-enable'));
+        this._trailItem.connect('toggled', (item, state) => {
+            if (this._settings.get_boolean('water-ripple-enable') !== state)
+                this._settings.set_boolean('water-ripple-enable', state);
+        });
+        this.menu.addMenuItem(this._trailItem);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
         const settingsItem = new PopupMenu.PopupMenuItem(_('Settings'));
         settingsItem.connect('activate', () => extension.openPreferences());
         this.menu.addMenuItem(settingsItem);
@@ -682,6 +694,8 @@ class EyeIndicator extends PanelMenu.Button {
             'changed::eye-size', () => this._loadSettings(),
             'changed::eye-line-width', () => this._loadSettings(),
             'changed::eye-margin', () => this._loadSettings(),
+            'changed::water-ripple-enable', () => this._trailItem.setToggleState(
+                this._settings.get_boolean('water-ripple-enable')),
             'changed::eye-repaint-interval', () => {
                 this._loadSettings();
                 this._stopTimer();
