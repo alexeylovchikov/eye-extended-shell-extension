@@ -29,11 +29,51 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         // Keep settings alive as long as the window
         window._settings = settings;
 
-        window.add(this._eyePage(settings));
-        window.add(this._mouseCirclePage(settings));
+        window.add(this._eyePage(settings, window));
+        window.add(this._mouseCirclePage(settings, window));
+        window.add(this._trailPage(settings, window));
     }
 
-    _eyePage(settings) {
+    // Button at the bottom of every page that resets all settings
+    _resetGroup(settings, window) {
+        const group = new Adw.PreferencesGroup();
+        const button = new Gtk.Button({
+            label: _('Reset to defaults'),
+            halign: Gtk.Align.CENTER,
+            css_classes: ['destructive-action'],
+        });
+        button.connect('clicked', () => this._confirmReset(settings, window));
+        group.add(button);
+        return group;
+    }
+
+    _confirmReset(settings, window) {
+        const heading = _('Reset all settings?');
+        const body = _('All settings of the extension will be returned to their default values.');
+        // Adw.AlertDialog needs libadwaita 1.5 (GNOME 46)
+        const dialog = Adw.AlertDialog
+            ? new Adw.AlertDialog({heading, body})
+            : new Adw.MessageDialog({heading, body, transient_for: window, modal: true});
+
+        dialog.add_response('cancel', _('Cancel'));
+        dialog.add_response('reset', _('Reset'));
+        dialog.set_response_appearance('reset', Adw.ResponseAppearance.DESTRUCTIVE);
+        dialog.set_default_response('cancel');
+        dialog.set_close_response('cancel');
+        dialog.connect('response', (d, response) => {
+            if (response !== 'reset')
+                return;
+            for (const key of settings.settings_schema.list_keys())
+                settings.reset(key);
+        });
+
+        if (Adw.AlertDialog)
+            dialog.present(window);
+        else
+            dialog.present();
+    }
+
+    _eyePage(settings, window) {
         const page = new Adw.PreferencesPage({
             title: _('Eye'),
             icon_name: 'view-reveal-symbolic',
@@ -56,10 +96,12 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._spinRow(settings, 'eye-margin', _('Margin'), 0, 5, 0.1, 1));
         group.add(this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
 
+        page.add(this._resetGroup(settings, window));
+
         return page;
     }
 
-    _mouseCirclePage(settings) {
+    _mouseCirclePage(settings, window) {
         const page = new Adw.PreferencesPage({
             title: _('Mouse indicator'),
             icon_name: 'input-mouse-symbolic',
@@ -82,8 +124,17 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._colorRow(settings, 'mouse-circle-right-click-color', _('Right click')));
         group.add(this._colorRow(settings, 'mouse-circle-middle-click-color', _('Middle click')));
 
-        const trailGroup = new Adw.PreferencesGroup({
+        page.add(this._resetGroup(settings, window));
+
+        return page;
+    }
+
+    _trailPage(settings, window) {
+        const page = new Adw.PreferencesPage({
             title: _('Pointer trail'),
+            icon_name: 'document-edit-symbolic',
+        });
+        const trailGroup = new Adw.PreferencesGroup({
             description: _('Animation that follows the mouse'),
         });
         page.add(trailGroup);
@@ -112,6 +163,8 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         };
         syncShape();
         settings.connect('changed::water-ripple-effect', syncShape);
+
+        page.add(this._resetGroup(settings, window));
 
         return page;
     }

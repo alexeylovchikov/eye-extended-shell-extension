@@ -18,152 +18,172 @@ msgstr ""
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: eye-extended@als.kz/extension.js:676 eye-extended@als.kz/prefs.js:86
+#: eye-extended@als.kz/extension.js:680 eye-extended@als.kz/prefs.js:134
 msgid "Pointer trail"
 msgstr "След указателя"
 
-#: eye-extended@als.kz/extension.js:685
+#: eye-extended@als.kz/extension.js:689
 msgid "Settings"
 msgstr "Настройки"
 
-#: eye-extended@als.kz/prefs.js:38
+#: eye-extended@als.kz/prefs.js:41
+msgid "Reset to defaults"
+msgstr "Сбросить настройки по умолчанию"
+
+#: eye-extended@als.kz/prefs.js:51
+msgid "Reset all settings?"
+msgstr "Сбросить все настройки?"
+
+#: eye-extended@als.kz/prefs.js:52
+msgid "All settings of the extension will be returned to their default values."
+msgstr "Все настройки расширения вернутся к значениям по умолчанию."
+
+#: eye-extended@als.kz/prefs.js:58
+msgid "Cancel"
+msgstr "Отмена"
+
+#: eye-extended@als.kz/prefs.js:59
+msgid "Reset"
+msgstr "Сбросить"
+
+#: eye-extended@als.kz/prefs.js:78
 msgid "Eye"
 msgstr "Глаз"
 
-#: eye-extended@als.kz/prefs.js:44 eye-extended@als.kz/prefs.js:73
-#: eye-extended@als.kz/prefs.js:102
+#: eye-extended@als.kz/prefs.js:84 eye-extended@als.kz/prefs.js:115
+#: eye-extended@als.kz/prefs.js:153
 msgid "Shape"
 msgstr "Форма"
 
-#: eye-extended@als.kz/prefs.js:45
+#: eye-extended@als.kz/prefs.js:85
 msgid "Round"
 msgstr "Круглый"
 
-#: eye-extended@als.kz/prefs.js:46
+#: eye-extended@als.kz/prefs.js:86
 msgid "Eyelid"
 msgstr "С веками"
 
-#: eye-extended@als.kz/prefs.js:48
+#: eye-extended@als.kz/prefs.js:88
 msgid "Location"
 msgstr "Местоположение"
 
-#: eye-extended@als.kz/prefs.js:49
+#: eye-extended@als.kz/prefs.js:89
 msgid "Left"
 msgstr "Слева"
 
-#: eye-extended@als.kz/prefs.js:50
+#: eye-extended@als.kz/prefs.js:90
 msgid "Center"
 msgstr "Центр"
 
-#: eye-extended@als.kz/prefs.js:51
+#: eye-extended@als.kz/prefs.js:91
 msgid "Right"
 msgstr "Справа"
 
-#: eye-extended@als.kz/prefs.js:53
+#: eye-extended@als.kz/prefs.js:93
 msgid "Position"
 msgstr "Порядок в панели"
 
-#: eye-extended@als.kz/prefs.js:54 eye-extended@als.kz/prefs.js:74
-#: eye-extended@als.kz/prefs.js:104
+#: eye-extended@als.kz/prefs.js:94 eye-extended@als.kz/prefs.js:116
+#: eye-extended@als.kz/prefs.js:155
 msgid "Size"
 msgstr "Размер"
 
-#: eye-extended@als.kz/prefs.js:55 eye-extended@als.kz/prefs.js:105
+#: eye-extended@als.kz/prefs.js:95 eye-extended@als.kz/prefs.js:156
 msgid "Line Thickness"
 msgstr "Толщина линии"
 
-#: eye-extended@als.kz/prefs.js:56
+#: eye-extended@als.kz/prefs.js:96
 msgid "Margin"
 msgstr "Отступ"
 
-#: eye-extended@als.kz/prefs.js:57 eye-extended@als.kz/prefs.js:76
+#: eye-extended@als.kz/prefs.js:97 eye-extended@als.kz/prefs.js:118
 msgid "Refresh interval (ms)"
 msgstr "Интервал обновления (мс)"
 
-#: eye-extended@als.kz/prefs.js:64
+#: eye-extended@als.kz/prefs.js:106
 msgid "Mouse indicator"
 msgstr "Индикатор мыши"
 
-#: eye-extended@als.kz/prefs.js:68
+#: eye-extended@als.kz/prefs.js:110
 msgid "Click on the eye to turn it on"
 msgstr "Чтобы включить, нажмите на глаз"
 
-#: eye-extended@als.kz/prefs.js:72 eye-extended@als.kz/prefs.js:91
+#: eye-extended@als.kz/prefs.js:114 eye-extended@als.kz/prefs.js:142
 msgid "Enable"
 msgstr "Включить"
 
-#: eye-extended@als.kz/prefs.js:75
+#: eye-extended@als.kz/prefs.js:117
 msgid "Opacity"
 msgstr "Непрозрачность"
 
-#: eye-extended@als.kz/prefs.js:77
+#: eye-extended@als.kz/prefs.js:119
 msgid "Enable left click coloring"
 msgstr "Включить раскрашивание при нажатии левой кнопкой"
 
-#: eye-extended@als.kz/prefs.js:78
+#: eye-extended@als.kz/prefs.js:120
 msgid "Enable right click coloring"
 msgstr "Включить раскрашивание при нажатии правой кнопкой"
 
-#: eye-extended@als.kz/prefs.js:79
+#: eye-extended@als.kz/prefs.js:121
 msgid "Enable middle click coloring"
 msgstr "Включить раскрашивание при нажатии средней кнопкой"
 
-#: eye-extended@als.kz/prefs.js:80
+#: eye-extended@als.kz/prefs.js:122
 msgid "Default"
 msgstr "По умолчанию"
 
-#: eye-extended@als.kz/prefs.js:81
+#: eye-extended@als.kz/prefs.js:123
 msgid "Left click"
 msgstr "Левый клик"
 
-#: eye-extended@als.kz/prefs.js:82
+#: eye-extended@als.kz/prefs.js:124
 msgid "Right click"
 msgstr "Правый клик"
 
-#: eye-extended@als.kz/prefs.js:83
+#: eye-extended@als.kz/prefs.js:125
 msgid "Middle click"
 msgstr "Средний клик"
 
-#: eye-extended@als.kz/prefs.js:87
+#: eye-extended@als.kz/prefs.js:138
 msgid "Animation that follows the mouse"
 msgstr "Анимация, которая следует за мышью"
 
-#: eye-extended@als.kz/prefs.js:92
+#: eye-extended@als.kz/prefs.js:143
 msgid "Show"
 msgstr "Показывать"
 
-#: eye-extended@als.kz/prefs.js:93
+#: eye-extended@als.kz/prefs.js:144
 msgid "While Ctrl is held"
 msgstr "При зажатом Ctrl"
 
-#: eye-extended@als.kz/prefs.js:94
+#: eye-extended@als.kz/prefs.js:145
 msgid "Always"
 msgstr "Всегда"
 
-#: eye-extended@als.kz/prefs.js:96
+#: eye-extended@als.kz/prefs.js:147
 msgid "Animation"
 msgstr "Анимация"
 
-#: eye-extended@als.kz/prefs.js:97
+#: eye-extended@als.kz/prefs.js:148
 msgid "Water ripples"
 msgstr "Круги на воде"
 
-#: eye-extended@als.kz/prefs.js:98
+#: eye-extended@als.kz/prefs.js:149
 msgid "Pointer line"
 msgstr "Указка"
 
-#: eye-extended@als.kz/prefs.js:99
+#: eye-extended@als.kz/prefs.js:150
 msgid "Comet tail"
 msgstr "Хвост кометы"
 
-#: eye-extended@als.kz/prefs.js:100
+#: eye-extended@als.kz/prefs.js:151
 msgid "Sparkles"
 msgstr "Искры"
 
-#: eye-extended@als.kz/prefs.js:106
+#: eye-extended@als.kz/prefs.js:157
 msgid "Duration (ms)"
 msgstr "Длительность (мс)"
 
-#: eye-extended@als.kz/prefs.js:107
+#: eye-extended@als.kz/prefs.js:158
 msgid "Color"
 msgstr "Цвет"

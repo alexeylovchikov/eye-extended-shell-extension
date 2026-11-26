@@ -95,6 +95,8 @@ To open the settings, do one of the following:
    ```
 
 Changes apply immediately, without logging out.
+The **Reset to defaults** button at the bottom of each tab returns all settings
+of the extension to their default values after a confirmation.
 
 ### Eye tab
 
@@ -102,13 +104,13 @@ Changes apply immediately, without logging out.
 |---|---|---|
 | Shape | Eyelid | **Round** draws an eyeball, **Eyelid** draws an eye with lids. |
 | Location | Left | Part of the top panel the eye is placed in: **Left**, **Center** or **Right**. |
-| Position | 0 | Order among the other icons in the same part of the panel, from −255 to 255. |
-| Size | 16 | Eye height in pixels, from 8 to 64. The eye never grows taller than the panel. |
-| Line Thickness | 1.5 | Width of the eye outline in pixels. |
-| Margin | 1.5 | Empty space on both sides of the eye in pixels. |
-| Refresh interval (ms) | 100 | How often the eye checks the pointer position. Lower is smoother, higher uses less CPU. |
+| Position | 1 | Order among the other icons in the same part of the panel, from −255 to 255. |
+| Size | 18 | Eye height in pixels, from 8 to 64. The eye never grows taller than the panel. |
+| Line Thickness | 2.5 | Width of the eye outline in pixels. |
+| Margin | 2 | Empty space on both sides of the eye in pixels. |
+| Refresh interval (ms) | 80 | How often the eye checks the pointer position. Lower is smoother, higher uses less CPU. |
 
-### Mouse indicator tab: indicator
+### Mouse indicator tab
 
 The indicator is turned on and off by clicking the eye with the left mouse button.
 
@@ -117,25 +119,25 @@ The indicator is turned on and off by clicking the eye with the left mouse butto
 | Enable | On | Shows the shape around the cursor. When it is off, clicks are still highlighted. |
 | Shape | 1 | One of the 19 shapes from the [circle](eye-extended@als.kz/circle) folder. |
 | Size | 60 | Shape size in pixels, from 1 to 500. |
-| Opacity | 200 | From 1 (almost invisible) to 255 (fully opaque). |
+| Opacity | 180 | From 1 (almost invisible) to 255 (fully opaque). |
 | Refresh interval (ms) | 10 | How often the indicator follows the pointer and checks the mouse buttons. |
 | Enable left / right / middle click coloring | On | Recolors the shape and shows a short flash on click of that button. |
-| Default | ![#62a0ea](https://img.shields.io/badge/-%2362a0ea-62a0ea) | Shape color when no button is pressed. The eye uses it too while the indicator is on. |
-| Left click | ![#57e389](https://img.shields.io/badge/-%2357e389-57e389) | Color on left click. |
-| Right click | ![#f8e45c](https://img.shields.io/badge/-%23f8e45c-f8e45c) | Color on right click. |
-| Middle click | ![#ffa348](https://img.shields.io/badge/-%23ffa348-ffa348) | Color on middle click. |
+| Default | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Shape color when no button is pressed. The eye uses it too while the indicator is on. |
+| Left click | ![#f66151](https://img.shields.io/badge/-%23f66151-f66151) | Color on left click. |
+| Right click | ![#8ff0a4](https://img.shields.io/badge/-%238ff0a4-8ff0a4) | Color on right click. |
+| Middle click | ![#f9f06b](https://img.shields.io/badge/-%23f9f06b-f9f06b) | Color on middle click. |
 
-### Mouse indicator tab: Pointer trail
+### Pointer trail tab
 
 | Setting | Default | Description |
 |---|---|---|
 | Enable | On | Draws the animation behind the pointer. The same switch is in the right-click menu of the eye. |
 | Show | While Ctrl is held | **While Ctrl is held** draws the trail only when <kbd>Ctrl</kbd> is pressed, **Always** draws it whenever the mouse moves. |
-| Animation | Water ripples | **Water ripples**, **Pointer line**, **Comet tail** or **Sparkles**. |
+| Animation | Pointer line | **Water ripples**, **Pointer line**, **Comet tail** or **Sparkles**. |
 | Shape | 0 | 0 draws a plain ring or dot, 1–19 use the mouse indicator shapes. Not used by **Pointer line**. |
-| Size | 80 | Overall size of the effect in pixels. A ripple starts exactly as big as a mouse indicator of the same size, comet dots are a quarter of it, and sparkles fly up to half of it. |
-| Line Thickness | 3 | Ring outline for **Water ripples** and line width for **Pointer line**, in pixels. |
-| Duration (ms) | 900 | How long each piece of the trail takes to fade away. |
+| Size | 60 | Overall size of the effect in pixels. A ripple starts exactly as big as a mouse indicator of the same size, comet dots are a quarter of it, and sparkles fly up to half of it. |
+| Line Thickness | 15 | Ring outline for **Water ripples** and line width for **Pointer line**, in pixels. |
+| Duration (ms) | 400 | How long each piece of the trail takes to fade away. |
 | Color | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Trail color. |
 
 ### Settings from the command line
@@ -145,10 +147,10 @@ You can read and change them from a terminal, for example:
 
 ```bash
 gsettings --schemadir ~/.local/share/gnome-shell/extensions/eye-extended@als.kz/schemas \
-    set org.gnome.shell.extensions.eye-extended water-ripple-effect 'line'
+    set org.gnome.shell.extensions.eye-extended water-ripple-effect 'ripples'
 ```
 
-To reset all settings to their defaults:
+To reset all settings to their defaults, use the **Reset to defaults** button or run:
 
 ```bash
 dconf reset -f /org/gnome/shell/extensions/eye-extended/

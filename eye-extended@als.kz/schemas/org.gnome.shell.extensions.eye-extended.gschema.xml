@@ -13,25 +13,25 @@
       <description>Supported value "left", "center" and "right"</description>
     </key>
     <key name="eye-position-weight" type="i">
-      <default>0</default>
+      <default>1</default>
       <summary>Eye position weight</summary>
     </key>
     <key name="eye-size" type="i">
       <range min="8" max="64"/>
-      <default>16</default>
+      <default>18</default>
       <summary>Eye size</summary>
       <description>Eye height in pixels; limited by the panel height</description>
     </key>
     <key name="eye-line-width" type="d">
-      <default>1.5</default>
+      <default>2.5</default>
       <summary>Eye line width</summary>
     </key>
     <key name="eye-margin" type="d">
-      <default>1.5</default>
+      <default>2</default>
       <summary>Eye margin</summary>
     </key>
     <key name="eye-repaint-interval" type="i">
-      <default>100</default>
+      <default>80</default>
       <summary>Eye repaint interval</summary>
     </key>
 
@@ -44,7 +44,7 @@
       <summary>Mouse circle size</summary>
     </key>
     <key name="mouse-circle-opacity" type="i">
-      <default>200</default>
+      <default>180</default>
       <summary>Mouse circle opacity</summary>
     </key>
     <key name="mouse-circle-repaint-interval" type="i">
@@ -70,19 +70,19 @@
     </key>
 
     <key name="mouse-circle-color" type="s">
-      <default>"#62a0ea"</default>
+      <default>"#99c1f1"</default>
       <summary>Mouse circle color</summary>
     </key>
     <key name="mouse-circle-left-click-color" type="s">
-      <default>"#57e389"</default>
+      <default>"#f66151"</default>
       <summary>Mouse circle left click color</summary>
     </key>
     <key name="mouse-circle-right-click-color" type="s">
-      <default>"#f8e45c"</default>
+      <default>"#8ff0a4"</default>
       <summary>Mouse circle right click color</summary>
     </key>
     <key name="mouse-circle-middle-click-color" type="s">
-      <default>"#ffa348"</default>
+      <default>"#f9f06b"</default>
       <summary>Mouse circle middle click color</summary>
     </key>
 
@@ -107,13 +107,13 @@
         <choice value="comet"/>
         <choice value="sparkles"/>
       </choices>
-      <default>"ripples"</default>
+      <default>"line"</default>
       <summary>Pointer trail effect</summary>
       <description>Animation drawn behind the pointer</description>
     </key>
     <key name="water-ripple-line-width" type="d">
       <range min="1" max="30"/>
-      <default>3</default>
+      <default>15</default>
       <summary>Pointer trail line thickness</summary>
       <description>Ring border for ripples and line width for the line effect</description>
     </key>
@@ -125,12 +125,12 @@
     </key>
     <key name="water-ripple-size" type="i">
       <range min="1" max="500"/>
-      <default>80</default>
+      <default>60</default>
       <summary>Water ripple size</summary>
     </key>
     <key name="water-ripple-duration" type="i">
       <range min="100" max="5000"/>
-      <default>900</default>
+      <default>400</default>
       <summary>Water ripple duration (ms)</summary>
     </key>
     <key name="water-ripple-color" type="s">
