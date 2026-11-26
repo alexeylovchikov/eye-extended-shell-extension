@@ -172,6 +172,7 @@ class MouseCircle {
         this._settings.disconnectObject(this);
         // Drop icons that are still being loaded
         this._iconSerial++;
+        this._stopTimer();
         this.setActive(false);
         for (const actor of this._animations) {
             actor.remove_all_transitions();
