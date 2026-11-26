@@ -355,6 +355,49 @@ const TRAIL_MAX_POINTS = 2000;
 // Ripples start at the set size, like the mouse indicator, and spread out
 const RIPPLE_END_SCALE = 2;
 const SPARKLES_PER_STEP = 3;
+// Length of the straight pieces a smoothed line is drawn with, in pixels
+const LINE_STEP = 4;
+const LINE_MAX_STEPS = 24;
+
+// Turns the polled pointer positions of one stroke into a smooth curve:
+// corners are rounded with quadratic Bezier curves between the midpoints of
+// neighbouring segments. Returns closely spaced {x, y, t} samples, so that
+// the color and the width of the line can change gradually along it.
+function smoothStroke(points) {
+    const n = points.length;
+    if (n < 3)
+        return points;
+
+    const mid = (a, b) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, t: (a.t + b.t) / 2});
+    const samples = [points[0]];
+    const addCurve = (from, ctrl, to) => {
+        const length = Math.hypot(ctrl.x - from.x, ctrl.y - from.y) +
+            Math.hypot(to.x - ctrl.x, to.y - ctrl.y);
+        const steps = Math.min(LINE_MAX_STEPS, Math.max(1, Math.ceil(length / LINE_STEP)));
+        for (let i = 1; i <= steps; i++) {
+            const u = i / steps;
+            const a = (1 - u) * (1 - u);
+            const b = 2 * u * (1 - u);
+            const c = u * u;
+            samples.push({
+                x: a * from.x + b * ctrl.x + c * to.x,
+                y: a * from.y + b * ctrl.y + c * to.y,
+                t: a * from.t + b * ctrl.t + c * to.t,
+            });
+        }
+    };
+
+    // Straight from the first point to the first midpoint
+    let from = mid(points[0], points[1]);
+    addCurve(points[0], mid(points[0], from), from);
+    for (let i = 1; i < n - 1; i++) {
+        const to = mid(points[i], points[i + 1]);
+        addCurve(from, points[i], to);
+        from = to;
+    }
+    addCurve(from, mid(from, points[n - 1]), points[n - 1]);
+    return samples;
+}
 
 // Animation behind the pointer, always or only while Ctrl is held: water ripples,
 // a fading laser-pointer line, a comet tail or sparkles
@@ -639,19 +682,32 @@ class PointerTrail {
         cr.setOperator(Cairo.Operator.SOURCE);
         // Points are in stage coordinates, the area starts at its own origin
         cr.translate(-this._areaX, -this._areaY);
-        for (let i = 1; i < this._points.length; i++) {
-            const p0 = this._points[i - 1];
-            const p1 = this._points[i];
-            if (p1.start)
-                continue;
-            const life = 1 - (now - p1.t) / this._duration;
-            if (life <= 0)
-                continue;
-            cr.setSourceRGBA(r, g, b, a * life);
-            cr.setLineWidth(lineWidth * (0.3 + 0.7 * life));
-            cr.moveTo(p0.x, p0.y);
-            cr.lineTo(p1.x, p1.y);
-            cr.stroke();
+        // Split the points into strokes: a new one starts each time the
+        // trail is triggered again
+        let stroke = [];
+        const strokes = [stroke];
+        for (const p of this._points) {
+            if (p.start && stroke.length) {
+                stroke = [];
+                strokes.push(stroke);
+            }
+            stroke.push(p);
+        }
+
+        for (const points of strokes) {
+            const samples = smoothStroke(points);
+            for (let i = 1; i < samples.length; i++) {
+                const p0 = samples[i - 1];
+                const p1 = samples[i];
+                const life = 1 - (now - p1.t) / this._duration;
+                if (life <= 0)
+                    continue;
+                cr.setSourceRGBA(r, g, b, a * life);
+                cr.setLineWidth(lineWidth * (0.3 + 0.7 * life));
+                cr.moveTo(p0.x, p0.y);
+                cr.lineTo(p1.x, p1.y);
+                cr.stroke();
+            }
         }
 
         cr.$dispose();
