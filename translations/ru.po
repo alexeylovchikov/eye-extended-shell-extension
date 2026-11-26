@@ -18,176 +18,273 @@ msgstr ""
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: eye-extended@als.kz/extension.js:736 eye-extended@als.kz/prefs.js:148
+#: eye-extended@als.kz/extension.js:762 eye-extended@als.kz/extension.js:811
+#: eye-extended@als.kz/prefs.js:199
 msgid "Pointer trail"
 msgstr "След указателя"
 
-#: eye-extended@als.kz/extension.js:745
-msgid "Settings"
-msgstr "Настройки"
-
-#: eye-extended@als.kz/prefs.js:49
-msgid "Reset to defaults"
-msgstr "Сбросить настройки по умолчанию"
-
-#: eye-extended@als.kz/prefs.js:56
-msgid "Support the project on Ko-fi"
-msgstr "Поддержать проект на Ko-fi"
-
-#: eye-extended@als.kz/prefs.js:65
-msgid "Reset all settings?"
-msgstr "Сбросить все настройки?"
-
-#: eye-extended@als.kz/prefs.js:66
-msgid "All settings of the extension will be returned to their default values."
-msgstr "Все настройки расширения вернутся к значениям по умолчанию."
-
-#: eye-extended@als.kz/prefs.js:72
-msgid "Cancel"
-msgstr "Отмена"
-
-#: eye-extended@als.kz/prefs.js:73
-msgid "Reset"
-msgstr "Сбросить"
-
-#: eye-extended@als.kz/prefs.js:92
-msgid "Eye"
-msgstr "Глаз"
-
-#: eye-extended@als.kz/prefs.js:98 eye-extended@als.kz/prefs.js:129
-#: eye-extended@als.kz/prefs.js:167
-msgid "Shape"
-msgstr "Форма"
-
-#: eye-extended@als.kz/prefs.js:99
-msgid "Round"
-msgstr "Круглый"
-
-#: eye-extended@als.kz/prefs.js:100
-msgid "Eyelid"
-msgstr "С веками"
-
-#: eye-extended@als.kz/prefs.js:102
-msgid "Location"
-msgstr "Местоположение"
-
-#: eye-extended@als.kz/prefs.js:103
-msgid "Left"
-msgstr "Слева"
-
-#: eye-extended@als.kz/prefs.js:104
-msgid "Center"
-msgstr "Центр"
-
-#: eye-extended@als.kz/prefs.js:105
-msgid "Right"
-msgstr "Справа"
-
-#: eye-extended@als.kz/prefs.js:107
-msgid "Position"
-msgstr "Порядок в панели"
-
-#: eye-extended@als.kz/prefs.js:108 eye-extended@als.kz/prefs.js:130
-#: eye-extended@als.kz/prefs.js:169
-msgid "Size"
-msgstr "Размер"
-
-#: eye-extended@als.kz/prefs.js:109 eye-extended@als.kz/prefs.js:170
-msgid "Line Thickness"
-msgstr "Толщина линии"
-
-#: eye-extended@als.kz/prefs.js:110
-msgid "Margin"
-msgstr "Отступ"
-
-#: eye-extended@als.kz/prefs.js:111 eye-extended@als.kz/prefs.js:132
-msgid "Refresh interval (ms)"
-msgstr "Интервал обновления (мс)"
-
-#: eye-extended@als.kz/prefs.js:120
+#: eye-extended@als.kz/extension.js:768 eye-extended@als.kz/prefs.js:136
 msgid "Mouse indicator"
 msgstr "Индикатор мыши"
 
+#: eye-extended@als.kz/extension.js:776
+msgid "Settings"
+msgstr "Настройки"
+
+#: eye-extended@als.kz/extension.js:812
+msgid "Pointer trail (hold Ctrl)"
+msgstr "След указателя (зажмите Ctrl)"
+
+#: eye-extended@als.kz/prefs.js:55
+msgid "Reset to defaults"
+msgstr "Сбросить настройки по умолчанию"
+
+#: eye-extended@als.kz/prefs.js:62
+msgid "Support the project on Ko-fi"
+msgstr "Поддержать проект на Ko-fi"
+
+#: eye-extended@als.kz/prefs.js:71
+msgid "Reset all settings?"
+msgstr "Сбросить все настройки?"
+
+#: eye-extended@als.kz/prefs.js:72
+msgid "All settings of the extension will be returned to their default values."
+msgstr "Все настройки расширения вернутся к значениям по умолчанию."
+
+#: eye-extended@als.kz/prefs.js:78
+msgid "Cancel"
+msgstr "Отмена"
+
+#: eye-extended@als.kz/prefs.js:79
+msgid "Reset"
+msgstr "Сбросить"
+
+#: eye-extended@als.kz/prefs.js:98
+msgid "Eye"
+msgstr "Глаз"
+
+#: eye-extended@als.kz/prefs.js:104 eye-extended@als.kz/prefs.js:148
+#: eye-extended@als.kz/prefs.js:221
+msgid "Shape"
+msgstr "Форма"
+
+#: eye-extended@als.kz/prefs.js:105
+msgid "Round"
+msgstr "Круглый"
+
+#: eye-extended@als.kz/prefs.js:106
+msgid "Eyelid"
+msgstr "С веками"
+
+#: eye-extended@als.kz/prefs.js:108
+msgid "Place in the panel"
+msgstr "Место в панели"
+
+#: eye-extended@als.kz/prefs.js:109
+msgid "Left"
+msgstr "Слева"
+
+#: eye-extended@als.kz/prefs.js:110
+msgid "Center"
+msgstr "Центр"
+
+#: eye-extended@als.kz/prefs.js:111
+msgid "Right"
+msgstr "Справа"
+
+#: eye-extended@als.kz/prefs.js:112
+msgid "Part of the top panel the eye is shown in"
+msgstr "Часть верхней панели, в которой показан глаз"
+
+#: eye-extended@als.kz/prefs.js:114
+msgid "Order in the panel"
+msgstr "Порядок в панели"
+
+#: eye-extended@als.kz/prefs.js:115
+msgid "Order among the other icons in the same part of the panel"
+msgstr "Порядок среди других значков в той же части панели"
+
+#: eye-extended@als.kz/prefs.js:117 eye-extended@als.kz/prefs.js:151
+#: eye-extended@als.kz/prefs.js:225
+msgid "Size"
+msgstr "Размер"
+
+#: eye-extended@als.kz/prefs.js:118
+msgid "Eye height in pixels"
+msgstr "Высота глаза в пикселях"
+
+#: eye-extended@als.kz/prefs.js:120 eye-extended@als.kz/prefs.js:228
+msgid "Line thickness"
+msgstr "Толщина линии"
+
+#: eye-extended@als.kz/prefs.js:121
+msgid "Width of the eye outline"
+msgstr "Ширина контура глаза"
+
+#: eye-extended@als.kz/prefs.js:123
+msgid "Margin"
+msgstr "Отступ"
+
 #: eye-extended@als.kz/prefs.js:124
-msgid "Click on the eye to turn it on"
-msgstr "Чтобы включить, нажмите на глаз"
+msgid "Empty space on both sides of the eye"
+msgstr "Пустое место по обе стороны от глаза"
 
-#: eye-extended@als.kz/prefs.js:128 eye-extended@als.kz/prefs.js:156
-msgid "Enable"
-msgstr "Включить"
+#: eye-extended@als.kz/prefs.js:126 eye-extended@als.kz/prefs.js:157
+msgid "Refresh interval (ms)"
+msgstr "Интервал обновления (мс)"
 
-#: eye-extended@als.kz/prefs.js:131
+#: eye-extended@als.kz/prefs.js:127 eye-extended@als.kz/prefs.js:158
+msgid "Lower is smoother, higher uses less CPU"
+msgstr "Меньше — плавнее, больше — ниже нагрузка на процессор"
+
+#: eye-extended@als.kz/prefs.js:140
+msgid "Turn it on from the menu of the eye"
+msgstr "Включается в меню глаза"
+
+#: eye-extended@als.kz/prefs.js:145
+msgid "Show the shape around the cursor"
+msgstr "Показывать фигуру вокруг курсора"
+
+#: eye-extended@als.kz/prefs.js:146
+msgid "When it is off, only clicks are highlighted"
+msgstr "Если выключено, подсвечиваются только клики"
+
+#: eye-extended@als.kz/prefs.js:149
+msgid "One of the 19 shapes"
+msgstr "Одна из 19 фигур"
+
+#: eye-extended@als.kz/prefs.js:152
+msgid "Shape size in pixels"
+msgstr "Размер фигуры в пикселях"
+
+#: eye-extended@als.kz/prefs.js:154
 msgid "Opacity"
 msgstr "Непрозрачность"
 
-#: eye-extended@als.kz/prefs.js:133
-msgid "Enable left click coloring"
-msgstr "Включить раскрашивание при нажатии левой кнопкой"
+#: eye-extended@als.kz/prefs.js:155
+msgid "From 1 (almost invisible) to 255 (opaque)"
+msgstr "От 1 (почти не видно) до 255 (непрозрачно)"
 
-#: eye-extended@als.kz/prefs.js:134
-msgid "Enable right click coloring"
-msgstr "Включить раскрашивание при нажатии правой кнопкой"
+#: eye-extended@als.kz/prefs.js:160 eye-extended@als.kz/prefs.js:233
+msgid "Color"
+msgstr "Цвет"
 
-#: eye-extended@als.kz/prefs.js:135
-msgid "Enable middle click coloring"
-msgstr "Включить раскрашивание при нажатии средней кнопкой"
+#: eye-extended@als.kz/prefs.js:161
+msgid "Shape color when no button is pressed"
+msgstr "Цвет фигуры, когда кнопки не нажаты"
 
-#: eye-extended@als.kz/prefs.js:136
-msgid "Default"
-msgstr "По умолчанию"
+#: eye-extended@als.kz/prefs.js:163
+msgid "Color the eye"
+msgstr "Окрашивать глаз"
 
-#: eye-extended@als.kz/prefs.js:137
+#: eye-extended@als.kz/prefs.js:164
+msgid "The eye in the panel takes the color of the indicator while it is on"
+msgstr "Глаз в панели принимает цвет индикатора, пока тот включён"
+
+#: eye-extended@als.kz/prefs.js:167
+msgid "Clicks"
+msgstr "Клики"
+
+#: eye-extended@als.kz/prefs.js:168
+msgid "The shape changes color and flashes on click"
+msgstr "При клике фигура меняет цвет и вспыхивает"
+
+#: eye-extended@als.kz/prefs.js:172
+msgid "Highlight left clicks"
+msgstr "Подсвечивать левый клик"
+
+#: eye-extended@als.kz/prefs.js:173
+msgid "Highlight middle clicks"
+msgstr "Подсвечивать средний клик"
+
+#: eye-extended@als.kz/prefs.js:174
+msgid "Highlight right clicks"
+msgstr "Подсвечивать правый клик"
+
+#: eye-extended@als.kz/prefs.js:178
+msgid "Click colors"
+msgstr "Цвета кликов"
+
+#: eye-extended@als.kz/prefs.js:179
+msgid "Left, middle, right"
+msgstr "Левый, средний, правый"
+
+#: eye-extended@als.kz/prefs.js:182
 msgid "Left click"
 msgstr "Левый клик"
 
-#: eye-extended@als.kz/prefs.js:138
-msgid "Right click"
-msgstr "Правый клик"
-
-#: eye-extended@als.kz/prefs.js:139
+#: eye-extended@als.kz/prefs.js:183
 msgid "Middle click"
 msgstr "Средний клик"
 
-#: eye-extended@als.kz/prefs.js:152
+#: eye-extended@als.kz/prefs.js:184
+msgid "Right click"
+msgstr "Правый клик"
+
+#: eye-extended@als.kz/prefs.js:203
 msgid "Animation that follows the mouse"
 msgstr "Анимация, которая следует за мышью"
 
-#: eye-extended@als.kz/prefs.js:157
+#: eye-extended@als.kz/prefs.js:208
+msgid "Enable"
+msgstr "Включить"
+
+#: eye-extended@als.kz/prefs.js:209
+msgid "The same switch is in the menu of the eye"
+msgstr "Такой же переключатель есть в меню глаза"
+
+#: eye-extended@als.kz/prefs.js:210
 msgid "Show"
 msgstr "Показывать"
 
-#: eye-extended@als.kz/prefs.js:158
+#: eye-extended@als.kz/prefs.js:211
 msgid "While Ctrl is held"
 msgstr "При зажатом Ctrl"
 
-#: eye-extended@als.kz/prefs.js:159
+#: eye-extended@als.kz/prefs.js:212
 msgid "Always"
 msgstr "Всегда"
 
-#: eye-extended@als.kz/prefs.js:161
+#: eye-extended@als.kz/prefs.js:213
+msgid "When the trail is drawn as the mouse moves"
+msgstr "Когда рисовать след при движении мыши"
+
+#: eye-extended@als.kz/prefs.js:214
 msgid "Animation"
 msgstr "Анимация"
 
-#: eye-extended@als.kz/prefs.js:162
+#: eye-extended@als.kz/prefs.js:215
 msgid "Water ripples"
 msgstr "Круги на воде"
 
-#: eye-extended@als.kz/prefs.js:163
+#: eye-extended@als.kz/prefs.js:216
 msgid "Pointer line"
 msgstr "Указка"
 
-#: eye-extended@als.kz/prefs.js:164
+#: eye-extended@als.kz/prefs.js:217
 msgid "Comet tail"
 msgstr "Хвост кометы"
 
-#: eye-extended@als.kz/prefs.js:165
+#: eye-extended@als.kz/prefs.js:218
 msgid "Sparkles"
 msgstr "Искры"
 
-#: eye-extended@als.kz/prefs.js:171
+#: eye-extended@als.kz/prefs.js:222
+msgid "0 is a plain ring or dot, 1–19 are the mouse indicator shapes"
+msgstr "0 — простое кольцо или точка, 1–19 — фигуры индикатора мыши"
+
+#: eye-extended@als.kz/prefs.js:226
+msgid "Size of each piece of the trail in pixels"
+msgstr "Размер каждого элемента следа в пикселях"
+
+#: eye-extended@als.kz/prefs.js:229
+msgid "Width of the ring outline and of the pointer line"
+msgstr "Ширина контура кольца и линии указки"
+
+#: eye-extended@als.kz/prefs.js:231
 msgid "Duration (ms)"
 msgstr "Длительность (мс)"
 
-#: eye-extended@als.kz/prefs.js:172
-msgid "Color"
-msgstr "Цвет"
+#: eye-extended@als.kz/prefs.js:232
+msgid "How long the trail takes to fade away"
+msgstr "За какое время след исчезает"

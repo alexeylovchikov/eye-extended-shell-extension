@@ -25,6 +25,12 @@ import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Ex
 
 const KOFI_URL = 'https://ko-fi.com/alexeylovchikov';
 
+// Adds the explanation shown under the title of a settings row
+function describe(row, subtitle) {
+    row.subtitle = subtitle;
+    return row;
+}
+
 export default class EyeExtendedPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
@@ -99,16 +105,26 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
             ['bulb', _('Round')],
             ['lids', _('Eyelid')],
         ]));
-        group.add(this._comboRow(settings, 'eye-position', _('Location'), [
+        group.add(describe(this._comboRow(settings, 'eye-position', _('Place in the panel'), [
             ['left', _('Left')],
             ['center', _('Center')],
             ['right', _('Right')],
-        ]));
-        group.add(this._spinRow(settings, 'eye-position-weight', _('Position'), -255, 255, 1));
-        group.add(this._spinRow(settings, 'eye-size', _('Size'), 8, 64, 1));
-        group.add(this._spinRow(settings, 'eye-line-width', _('Line Thickness'), 0, 5, 0.1, 1));
-        group.add(this._spinRow(settings, 'eye-margin', _('Margin'), 0, 5, 0.1, 1));
-        group.add(this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
+        ]), _('Part of the top panel the eye is shown in')));
+        group.add(describe(
+            this._spinRow(settings, 'eye-position-weight', _('Order in the panel'), -255, 255, 1),
+            _('Order among the other icons in the same part of the panel')));
+        group.add(describe(
+            this._spinRow(settings, 'eye-size', _('Size'), 8, 64, 1),
+            _('Eye height in pixels')));
+        group.add(describe(
+            this._spinRow(settings, 'eye-line-width', _('Line thickness'), 0, 5, 0.1, 1),
+            _('Width of the eye outline')));
+        group.add(describe(
+            this._spinRow(settings, 'eye-margin', _('Margin'), 0, 5, 0.1, 1),
+            _('Empty space on both sides of the eye')));
+        group.add(describe(
+            this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10),
+            _('Lower is smoother, higher uses less CPU')));
 
         page.add(this._resetGroup(settings, window));
 
@@ -125,18 +141,53 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         });
         page.add(group);
 
-        group.add(this._switchRow(settings, 'mouse-circle-enable', _('Enable')));
-        group.add(this._spinRow(settings, 'mouse-circle-mode', _('Shape'), 1, 19, 1));
-        group.add(this._spinRow(settings, 'mouse-circle-size', _('Size'), 1, 500, 10));
-        group.add(this._spinRow(settings, 'mouse-circle-opacity', _('Opacity'), 1, 255, 10));
-        group.add(this._spinRow(settings, 'mouse-circle-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10));
-        group.add(this._switchRow(settings, 'mouse-circle-left-click-enable', _('Enable left click coloring')));
-        group.add(this._switchRow(settings, 'mouse-circle-right-click-enable', _('Enable right click coloring')));
-        group.add(this._switchRow(settings, 'mouse-circle-middle-click-enable', _('Enable middle click coloring')));
-        group.add(this._colorRow(settings, 'mouse-circle-color', _('Default')));
-        group.add(this._colorRow(settings, 'mouse-circle-left-click-color', _('Left click')));
-        group.add(this._colorRow(settings, 'mouse-circle-right-click-color', _('Right click')));
-        group.add(this._colorRow(settings, 'mouse-circle-middle-click-color', _('Middle click')));
+        group.add(describe(
+            this._switchRow(settings, 'mouse-circle-enable', _('Show the shape around the cursor')),
+            _('When it is off, only clicks are highlighted')));
+        group.add(describe(
+            this._spinRow(settings, 'mouse-circle-mode', _('Shape'), 1, 19, 1),
+            _('One of the 19 shapes')));
+        group.add(describe(
+            this._spinRow(settings, 'mouse-circle-size', _('Size'), 1, 500, 10),
+            _('Shape size in pixels')));
+        group.add(describe(
+            this._spinRow(settings, 'mouse-circle-opacity', _('Opacity'), 1, 255, 10),
+            _('From 1 (almost invisible) to 255 (opaque)')));
+        group.add(describe(
+            this._spinRow(settings, 'mouse-circle-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10),
+            _('Lower is smoother, higher uses less CPU')));
+        group.add(describe(
+            this._colorRow(settings, 'mouse-circle-color', _('Color')),
+            _('Shape color when no button is pressed')));
+        group.add(describe(
+            this._switchRow(settings, 'mouse-circle-color-eye', _('Color the eye')),
+            _('The eye in the panel takes the color of the indicator while it is on')));
+
+        const clickGroup = new Adw.PreferencesGroup({
+            title: _('Clicks'),
+            description: _('The shape changes color and flashes on click'),
+        });
+        page.add(clickGroup);
+
+        clickGroup.add(this._switchRow(settings, 'mouse-circle-left-click-enable', _('Highlight left clicks')));
+        clickGroup.add(this._switchRow(settings, 'mouse-circle-middle-click-enable', _('Highlight middle clicks')));
+        clickGroup.add(this._switchRow(settings, 'mouse-circle-right-click-enable', _('Highlight right clicks')));
+
+        // The click colors share a row, in the order of the mouse buttons
+        const clickRow = new Adw.ActionRow({
+            title: _('Click colors'),
+            subtitle: _('Left, middle, right'),
+        });
+        for (const [key, tooltip] of [
+            ['mouse-circle-left-click-color', _('Left click')],
+            ['mouse-circle-middle-click-color', _('Middle click')],
+            ['mouse-circle-right-click-color', _('Right click')],
+        ]) {
+            const button = this._colorButton(settings, key);
+            button.tooltip_text = tooltip;
+            clickRow.add_suffix(button);
+        }
+        clickGroup.add(clickRow);
 
         page.add(this._resetGroup(settings, window));
 
@@ -153,22 +204,32 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         });
         page.add(trailGroup);
 
-        trailGroup.add(this._switchRow(settings, 'water-ripple-enable', _('Enable')));
-        trailGroup.add(this._comboRow(settings, 'water-ripple-trigger', _('Show'), [
+        trailGroup.add(describe(
+            this._switchRow(settings, 'water-ripple-enable', _('Enable')),
+            _('The same switch is in the menu of the eye')));
+        trailGroup.add(describe(this._comboRow(settings, 'water-ripple-trigger', _('Show'), [
             ['ctrl', _('While Ctrl is held')],
             ['always', _('Always')],
-        ]));
+        ]), _('When the trail is drawn as the mouse moves')));
         trailGroup.add(this._comboRow(settings, 'water-ripple-effect', _('Animation'), [
             ['ripples', _('Water ripples')],
             ['line', _('Pointer line')],
             ['comet', _('Comet tail')],
             ['sparkles', _('Sparkles')],
         ]));
-        const shapeRow = this._spinRow(settings, 'water-ripple-mode', _('Shape'), 0, 19, 1);
+        const shapeRow = describe(
+            this._spinRow(settings, 'water-ripple-mode', _('Shape'), 0, 19, 1),
+            _('0 is a plain ring or dot, 1–19 are the mouse indicator shapes'));
         trailGroup.add(shapeRow);
-        trailGroup.add(this._spinRow(settings, 'water-ripple-size', _('Size'), 1, 500, 10));
-        trailGroup.add(this._spinRow(settings, 'water-ripple-line-width', _('Line Thickness'), 1, 30, 1, 1));
-        trailGroup.add(this._spinRow(settings, 'water-ripple-duration', _('Duration (ms)'), 100, 5000, 100));
+        trailGroup.add(describe(
+            this._spinRow(settings, 'water-ripple-size', _('Size'), 1, 500, 10),
+            _('Size of each piece of the trail in pixels')));
+        trailGroup.add(describe(
+            this._spinRow(settings, 'water-ripple-line-width', _('Line thickness'), 1, 30, 1, 1),
+            _('Width of the ring outline and of the pointer line')));
+        trailGroup.add(describe(
+            this._spinRow(settings, 'water-ripple-duration', _('Duration (ms)'), 100, 5000, 100),
+            _('How long the trail takes to fade away')));
         trailGroup.add(this._colorRow(settings, 'water-ripple-color', _('Color')));
 
         // The line effect has no shape
@@ -227,6 +288,13 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
     }
 
     _colorRow(settings, key, title) {
+        const button = this._colorButton(settings, key);
+        const row = new Adw.ActionRow({title, activatable_widget: button});
+        row.add_suffix(button);
+        return row;
+    }
+
+    _colorButton(settings, key) {
         const button = new Gtk.ColorDialogButton({
             dialog: new Gtk.ColorDialog(),
             valign: Gtk.Align.CENTER,
@@ -248,8 +316,6 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
             settings.set_string(key, button.rgba.to_string());
         });
 
-        const row = new Adw.ActionRow({title, activatable_widget: button});
-        row.add_suffix(button);
-        return row;
+        return button;
     }
 }

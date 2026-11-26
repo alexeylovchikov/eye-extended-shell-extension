@@ -17,177 +17,274 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: eye-extended@als.kz/extension.js:736 eye-extended@als.kz/prefs.js:148
+#: eye-extended@als.kz/extension.js:762 eye-extended@als.kz/extension.js:811
+#: eye-extended@als.kz/prefs.js:199
 msgid "Pointer trail"
 msgstr "Aanwijzerspoor"
 
-#: eye-extended@als.kz/extension.js:745
+#: eye-extended@als.kz/extension.js:768 eye-extended@als.kz/prefs.js:136
+msgid "Mouse indicator"
+msgstr "Muisindicator"
+
+#: eye-extended@als.kz/extension.js:776
 msgid "Settings"
 msgstr "Instellingen"
 
-#: eye-extended@als.kz/prefs.js:49
+#: eye-extended@als.kz/extension.js:812
+msgid "Pointer trail (hold Ctrl)"
+msgstr "Aanwijzerspoor (houd Ctrl ingedrukt)"
+
+#: eye-extended@als.kz/prefs.js:55
 msgid "Reset to defaults"
 msgstr "Standaardwaarden herstellen"
 
-#: eye-extended@als.kz/prefs.js:56
+#: eye-extended@als.kz/prefs.js:62
 msgid "Support the project on Ko-fi"
 msgstr "Steun het project op Ko-fi"
 
-#: eye-extended@als.kz/prefs.js:65
+#: eye-extended@als.kz/prefs.js:71
 msgid "Reset all settings?"
 msgstr "Alle instellingen herstellen?"
 
-#: eye-extended@als.kz/prefs.js:66
+#: eye-extended@als.kz/prefs.js:72
 msgid "All settings of the extension will be returned to their default values."
 msgstr ""
 "Alle instellingen van de extensie worden teruggezet naar de standaardwaarden."
 
-#: eye-extended@als.kz/prefs.js:72
+#: eye-extended@als.kz/prefs.js:78
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: eye-extended@als.kz/prefs.js:73
+#: eye-extended@als.kz/prefs.js:79
 msgid "Reset"
 msgstr "Herstellen"
 
-#: eye-extended@als.kz/prefs.js:92
+#: eye-extended@als.kz/prefs.js:98
 msgid "Eye"
 msgstr "Oog"
 
-#: eye-extended@als.kz/prefs.js:98 eye-extended@als.kz/prefs.js:129
-#: eye-extended@als.kz/prefs.js:167
+#: eye-extended@als.kz/prefs.js:104 eye-extended@als.kz/prefs.js:148
+#: eye-extended@als.kz/prefs.js:221
 msgid "Shape"
 msgstr "Vorm"
 
-#: eye-extended@als.kz/prefs.js:99
+#: eye-extended@als.kz/prefs.js:105
 msgid "Round"
 msgstr "Rond"
 
-#: eye-extended@als.kz/prefs.js:100
+#: eye-extended@als.kz/prefs.js:106
 msgid "Eyelid"
 msgstr "Ooglid"
 
-#: eye-extended@als.kz/prefs.js:102
-msgid "Location"
-msgstr "Locatie"
+#: eye-extended@als.kz/prefs.js:108
+msgid "Place in the panel"
+msgstr "Plaats in het paneel"
 
-#: eye-extended@als.kz/prefs.js:103
+#: eye-extended@als.kz/prefs.js:109
 msgid "Left"
 msgstr "Links"
 
-#: eye-extended@als.kz/prefs.js:104
+#: eye-extended@als.kz/prefs.js:110
 msgid "Center"
 msgstr "Gecentreerd"
 
-#: eye-extended@als.kz/prefs.js:105
+#: eye-extended@als.kz/prefs.js:111
 msgid "Right"
 msgstr "Rechts"
 
-#: eye-extended@als.kz/prefs.js:107
-msgid "Position"
-msgstr "Positie"
+#: eye-extended@als.kz/prefs.js:112
+msgid "Part of the top panel the eye is shown in"
+msgstr "Deel van het bovenpaneel waarin het oog wordt getoond"
 
-#: eye-extended@als.kz/prefs.js:108 eye-extended@als.kz/prefs.js:130
-#: eye-extended@als.kz/prefs.js:169
+#: eye-extended@als.kz/prefs.js:114
+msgid "Order in the panel"
+msgstr "Volgorde in het paneel"
+
+#: eye-extended@als.kz/prefs.js:115
+msgid "Order among the other icons in the same part of the panel"
+msgstr "Volgorde tussen de andere pictogrammen in hetzelfde deel van het paneel"
+
+#: eye-extended@als.kz/prefs.js:117 eye-extended@als.kz/prefs.js:151
+#: eye-extended@als.kz/prefs.js:225
 msgid "Size"
 msgstr "Grootte"
 
-#: eye-extended@als.kz/prefs.js:109 eye-extended@als.kz/prefs.js:170
-msgid "Line Thickness"
-msgstr "Lijnbreedte"
+#: eye-extended@als.kz/prefs.js:118
+msgid "Eye height in pixels"
+msgstr "Hoogte van het oog in pixels"
 
-#: eye-extended@als.kz/prefs.js:110
+#: eye-extended@als.kz/prefs.js:120 eye-extended@als.kz/prefs.js:228
+msgid "Line thickness"
+msgstr "Lijndikte"
+
+#: eye-extended@als.kz/prefs.js:121
+msgid "Width of the eye outline"
+msgstr "Breedte van de omtrek van het oog"
+
+#: eye-extended@als.kz/prefs.js:123
 msgid "Margin"
 msgstr "Marge"
 
-#: eye-extended@als.kz/prefs.js:111 eye-extended@als.kz/prefs.js:132
+#: eye-extended@als.kz/prefs.js:124
+msgid "Empty space on both sides of the eye"
+msgstr "Lege ruimte aan beide kanten van het oog"
+
+#: eye-extended@als.kz/prefs.js:126 eye-extended@als.kz/prefs.js:157
 msgid "Refresh interval (ms)"
 msgstr "Verversingsinterval (ms)"
 
-#: eye-extended@als.kz/prefs.js:120
-msgid "Mouse indicator"
-msgstr "Muisindicator"
+#: eye-extended@als.kz/prefs.js:127 eye-extended@als.kz/prefs.js:158
+msgid "Lower is smoother, higher uses less CPU"
+msgstr "Lager is vloeiender, hoger belast de processor minder"
 
-#: eye-extended@als.kz/prefs.js:124
-msgid "Click on the eye to turn it on"
-msgstr "Klik op het oog om het aan te zetten"
+#: eye-extended@als.kz/prefs.js:140
+msgid "Turn it on from the menu of the eye"
+msgstr "Schakel in via het menu van het oog"
 
-#: eye-extended@als.kz/prefs.js:128 eye-extended@als.kz/prefs.js:156
-msgid "Enable"
-msgstr "Inschakelen"
+#: eye-extended@als.kz/prefs.js:145
+msgid "Show the shape around the cursor"
+msgstr "Vorm rond de cursor tonen"
 
-#: eye-extended@als.kz/prefs.js:131
+#: eye-extended@als.kz/prefs.js:146
+msgid "When it is off, only clicks are highlighted"
+msgstr "Indien uit, worden alleen klikken gemarkeerd"
+
+#: eye-extended@als.kz/prefs.js:149
+msgid "One of the 19 shapes"
+msgstr "Een van de 19 vormen"
+
+#: eye-extended@als.kz/prefs.js:152
+msgid "Shape size in pixels"
+msgstr "Grootte van de vorm in pixels"
+
+#: eye-extended@als.kz/prefs.js:154
 msgid "Opacity"
 msgstr "Dekking"
 
-#: eye-extended@als.kz/prefs.js:133
-msgid "Enable left click coloring"
-msgstr "Kleuren bij linkerklik inschakelen"
+#: eye-extended@als.kz/prefs.js:155
+msgid "From 1 (almost invisible) to 255 (opaque)"
+msgstr "Van 1 (bijna onzichtbaar) tot 255 (dekkend)"
 
-#: eye-extended@als.kz/prefs.js:134
-msgid "Enable right click coloring"
-msgstr "Kleuren bij rechterklik inschakelen"
+#: eye-extended@als.kz/prefs.js:160 eye-extended@als.kz/prefs.js:233
+msgid "Color"
+msgstr "Kleur"
 
-#: eye-extended@als.kz/prefs.js:135
-msgid "Enable middle click coloring"
-msgstr "Kleuren bij middelklik inschakelen"
+#: eye-extended@als.kz/prefs.js:161
+msgid "Shape color when no button is pressed"
+msgstr "Kleur van de vorm als er geen knop is ingedrukt"
 
-#: eye-extended@als.kz/prefs.js:136
-msgid "Default"
-msgstr "Standaard"
+#: eye-extended@als.kz/prefs.js:163
+msgid "Color the eye"
+msgstr "Oog kleuren"
 
-#: eye-extended@als.kz/prefs.js:137
+#: eye-extended@als.kz/prefs.js:164
+msgid "The eye in the panel takes the color of the indicator while it is on"
+msgstr "Het oog in het paneel krijgt de kleur van de indicator zolang die aan staat"
+
+#: eye-extended@als.kz/prefs.js:167
+msgid "Clicks"
+msgstr "Klikken"
+
+#: eye-extended@als.kz/prefs.js:168
+msgid "The shape changes color and flashes on click"
+msgstr "De vorm verandert van kleur en licht op bij een klik"
+
+#: eye-extended@als.kz/prefs.js:172
+msgid "Highlight left clicks"
+msgstr "Linkerklikken markeren"
+
+#: eye-extended@als.kz/prefs.js:173
+msgid "Highlight middle clicks"
+msgstr "Middelklikken markeren"
+
+#: eye-extended@als.kz/prefs.js:174
+msgid "Highlight right clicks"
+msgstr "Rechterklikken markeren"
+
+#: eye-extended@als.kz/prefs.js:178
+msgid "Click colors"
+msgstr "Klikkleuren"
+
+#: eye-extended@als.kz/prefs.js:179
+msgid "Left, middle, right"
+msgstr "Links, midden, rechts"
+
+#: eye-extended@als.kz/prefs.js:182
 msgid "Left click"
 msgstr "Linkerklik"
 
-#: eye-extended@als.kz/prefs.js:138
-msgid "Right click"
-msgstr "Rechterklik"
-
-#: eye-extended@als.kz/prefs.js:139
+#: eye-extended@als.kz/prefs.js:183
 msgid "Middle click"
 msgstr "Middelklik"
 
-#: eye-extended@als.kz/prefs.js:152
+#: eye-extended@als.kz/prefs.js:184
+msgid "Right click"
+msgstr "Rechterklik"
+
+#: eye-extended@als.kz/prefs.js:203
 msgid "Animation that follows the mouse"
 msgstr "Animatie die de muis volgt"
 
-#: eye-extended@als.kz/prefs.js:157
+#: eye-extended@als.kz/prefs.js:208
+msgid "Enable"
+msgstr "Inschakelen"
+
+#: eye-extended@als.kz/prefs.js:209
+msgid "The same switch is in the menu of the eye"
+msgstr "Dezelfde schakelaar staat in het menu van het oog"
+
+#: eye-extended@als.kz/prefs.js:210
 msgid "Show"
 msgstr "Tonen"
 
-#: eye-extended@als.kz/prefs.js:158
+#: eye-extended@als.kz/prefs.js:211
 msgid "While Ctrl is held"
 msgstr "Terwijl Ctrl ingedrukt is"
 
-#: eye-extended@als.kz/prefs.js:159
+#: eye-extended@als.kz/prefs.js:212
 msgid "Always"
 msgstr "Altijd"
 
-#: eye-extended@als.kz/prefs.js:161
+#: eye-extended@als.kz/prefs.js:213
+msgid "When the trail is drawn as the mouse moves"
+msgstr "Wanneer het spoor wordt getekend als de muis beweegt"
+
+#: eye-extended@als.kz/prefs.js:214
 msgid "Animation"
 msgstr "Animatie"
 
-#: eye-extended@als.kz/prefs.js:162
+#: eye-extended@als.kz/prefs.js:215
 msgid "Water ripples"
 msgstr "Rimpelingen"
 
-#: eye-extended@als.kz/prefs.js:163
+#: eye-extended@als.kz/prefs.js:216
 msgid "Pointer line"
 msgstr "Aanwijzerlijn"
 
-#: eye-extended@als.kz/prefs.js:164
+#: eye-extended@als.kz/prefs.js:217
 msgid "Comet tail"
 msgstr "Komeetstaart"
 
-#: eye-extended@als.kz/prefs.js:165
+#: eye-extended@als.kz/prefs.js:218
 msgid "Sparkles"
 msgstr "Vonken"
 
-#: eye-extended@als.kz/prefs.js:171
+#: eye-extended@als.kz/prefs.js:222
+msgid "0 is a plain ring or dot, 1–19 are the mouse indicator shapes"
+msgstr "0 is een eenvoudige ring of stip, 1–19 zijn de vormen van de muisindicator"
+
+#: eye-extended@als.kz/prefs.js:226
+msgid "Size of each piece of the trail in pixels"
+msgstr "Grootte van elk deel van het spoor in pixels"
+
+#: eye-extended@als.kz/prefs.js:229
+msgid "Width of the ring outline and of the pointer line"
+msgstr "Breedte van de ringomtrek en van de aanwijzerlijn"
+
+#: eye-extended@als.kz/prefs.js:231
 msgid "Duration (ms)"
 msgstr "Duur (ms)"
 
-#: eye-extended@als.kz/prefs.js:172
-msgid "Color"
-msgstr "Kleur"
+#: eye-extended@als.kz/prefs.js:232
+msgid "How long the trail takes to fade away"
+msgstr "Hoe lang het spoor erover doet om te vervagen"

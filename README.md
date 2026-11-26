@@ -95,7 +95,7 @@ To open the settings, do one of the following:
    gnome-extensions prefs eye-extended@als.kz
    ```
 
-Changes apply immediately, without logging out.
+Changes apply immediately, without logging out. Every setting has a short explanation under its name.
 The **Reset to defaults** button at the bottom of each tab returns all settings
 of the extension to their default values after a confirmation.
 
@@ -104,10 +104,10 @@ of the extension to their default values after a confirmation.
 | Setting | Default | Description |
 |---|---|---|
 | Shape | Eyelid | **Round** draws an eyeball, **Eyelid** draws an eye with lids. |
-| Location | Left | Part of the top panel the eye is placed in: **Left**, **Center** or **Right**. |
-| Position | 1 | Order among the other icons in the same part of the panel, from −255 to 255. |
+| Place in the panel | Left | Part of the top panel the eye is placed in: **Left**, **Center** or **Right**. |
+| Order in the panel | 1 | Order among the other icons in the same part of the panel, from −255 to 255. |
 | Size | 18 | Eye height in pixels, from 8 to 64. The eye never grows taller than the panel. |
-| Line Thickness | 2.5 | Width of the eye outline in pixels. |
+| Line thickness | 2.5 | Width of the eye outline in pixels. |
 | Margin | 2 | Empty space on both sides of the eye in pixels. |
 | Refresh interval (ms) | 80 | How often the eye checks the pointer position. Lower is smoother, higher uses less CPU. |
 
@@ -118,16 +118,15 @@ It is off after you log in.
 
 | Setting | Default | Description |
 |---|---|---|
-| Enable | On | Shows the shape around the cursor. When it is off, clicks are still highlighted. |
+| Show the shape around the cursor | On | When it is off, only clicks are highlighted. |
 | Shape | 1 | One of the 19 shapes from the [circle](eye-extended@als.kz/circle) folder. |
 | Size | 60 | Shape size in pixels, from 1 to 500. |
 | Opacity | 180 | From 1 (almost invisible) to 255 (fully opaque). |
 | Refresh interval (ms) | 10 | How often the indicator follows the pointer and checks the mouse buttons. |
-| Enable left / right / middle click coloring | On | Recolors the shape and shows a short flash on click of that button. |
-| Default | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Shape color when no button is pressed. The eye uses it too while the indicator is on. |
-| Left click | ![#f66151](https://img.shields.io/badge/-%23f66151-f66151) | Color on left click. |
-| Right click | ![#8ff0a4](https://img.shields.io/badge/-%238ff0a4-8ff0a4) | Color on right click. |
-| Middle click | ![#f9f06b](https://img.shields.io/badge/-%23f9f06b-f9f06b) | Color on middle click. |
+| Color | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Shape color when no button is pressed. |
+| Color the eye | Off | The eye in the panel takes the color of the indicator while the indicator is on. |
+| Highlight left / middle / right clicks | On | Recolors the shape and shows a short flash on click of that button. |
+| Click colors | ![#f66151](https://img.shields.io/badge/-%23f66151-f66151) ![#f9f06b](https://img.shields.io/badge/-%23f9f06b-f9f06b) ![#8ff0a4](https://img.shields.io/badge/-%238ff0a4-8ff0a4) | Colors on left, middle and right click, in this order. |
 
 ### Pointer trail tab
 
