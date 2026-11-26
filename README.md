@@ -53,6 +53,11 @@ on and off from the right-click menu of the eye.
 | Comet tail | A tail of dots that shrink and disappear |
 | Sparkles | Small pieces scatter around the cursor |
 
+The trail settings in action: switching between **While Ctrl is held** and **Always**,
+and between the animations.
+
+![Demo: the pointer trail is turned on in the settings, switched from While Ctrl is held to Always, and changed from a pointer line to water ripples with a gear shape](assets/video3.gif)
+
 ## Installation
 
 1. Clone the repository:
