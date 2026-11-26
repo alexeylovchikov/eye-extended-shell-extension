@@ -741,6 +741,218 @@ class PointerTrail {
 }
 
 // Eye in the top panel
+const EYE_MODES = ['bulb', 'lids', 'cat', 'pair', 'cartoon', 'robot', 'crosshair'];
+const EYE_KEYS = [
+    'eye-mode',
+    'eye-size',
+    'eye-line-width',
+    'eye-margin',
+    'eye-repaint-interval',
+    'eye-blink',
+    'eye-blink-on-click',
+    'eye-pupil-distance',
+    'eye-sleepy',
+    'mouse-circle-color-eye',
+];
+// A click can be shorter than the refresh interval of the eye
+const EYE_CLICK_POLL_INTERVAL = 30;
+const EYE_ANIMATION_INTERVAL = 16;
+const BLINK_DURATION = 220;
+const BLINK_MIN_PAUSE = 3000;
+const BLINK_MAX_PAUSE = 8000;
+// The eye half closes after the mouse has been still for this long
+const SLEEP_DELAY = 30000;
+const SLEEP_LEVEL = 0.55;
+const SLEEP_TRANSITION = 400;
+// Distance in pixels from which the pupil starts to grow
+const PUPIL_FAR = 600;
+// Gap between the two eyes of a pair, as a part of the eye size
+const PAIR_GAP = 0.1;
+
+// Width of the box an eye of the given height is drawn in
+function eyeBoxWidth(mode, size) {
+    if (mode === 'lids' || mode === 'cat')
+        return size * 1.5;
+    if (mode === 'pair')
+        return size * (2 + PAIR_GAP);
+    return size;
+}
+
+// Draws one eye around the current origin of the Cairo context.
+//   eyeRad    - radius of the eye
+//   dx, dy    - where the pointer is, relative to the center of the eye
+//   lineWidth - width of the outline
+//   lid       - how far the eye is open, from 0 (closed) to 1
+//   near      - how close the pointer is, from 0 (far) to 1; widens the pupil
+function drawEye(cr, style, {eyeRad, dx, dy, lineWidth, lid = 1, near = 0}) {
+    if (!(eyeRad > 0))
+        return;
+
+    const ang = Math.atan2(dy, dx);
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const full = 2 * Math.PI;
+
+    cr.save();
+    cr.setLineWidth(lineWidth);
+
+    if (style === 'robot' || style === 'crosshair' || style === 'cartoon') {
+        drawFlatEye(cr, style, {eyeRad, ang, dist, lineWidth, lid, near});
+        cr.restore();
+        return;
+    }
+
+    const almond = style === 'lids' || style === 'cat';
+    const irisRad = eyeRad * (almond ? 0.5 : 0.6);
+    const pupilRad = irisRad * 0.4 * (1 + 0.5 * near);
+    // How far the iris can move from the center
+    let maxRad = almond
+        ? eyeRad * (Math.pow(Math.cos(ang), 4) * 0.5 + 0.25)
+        : eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - lineWidth;
+    // A thick outline on a small eye leaves no room to move
+    maxRad = Math.max(0, maxRad);
+
+    const irisR = eyeRad * Math.cos(Math.asin(irisRad / eyeRad));
+    const eyeAng = Math.atan(Math.min(dist, maxRad) / irisR);
+
+    if (almond) {
+        const xDef = irisRad * Math.cos(ang) * Math.sin(eyeAng);
+        const yDef = irisRad * Math.sin(ang) * Math.sin(eyeAng);
+        // Cairo's y axis points down: the first curve is the lower lid.
+        // Both lids flatten into a line as the eye closes.
+        const lowerY = (yDef + eyeRad * 0.8) * lid;
+        const upperY = (yDef - eyeRad * 0.6) * lid;
+
+        const lidsPath = () => {
+            cr.moveTo(-eyeRad, 0);
+            cr.curveTo(xDef - irisRad, lowerY, xDef + irisRad, lowerY, eyeRad, 0);
+            cr.curveTo(xDef + irisRad, upperY, xDef - irisRad, upperY, -eyeRad, 0);
+        };
+
+        lidsPath();
+        cr.stroke();
+        lidsPath();
+        cr.clip();
+    } else {
+        cr.arc(0, 0, eyeRad, 0, full);
+        cr.stroke();
+        if (lid < 1) {
+            // Both lids close towards the middle of a round eye
+            const y = eyeRad * lid;
+            const half = Math.sqrt(Math.max(0, eyeRad * eyeRad - y * y));
+            for (const side of lid > 0 ? [-1, 1] : [1]) {
+                cr.moveTo(-half, side * y);
+                cr.lineTo(half, side * y);
+                cr.stroke();
+            }
+            cr.rectangle(-eyeRad, -y, 2 * eyeRad, 2 * y);
+            cr.clip();
+        }
+    }
+
+    // The iris is a circle on a ball, seen from the side
+    cr.save();
+    cr.rotate(ang);
+    cr.setLineWidth(lineWidth / irisRad);
+
+    cr.translate(irisR * Math.sin(eyeAng), 0);
+    cr.scale(irisRad * Math.cos(eyeAng), irisRad);
+    cr.arc(0, 0, 1.0, 0, full);
+    cr.stroke();
+    cr.scale(1 / (irisRad * Math.cos(eyeAng)), 1 / irisRad);
+    cr.translate(-irisR * Math.sin(eyeAng), 0);
+
+    if (style !== 'cat') {
+        cr.translate(eyeRad * Math.sin(eyeAng), 0);
+        cr.scale(pupilRad * Math.cos(eyeAng), pupilRad);
+        cr.arc(0, 0, 1.0, 0, full);
+        cr.fill();
+    }
+    cr.restore();
+
+    if (style === 'cat') {
+        // A slit that stays upright and widens when the pointer is close
+        const shift = eyeRad * Math.sin(eyeAng);
+        cr.save();
+        cr.translate(shift * Math.cos(ang), shift * Math.sin(ang));
+        cr.scale(irisRad * (0.2 + 0.3 * near), irisRad * 0.95);
+        cr.arc(0, 0, 1.0, 0, full);
+        cr.fill();
+        cr.restore();
+    }
+
+    cr.restore();
+}
+
+// Eyes without perspective: a cartoon eye, a camera lens and a crosshair
+function drawFlatEye(cr, style, {eyeRad, ang, dist, lineWidth, lid, near}) {
+    const full = 2 * Math.PI;
+    const cos = Math.cos(ang);
+    const sin = Math.sin(ang);
+    // Thinner lines for the details, so that a small eye stays readable
+    const thin = Math.max(1, lineWidth * 0.6);
+
+    if (style === 'cartoon') {
+        cr.arc(0, 0, eyeRad, 0, full);
+        cr.stroke();
+        if (lid < 1) {
+            const y = eyeRad * lid;
+            const half = Math.sqrt(Math.max(0, eyeRad * eyeRad - y * y));
+            for (const side of lid > 0 ? [-1, 1] : [1]) {
+                cr.moveTo(-half, side * y);
+                cr.lineTo(half, side * y);
+                cr.stroke();
+            }
+            cr.rectangle(-eyeRad, -y, 2 * eyeRad, 2 * y);
+            cr.clip();
+        }
+
+        // A big pupil with a highlight cut out of it
+        const inner = eyeRad - lineWidth / 2;
+        const pupilRad = Math.min(inner * (0.6 + 0.15 * near), inner * 0.85);
+        const shift = Math.min(dist, Math.max(0, inner - pupilRad - thin / 2));
+        const x = shift * cos;
+        const y = shift * sin;
+        const glintRad = pupilRad * 0.34;
+        cr.setFillRule(Cairo.FillRule.EVEN_ODD);
+        cr.arc(x, y, pupilRad, 0, full);
+        cr.moveTo(x - pupilRad * 0.36 + glintRad, y - pupilRad * 0.36);
+        cr.arc(x - pupilRad * 0.36, y - pupilRad * 0.36, glintRad, 0, full);
+        cr.fill();
+        return;
+    }
+
+    if (style === 'robot') {
+        // A lens: the aperture ring closes instead of a lid
+        const inner = eyeRad - lineWidth / 2;
+        const ringRad = inner * 0.62 * (0.35 + 0.65 * lid);
+        const dotRad = Math.max(1, inner * (0.22 + 0.12 * near)) * (0.4 + 0.6 * lid);
+        const shift = Math.min(dist, inner * 0.3);
+        cr.arc(0, 0, eyeRad, 0, full);
+        cr.stroke();
+        cr.setLineWidth(thin);
+        cr.arc(shift * 0.5 * cos, shift * 0.5 * sin, ringRad, 0, full);
+        cr.stroke();
+        cr.arc(shift * cos, shift * sin, dotRad, 0, full);
+        cr.fill();
+        return;
+    }
+
+    // Crosshair: a ring with four ticks and a dot that aims at the pointer
+    const ringRad = eyeRad * 0.72;
+    const dotRad = Math.max(1, eyeRad * (0.2 + 0.1 * near)) * (0.3 + 0.7 * lid);
+    const shift = Math.min(dist, ringRad * 0.45);
+    cr.setLineWidth(thin);
+    cr.arc(0, 0, ringRad, 0, full);
+    cr.stroke();
+    for (const [tx, ty] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) {
+        cr.moveTo(tx * eyeRad * 0.55, ty * eyeRad * 0.55);
+        cr.lineTo(tx * (eyeRad + lineWidth / 2), ty * (eyeRad + lineWidth / 2));
+        cr.stroke();
+    }
+    cr.arc(shift * cos, shift * sin, dotRad, 0, full);
+    cr.fill();
+}
+
 const EyeIndicator = GObject.registerClass(
 class EyeIndicator extends PanelMenu.Button {
     _init(extension, settings, circle) {
@@ -749,6 +961,7 @@ class EyeIndicator extends PanelMenu.Button {
         this._settings = settings;
         this._circle = circle;
         this._timeoutId = 0;
+        this._animationId = 0;
         this._lastX = undefined;
         this._lastY = undefined;
 
@@ -781,19 +994,16 @@ class EyeIndicator extends PanelMenu.Button {
         this._startTimer();
 
         this._settings.connectObject(
-            'changed::eye-mode', () => this._loadSettings(),
-            'changed::eye-size', () => this._loadSettings(),
-            'changed::eye-line-width', () => this._loadSettings(),
-            'changed::eye-margin', () => this._loadSettings(),
-            'changed::mouse-circle-color-eye', () => this._loadSettings(),
-            'changed::water-ripple-enable', () => this._trailItem.setToggleState(
-                this._settings.get_boolean('water-ripple-enable')),
-            'changed::water-ripple-trigger', () => this._syncTrailLabel(),
-            'changed::eye-repaint-interval', () => {
+            'changed', (settings, key) => {
+                if (!EYE_KEYS.includes(key))
+                    return;
                 this._loadSettings();
                 this._stopTimer();
                 this._startTimer();
             },
+            'changed::water-ripple-enable', () => this._trailItem.setToggleState(
+                this._settings.get_boolean('water-ripple-enable')),
+            'changed::water-ripple-trigger', () => this._syncTrailLabel(),
             this);
 
         St.ThemeContext.get_for_stage(global.stage).connectObject(
@@ -822,35 +1032,47 @@ class EyeIndicator extends PanelMenu.Button {
     }
 
     _loadSettings() {
-        this._mode = this._settings.get_string('eye-mode') === 'lids' ? 'lids' : 'bulb';
-        this._colorEye = this._settings.get_boolean('mouse-circle-color-eye');
+        const s = this._settings;
+        const mode = s.get_string('eye-mode');
+        this._mode = EYE_MODES.includes(mode) ? mode : 'bulb';
+        this._colorEye = s.get_boolean('mouse-circle-color-eye');
+        this._blinkEnabled = s.get_boolean('eye-blink');
+        this._blinkOnClick = s.get_boolean('eye-blink-on-click');
+        this._pupilDistance = s.get_boolean('eye-pupil-distance');
+        this._sleepy = s.get_boolean('eye-sleepy');
         // Sizes are set in logical pixels, the panel is laid out in stage pixels
-        const scale = getScaleFactor();
-        this._size = this._settings.get_int('eye-size') * scale;
-        this._lineWidth = this._settings.get_double('eye-line-width') * scale;
-        this._margin = this._settings.get_double('eye-margin') * scale;
-        this._interval = Math.max(1, this._settings.get_int('eye-repaint-interval'));
+        this._scale = getScaleFactor();
+        this._size = s.get_int('eye-size') * this._scale;
+        this._lineWidth = s.get_double('eye-line-width') * this._scale;
+        this._margin = s.get_double('eye-margin') * this._scale;
+        this._interval = Math.max(1, s.get_int('eye-repaint-interval'));
+
+        // Start with an open eye that has just seen the mouse move
+        const now = GLib.get_monotonic_time() / 1000;
+        this._blinkStart = 0;
+        this._nextBlink = now + this._blinkPause();
+        this._sleepLevel = 1;
+        this._sleepTarget = 1;
+        this._lastMove = now;
+        this._buttons = global.get_pointer()[2] & BUTTONS_MASK;
 
         // The eye is drawn inside a fixed box; the margin only adds space on
         // the sides, so it never changes the panel button height.
-        this._boxWidth = this._mode === 'lids' ? this._size * 1.5 : this._size;
+        this._boxWidth = eyeBoxWidth(this._mode, this._size);
         this._area.set_width(Math.round(this._boxWidth + 2 * this._margin));
         this._area.queue_repaint();
     }
 
-    _startTimer() {
-        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._interval, () => {
-            // Nothing to draw while the panel is hidden, e.g. under a
-            // fullscreen window; the eye catches up once it is shown again
-            if (!this._area.mapped)
-                return GLib.SOURCE_CONTINUE;
+    _blinkPause() {
+        return BLINK_MIN_PAUSE + Math.random() * (BLINK_MAX_PAUSE - BLINK_MIN_PAUSE);
+    }
 
-            const [x, y] = global.get_pointer();
-            if (this._lastX !== x || this._lastY !== y) {
-                this._lastX = x;
-                this._lastY = y;
-                this._area.queue_repaint();
-            }
+    _startTimer() {
+        const interval = this._blinkOnClick
+            ? Math.min(this._interval, EYE_CLICK_POLL_INTERVAL)
+            : this._interval;
+        this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+            this._poll();
             return GLib.SOURCE_CONTINUE;
         });
     }
@@ -860,6 +1082,87 @@ class EyeIndicator extends PanelMenu.Button {
             GLib.source_remove(this._timeoutId);
             this._timeoutId = 0;
         }
+        if (this._animationId) {
+            GLib.source_remove(this._animationId);
+            this._animationId = 0;
+        }
+    }
+
+    _poll() {
+        // Nothing to draw while the panel is hidden, e.g. under a
+        // fullscreen window; the eye catches up once it is shown again
+        if (!this._area.mapped)
+            return;
+
+        const now = GLib.get_monotonic_time() / 1000;
+        const [x, y, mods] = global.get_pointer();
+        if (this._lastX !== x || this._lastY !== y) {
+            this._lastX = x;
+            this._lastY = y;
+            this._lastMove = now;
+            this._area.queue_repaint();
+        }
+
+        if (this._blinkOnClick) {
+            const buttons = mods & BUTTONS_MASK;
+            // A button that was not pressed at the previous check
+            if (buttons & ~this._buttons)
+                this._blink(now);
+            this._buttons = buttons;
+        }
+
+        if (this._blinkEnabled && now >= this._nextBlink)
+            this._blink(now);
+
+        const target = this._sleepy && now - this._lastMove > SLEEP_DELAY ? SLEEP_LEVEL : 1;
+        if (target !== this._sleepTarget) {
+            this._sleepTarget = target;
+            this._startAnimation();
+        }
+    }
+
+    _blink(now) {
+        this._nextBlink = now + this._blinkPause();
+        if (this._blinkStart)
+            return;
+        this._blinkStart = now;
+        this._startAnimation();
+    }
+
+    // Repaints the eye every frame while it blinks, falls asleep or wakes up
+    _startAnimation() {
+        if (this._animationId)
+            return;
+        this._animationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, EYE_ANIMATION_INTERVAL, () => {
+            const now = GLib.get_monotonic_time() / 1000;
+            if (this._blinkStart && now - this._blinkStart >= BLINK_DURATION)
+                this._blinkStart = 0;
+
+            const step = EYE_ANIMATION_INTERVAL / SLEEP_TRANSITION * (1 - SLEEP_LEVEL);
+            if (this._sleepLevel < this._sleepTarget)
+                this._sleepLevel = Math.min(this._sleepTarget, this._sleepLevel + step);
+            else if (this._sleepLevel > this._sleepTarget)
+                this._sleepLevel = Math.max(this._sleepTarget, this._sleepLevel - step);
+
+            this._area.queue_repaint();
+            if (this._blinkStart || this._sleepLevel !== this._sleepTarget)
+                return GLib.SOURCE_CONTINUE;
+
+            this._animationId = 0;
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    // How far the eye is open right now, from 0 to 1
+    _lidLevel(now) {
+        let blink = 1;
+        if (this._blinkStart) {
+            const progress = (now - this._blinkStart) / BLINK_DURATION;
+            // Closes during the first half of a blink and opens again
+            if (progress < 1)
+                blink = Math.abs(1 - 2 * progress);
+        }
+        return blink * this._sleepLevel;
     }
 
     _draw(area) {
@@ -870,92 +1173,57 @@ class EyeIndicator extends PanelMenu.Button {
         const [areaX, areaY] = area.get_transformed_position();
 
         const [pointerX, pointerY] = global.get_pointer();
-        let mouseX = pointerX - areaX - areaWidth / 2;
-        let mouseY = pointerY - areaY - areaHeight / 2;
+        const centerX = areaWidth / 2;
+        const centerY = areaHeight / 2;
+        let mouseX = pointerX - areaX;
+        let mouseY = pointerY - areaY;
         // The transformed position is NaN until the panel is laid out
-        if (!Number.isFinite(mouseX) || !Number.isFinite(mouseY))
-            mouseX = mouseY = 0;
-
-        const mouseAng = Math.atan2(mouseY, mouseX);
-        let mouseRad = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+        if (!Number.isFinite(mouseX) || !Number.isFinite(mouseY)) {
+            mouseX = centerX;
+            mouseY = centerY;
+        }
 
         // Fit the eye with its outline into the box
-        const boxW = Math.min(this._boxWidth, areaWidth) - this._lineWidth;
-        const boxH = Math.min(this._size, areaHeight) - this._lineWidth;
+        const lineWidth = this._lineWidth;
+        const boxW = Math.min(this._boxWidth, areaWidth) - lineWidth;
+        const boxH = Math.min(this._size, areaHeight) - lineWidth;
 
-        let eyeRad, irisRad, pupilRad, maxRad;
-        if (this._mode === 'lids') {
+        // The eyes to draw: [style, offset of the center, radius]
+        let eyes;
+        if (this._mode === 'pair') {
+            const gap = this._size * PAIR_GAP;
+            const eyeRad = Math.min((boxW - gap - lineWidth) / 2, boxH) / 2;
+            const offset = eyeRad + (gap + lineWidth) / 2;
+            eyes = [['bulb', -offset, eyeRad], ['bulb', offset, eyeRad]];
+        } else if (this._mode === 'lids' || this._mode === 'cat') {
             // The lids rise to 0.6 of the eye radius
-            eyeRad = Math.min(boxW / 2, boxH / 2 / 0.6);
-            irisRad = eyeRad * 0.5;
-            pupilRad = irisRad * 0.4;
-            maxRad = eyeRad * (Math.pow(Math.cos(mouseAng), 4) * 0.5 + 0.25);
+            eyes = [[this._mode, 0, Math.min(boxW / 2, boxH / 2 / 0.6)]];
         } else {
-            eyeRad = Math.min(boxW, boxH) / 2;
-            irisRad = eyeRad * 0.6;
-            pupilRad = irisRad * 0.4;
-            maxRad = eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - this._lineWidth;
+            eyes = [[this._mode, 0, Math.min(boxW, boxH) / 2]];
         }
         // No room for an eye at all: drawing with a zero radius
         // would leave the Cairo context in an error state
-        if (!(eyeRad > 0))
+        if (!eyes.every(eye => eye[2] > 0))
             return;
-        // A thick outline on a small eye leaves no room to move
-        maxRad = Math.max(0, maxRad);
 
-        if (mouseRad > maxRad)
-            mouseRad = maxRad;
-
-        const irisArc = Math.asin(irisRad / eyeRad);
-        const irisR = eyeRad * Math.cos(irisArc);
-        const eyeAng = Math.atan(mouseRad / irisR);
-
+        const lid = this._lidLevel(GLib.get_monotonic_time() / 1000);
         const cr = area.get_context();
 
         const color = (this._colorEye && this._circle.active && parseColor(this._circle.color)) ||
             area.get_theme_node().get_foreground_color();
         setSourceColor(cr, color);
 
-        cr.translate(areaWidth * 0.5, areaHeight * 0.5);
-        cr.setLineWidth(this._lineWidth);
-
-        if (this._mode === 'lids') {
-            const xDef = irisRad * Math.cos(mouseAng) * Math.sin(eyeAng);
-            const yDef = irisRad * Math.sin(mouseAng) * Math.sin(eyeAng);
-            const topAmp = eyeRad * 0.8;
-            const bottomAmp = eyeRad * 0.6;
-
-            const lidsPath = () => {
-                cr.moveTo(-eyeRad, 0);
-                cr.curveTo(xDef - irisRad, yDef + topAmp,
-                    xDef + irisRad, yDef + topAmp, eyeRad, 0);
-                cr.curveTo(xDef + irisRad, yDef - bottomAmp,
-                    xDef - irisRad, yDef - bottomAmp, -eyeRad, 0);
-            };
-
-            lidsPath();
-            cr.stroke();
-            lidsPath();
-            cr.clip();
-        } else {
-            cr.arc(0, 0, eyeRad, 0, 2 * Math.PI);
-            cr.stroke();
+        for (const [style, offset, eyeRad] of eyes) {
+            const dx = mouseX - centerX - offset;
+            const dy = mouseY - centerY;
+            const near = this._pupilDistance
+                ? 1 - Math.min(1, Math.sqrt(dx * dx + dy * dy) / (PUPIL_FAR * this._scale))
+                : 0;
+            cr.save();
+            cr.translate(centerX + offset, centerY);
+            drawEye(cr, style, {eyeRad, dx, dy, lineWidth, lid, near});
+            cr.restore();
         }
-
-        cr.rotate(mouseAng);
-        cr.setLineWidth(this._lineWidth / irisRad);
-
-        cr.translate(irisR * Math.sin(eyeAng), 0);
-        cr.scale(irisRad * Math.cos(eyeAng), irisRad);
-        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
-        cr.stroke();
-        cr.scale(1 / (irisRad * Math.cos(eyeAng)), 1 / irisRad);
-        cr.translate(-irisR * Math.sin(eyeAng), 0);
-
-        cr.translate(eyeRad * Math.sin(eyeAng), 0);
-        cr.scale(pupilRad * Math.cos(eyeAng), pupilRad);
-        cr.arc(0, 0, 1.0, 0, 2 * Math.PI);
-        cr.fill();
 
         cr.$dispose();
     }

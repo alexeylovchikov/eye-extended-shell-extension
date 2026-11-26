@@ -104,6 +104,11 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(this._comboRow(settings, 'eye-mode', _('Shape'), [
             ['bulb', _('Round')],
             ['lids', _('Eyelid')],
+            ['cat', _('Cat eye')],
+            ['pair', _('Pair of eyes')],
+            ['cartoon', _('Cartoon')],
+            ['robot', _('Lens')],
+            ['crosshair', _('Crosshair')],
         ]));
         group.add(describe(this._comboRow(settings, 'eye-position', _('Place in the panel'), [
             ['left', _('Left')],
@@ -125,6 +130,25 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         group.add(describe(
             this._spinRow(settings, 'eye-repaint-interval', _('Refresh interval (ms)'), 1, 1000, 10),
             _('Lower is smoother, higher uses less CPU')));
+
+        const behaviorGroup = new Adw.PreferencesGroup({
+            title: _('Behavior'),
+            description: _('What the eye does besides following the cursor'),
+        });
+        page.add(behaviorGroup);
+
+        behaviorGroup.add(describe(
+            this._switchRow(settings, 'eye-blink', _('Blink')),
+            _('The eye blinks from time to time')));
+        behaviorGroup.add(describe(
+            this._switchRow(settings, 'eye-blink-on-click', _('Blink on click')),
+            _('The eye blinks when a mouse button is pressed')));
+        behaviorGroup.add(describe(
+            this._switchRow(settings, 'eye-pupil-distance', _('Pupil reacts to the cursor')),
+            _('The pupil grows as the cursor comes closer to the eye')));
+        behaviorGroup.add(describe(
+            this._switchRow(settings, 'eye-sleepy', _('Fall asleep')),
+            _('The eye half closes when the mouse has not moved for 30 seconds')));
 
         page.add(this._resetGroup(settings, window));
 

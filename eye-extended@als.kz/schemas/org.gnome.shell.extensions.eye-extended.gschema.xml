@@ -5,7 +5,27 @@
     <key name="eye-mode" type="s">
       <default>"lids"</default>
       <summary>Eye mode</summary>
-      <description>Supported value "lids" and "bulb"</description>
+      <description>Supported values: "bulb", "lids", "cat", "pair", "cartoon", "robot" and "crosshair"</description>
+    </key>
+    <key name="eye-blink" type="b">
+      <default>false</default>
+      <summary>Blink</summary>
+      <description>The eye blinks from time to time</description>
+    </key>
+    <key name="eye-blink-on-click" type="b">
+      <default>false</default>
+      <summary>Blink on click</summary>
+      <description>The eye blinks when a mouse button is pressed</description>
+    </key>
+    <key name="eye-pupil-distance" type="b">
+      <default>false</default>
+      <summary>Pupil reacts to the pointer</summary>
+      <description>The pupil grows as the pointer comes closer to the eye</description>
+    </key>
+    <key name="eye-sleepy" type="b">
+      <default>false</default>
+      <summary>Sleepy eye</summary>
+      <description>The eye half closes when the mouse has not moved for a while</description>
     </key>
     <key name="eye-position" type="s">
       <default>"left"</default>

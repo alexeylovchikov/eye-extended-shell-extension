@@ -27,13 +27,16 @@ Made for screen recordings, presentations, screen sharing and large monitors.
 
 ### Eye in the top panel
 
-The eye watches the cursor wherever it goes. Choose a round eye or an eye with lids,
+The eye watches the cursor wherever it goes. Choose one of seven shapes — a round eye,
+an eye with lids, a cat eye, a pair of eyes, a cartoon eye, a lens or a crosshair —
 and set its size, line thickness, margin and place in the panel.
+The eye can also blink, blink on every click, widen its pupil when the cursor
+comes close, and fall asleep when the mouse is idle.
 
 ### Mouse indicator
 
 Turn the indicator on or off with the **Mouse indicator** switch in the menu of the eye.
-A shape follows the cursor and changes color on left, right and middle clicks,
+A shape follows the cursor and changes color on left, middle and right clicks,
 so viewers can see what you click. If you like, the eye takes the color of the indicator while it is on.
 
 ![Mouse indicator around the cursor](assets/screenshot1.png)
@@ -103,13 +106,24 @@ of the extension to their default values after a confirmation.
 
 | Setting | Default | Description |
 |---|---|---|
-| Shape | Eyelid | **Round** draws an eyeball, **Eyelid** draws an eye with lids. |
+| Shape | Eyelid | **Round** draws an eyeball, **Eyelid** an eye with lids, **Cat eye** an eye with a vertical slit, **Pair of eyes** two round eyes side by side, **Cartoon** a big pupil with a highlight, **Lens** concentric rings like a camera, **Crosshair** a ring with ticks and a dot that aims at the cursor. |
 | Place in the panel | Left | Part of the top panel the eye is placed in: **Left**, **Center** or **Right**. |
 | Order in the panel | 1 | Order among the other icons in the same part of the panel, from −255 to 255. |
 | Size | 18 | Eye height in pixels, from 8 to 64. The eye never grows taller than the panel. |
 | Line thickness | 2.5 | Width of the eye outline in pixels. |
 | Margin | 2 | Empty space on both sides of the eye in pixels. |
 | Refresh interval (ms) | 80 | How often the eye checks the pointer position. Lower is smoother, higher uses less CPU. |
+
+The **Behavior** group on the same tab. All four switches are off by default:
+
+| Setting | Default | Description |
+|---|---|---|
+| Blink | Off | The eye blinks every 3 to 8 seconds. |
+| Blink on click | Off | The eye blinks when a mouse button is pressed. While this is on, the eye checks the mouse at least every 30 ms. |
+| Pupil reacts to the cursor | Off | The pupil grows as the cursor comes closer to the eye. |
+| Fall asleep | Off | The eye half closes when the mouse has not moved for 30 seconds and opens when it moves again. |
+
+**Lens** and **Crosshair** have no lids: when they blink or fall asleep, the ring or the dot shrinks instead.
 
 ### Mouse indicator tab
 

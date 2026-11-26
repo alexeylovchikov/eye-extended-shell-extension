@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: eye-extended@als.kz/extension.js:762 eye-extended@als.kz/extension.js:811
-#: eye-extended@als.kz/prefs.js:199
+#: eye-extended@als.kz/extension.js:975 eye-extended@als.kz/extension.js:1024
+#: eye-extended@als.kz/prefs.js:223
 msgid "Pointer trail"
 msgstr ""
 
-#: eye-extended@als.kz/extension.js:768 eye-extended@als.kz/prefs.js:136
+#: eye-extended@als.kz/extension.js:981 eye-extended@als.kz/prefs.js:160
 msgid "Mouse indicator"
 msgstr ""
 
-#: eye-extended@als.kz/extension.js:776
+#: eye-extended@als.kz/extension.js:989
 msgid "Settings"
 msgstr ""
 
-#: eye-extended@als.kz/extension.js:812
+#: eye-extended@als.kz/extension.js:1025
 msgid "Pointer trail (hold Ctrl)"
 msgstr ""
 
@@ -62,8 +62,8 @@ msgstr ""
 msgid "Eye"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:104 eye-extended@als.kz/prefs.js:148
-#: eye-extended@als.kz/prefs.js:221
+#: eye-extended@als.kz/prefs.js:104 eye-extended@als.kz/prefs.js:172
+#: eye-extended@als.kz/prefs.js:245
 msgid "Shape"
 msgstr ""
 
@@ -75,215 +75,275 @@ msgstr ""
 msgid "Eyelid"
 msgstr ""
 
+#: eye-extended@als.kz/prefs.js:107
+msgid "Cat eye"
+msgstr ""
+
 #: eye-extended@als.kz/prefs.js:108
-msgid "Place in the panel"
+msgid "Pair of eyes"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:109
-msgid "Left"
+msgid "Cartoon"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:110
-msgid "Center"
+msgid "Lens"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:111
-msgid "Right"
+msgid "Crosshair"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:112
-msgid "Part of the top panel the eye is shown in"
+#: eye-extended@als.kz/prefs.js:113
+msgid "Place in the panel"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:114
-msgid "Order in the panel"
+msgid "Left"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:115
+msgid "Center"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:116
+msgid "Right"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:117
+msgid "Part of the top panel the eye is shown in"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:119
+msgid "Order in the panel"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:120
 msgid "Order among the other icons in the same part of the panel"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:117 eye-extended@als.kz/prefs.js:151
-#: eye-extended@als.kz/prefs.js:225
+#: eye-extended@als.kz/prefs.js:122 eye-extended@als.kz/prefs.js:175
+#: eye-extended@als.kz/prefs.js:249
 msgid "Size"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:118
+#: eye-extended@als.kz/prefs.js:123
 msgid "Eye height in pixels"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:120 eye-extended@als.kz/prefs.js:228
+#: eye-extended@als.kz/prefs.js:125 eye-extended@als.kz/prefs.js:252
 msgid "Line thickness"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:121
+#: eye-extended@als.kz/prefs.js:126
 msgid "Width of the eye outline"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:123
+#: eye-extended@als.kz/prefs.js:128
 msgid "Margin"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:124
+#: eye-extended@als.kz/prefs.js:129
 msgid "Empty space on both sides of the eye"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:126 eye-extended@als.kz/prefs.js:157
+#: eye-extended@als.kz/prefs.js:131 eye-extended@als.kz/prefs.js:181
 msgid "Refresh interval (ms)"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:127 eye-extended@als.kz/prefs.js:158
+#: eye-extended@als.kz/prefs.js:132 eye-extended@als.kz/prefs.js:182
 msgid "Lower is smoother, higher uses less CPU"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:140
-msgid "Turn it on from the menu of the eye"
+#: eye-extended@als.kz/prefs.js:135
+msgid "Behavior"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:136
+msgid "What the eye does besides following the cursor"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:141
+msgid "Blink"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:142
+msgid "The eye blinks from time to time"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:144
+msgid "Blink on click"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:145
-msgid "Show the shape around the cursor"
+msgid "The eye blinks when a mouse button is pressed"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:146
-msgid "When it is off, only clicks are highlighted"
+#: eye-extended@als.kz/prefs.js:147
+msgid "Pupil reacts to the cursor"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:149
-msgid "One of the 19 shapes"
+#: eye-extended@als.kz/prefs.js:148
+msgid "The pupil grows as the cursor comes closer to the eye"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:152
-msgid "Shape size in pixels"
+#: eye-extended@als.kz/prefs.js:150
+msgid "Fall asleep"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:154
-msgid "Opacity"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:155
-msgid "From 1 (almost invisible) to 255 (opaque)"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:160 eye-extended@als.kz/prefs.js:233
-msgid "Color"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:161
-msgid "Shape color when no button is pressed"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:163
-msgid "Color the eye"
+#: eye-extended@als.kz/prefs.js:151
+msgid "The eye half closes when the mouse has not moved for 30 seconds"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:164
-msgid "The eye in the panel takes the color of the indicator while it is on"
+msgid "Turn it on from the menu of the eye"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:167
-msgid "Clicks"
+#: eye-extended@als.kz/prefs.js:169
+msgid "Show the shape around the cursor"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:168
-msgid "The shape changes color and flashes on click"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:172
-msgid "Highlight left clicks"
+#: eye-extended@als.kz/prefs.js:170
+msgid "When it is off, only clicks are highlighted"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:173
-msgid "Highlight middle clicks"
+msgid "One of the 19 shapes"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:174
-msgid "Highlight right clicks"
+#: eye-extended@als.kz/prefs.js:176
+msgid "Shape size in pixels"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:178
-msgid "Click colors"
+msgid "Opacity"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:179
-msgid "Left, middle, right"
+msgid "From 1 (almost invisible) to 255 (opaque)"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:182
-msgid "Left click"
+#: eye-extended@als.kz/prefs.js:184 eye-extended@als.kz/prefs.js:257
+msgid "Color"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:183
-msgid "Middle click"
+#: eye-extended@als.kz/prefs.js:185
+msgid "Shape color when no button is pressed"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:184
-msgid "Right click"
+#: eye-extended@als.kz/prefs.js:187
+msgid "Color the eye"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:188
+msgid "The eye in the panel takes the color of the indicator while it is on"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:191
+msgid "Clicks"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:192
+msgid "The shape changes color and flashes on click"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:196
+msgid "Highlight left clicks"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:197
+msgid "Highlight middle clicks"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:198
+msgid "Highlight right clicks"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:202
+msgid "Click colors"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:203
-msgid "Animation that follows the mouse"
+msgid "Left, middle, right"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:206
+msgid "Left click"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:207
+msgid "Middle click"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:208
-msgid "Enable"
+msgid "Right click"
 msgstr ""
 
-#: eye-extended@als.kz/prefs.js:209
-msgid "The same switch is in the menu of the eye"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:210
-msgid "Show"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:211
-msgid "While Ctrl is held"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:212
-msgid "Always"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:213
-msgid "When the trail is drawn as the mouse moves"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:214
-msgid "Animation"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:215
-msgid "Water ripples"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:216
-msgid "Pointer line"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:217
-msgid "Comet tail"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:218
-msgid "Sparkles"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:222
-msgid "0 is a plain ring or dot, 1–19 are the mouse indicator shapes"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:226
-msgid "Size of each piece of the trail in pixels"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:229
-msgid "Width of the ring outline and of the pointer line"
-msgstr ""
-
-#: eye-extended@als.kz/prefs.js:231
-msgid "Duration (ms)"
+#: eye-extended@als.kz/prefs.js:227
+msgid "Animation that follows the mouse"
 msgstr ""
 
 #: eye-extended@als.kz/prefs.js:232
+msgid "Enable"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:233
+msgid "The same switch is in the menu of the eye"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:234
+msgid "Show"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:235
+msgid "While Ctrl is held"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:236
+msgid "Always"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:237
+msgid "When the trail is drawn as the mouse moves"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:238
+msgid "Animation"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:239
+msgid "Water ripples"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:240
+msgid "Pointer line"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:241
+msgid "Comet tail"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:242
+msgid "Sparkles"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:246
+msgid "0 is a plain ring or dot, 1–19 are the mouse indicator shapes"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:250
+msgid "Size of each piece of the trail in pixels"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:253
+msgid "Width of the ring outline and of the pointer line"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:255
+msgid "Duration (ms)"
+msgstr ""
+
+#: eye-extended@als.kz/prefs.js:256
 msgid "How long the trail takes to fade away"
 msgstr ""
