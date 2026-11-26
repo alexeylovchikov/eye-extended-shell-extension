@@ -52,7 +52,7 @@ on and off from the right-click menu of the eye.
 | Water ripples | Rings spread out behind the cursor, like a finger moving through water |
 | Pointer line | A line follows the cursor and fades away, like a laser pointer |
 | Comet tail | A tail of dots that shrink and disappear |
-| Sparkles | Small pieces scatter around the cursor |
+| Sparkles | Pieces scatter around the cursor and shrink |
 
 The trail settings in action: switching between **While Ctrl is held** and **Always**,
 and between the animations.
@@ -136,8 +136,8 @@ The indicator is turned on and off by clicking the eye with the left mouse butto
 | Show | While Ctrl is held | **While Ctrl is held** draws the trail only when <kbd>Ctrl</kbd> is pressed, **Always** draws it whenever the mouse moves. |
 | Animation | Pointer line | **Water ripples**, **Pointer line**, **Comet tail** or **Sparkles**. |
 | Shape | 0 | 0 draws a plain ring or dot, 1–19 use the mouse indicator shapes. Not used by **Pointer line**. |
-| Size | 60 | Overall size of the effect in pixels. A ripple starts exactly as big as a mouse indicator of the same size, comet dots are a quarter of it, and sparkles fly up to half of it. |
-| Line Thickness | 15 | Ring outline for **Water ripples** and line width for **Pointer line**, in pixels. |
+| Size | 60 | Overall size of the effect in pixels. Every piece of the trail starts exactly as big as a mouse indicator of the same size: a ripple then spreads out, a comet dot shrinks away, and sparkles scatter up to this distance and shrink. |
+| Line thickness | 15 | Ring outline for **Water ripples** and line width for **Pointer line**, in pixels. |
 | Duration (ms) | 400 | How long each piece of the trail takes to fade away. |
 | Color | ![#99c1f1](https://img.shields.io/badge/-%2399c1f1-99c1f1) | Trail color. |
 

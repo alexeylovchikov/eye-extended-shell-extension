@@ -463,8 +463,8 @@ class PointerTrail {
         // Distance the pointer has to move before the next piece is added
         this._spacing = ({
             ripples: Math.max(4, this._size / 4),
-            comet: Math.max(2, this._size / 16),
-            sparkles: Math.max(4, this._size / 6),
+            comet: Math.max(4, this._size / 4),
+            sparkles: Math.max(4, this._size / 3),
         }[this._effect] ?? 2) * getScaleFactor();
 
         // Do not mix pieces of the old and the new effect
@@ -593,20 +593,19 @@ class PointerTrail {
 
     // Dots along the path that shrink away
     _spawnComet(x, y) {
-        const actor = this._addActor(x, y, Math.max(2, Math.round(this._size / 4)), true);
+        const actor = this._addActor(x, y, this._size, true);
         if (actor)
             this._fade(actor, {scale_x: 0, scale_y: 0}, Clutter.AnimationMode.EASE_IN_QUAD);
     }
 
-    // Small pieces that scatter around the pointer
+    // Pieces that scatter around the pointer and shrink
     _spawnSparkles(x, y) {
-        const size = Math.max(3, Math.round(this._size / 8));
         for (let i = 0; i < SPARKLES_PER_STEP; i++) {
-            const actor = this._addActor(x, y, size, true);
+            const actor = this._addActor(x, y, this._size, true);
             if (!actor)
                 return;
             const angle = Math.random() * 2 * Math.PI;
-            const distance = this._size * getScaleFactor() / 2 * (0.4 + Math.random() * 0.6);
+            const distance = this._size * getScaleFactor() * (0.4 + Math.random() * 0.6);
             this._fade(actor, {
                 translation_x: Math.cos(angle) * distance,
                 translation_y: Math.sin(angle) * distance,
