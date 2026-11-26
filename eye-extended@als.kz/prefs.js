@@ -23,6 +23,8 @@ import Gtk from 'gi://Gtk';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+const KOFI_URL = 'https://ko-fi.com/alexeylovchikov';
+
 export default class EyeExtendedPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
@@ -34,16 +36,28 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
         window.add(this._trailPage(settings, window));
     }
 
-    // Button at the bottom of every page that resets all settings
+    // Bottom of every page: a button that resets all settings
+    // and a link to support the project
     _resetGroup(settings, window) {
         const group = new Adw.PreferencesGroup();
+        const box = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            spacing: 12,
+            halign: Gtk.Align.CENTER,
+        });
         const button = new Gtk.Button({
             label: _('Reset to defaults'),
             halign: Gtk.Align.CENTER,
             css_classes: ['destructive-action'],
         });
         button.connect('clicked', () => this._confirmReset(settings, window));
-        group.add(button);
+        box.append(button);
+        box.append(new Gtk.LinkButton({
+            label: _('Support the project on Ko-fi'),
+            uri: KOFI_URL,
+            halign: Gtk.Align.CENTER,
+        }));
+        group.add(box);
         return group;
     }
 

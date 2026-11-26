@@ -15,8 +15,9 @@ Made for screen recordings, presentations, screen sharing and large monitors.
 ![Sessions: Wayland and X11](https://img.shields.io/badge/sessions-Wayland%20%C2%B7%20X11-informational)
 ![Written in GJS](https://img.shields.io/badge/written%20in-GJS-f7df1e)
 [![Translations: 4](https://img.shields.io/badge/translations-de%20%C2%B7%20fr%20%C2%B7%20nl%20%C2%B7%20ru-success)](#translations)
+[![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/alexeylovchikov)
 
-[Installation](#installation) · [Settings](#settings) · [Compatibility](#compatibility) · [Translations](#translations)
+[Installation](#installation) · [Settings](#settings) · [Compatibility](#compatibility) · [Translations](#translations) · [Support](#support)
 
 </div>
 
@@ -178,6 +179,11 @@ The settings are translated into German, French, Dutch and Russian; the files ar
 1. Copy `translations/EyeExtendedExtension.pot` to `translations/<language>.po`.
 2. Translate the strings, for example in Poedit.
 3. Run `./scripts/install.sh` to check the result and open a pull request.
+
+## Support
+
+If the extension is useful to you, you can support its development on
+[Ko-fi](https://ko-fi.com/alexeylovchikov). The same link is at the bottom of the settings window.
 
 ## Credits
 
