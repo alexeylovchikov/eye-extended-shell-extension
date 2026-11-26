@@ -796,6 +796,9 @@ class EyeIndicator extends PanelMenu.Button {
             },
             this);
 
+        St.ThemeContext.get_for_stage(global.stage).connectObject(
+            'notify::scale-factor', () => this._loadSettings(), this);
+
         // Also covers the actor being destroyed by the shell itself
         this.connect('destroy', () => this._stopTimer());
     }
@@ -821,9 +824,11 @@ class EyeIndicator extends PanelMenu.Button {
     _loadSettings() {
         this._mode = this._settings.get_string('eye-mode') === 'lids' ? 'lids' : 'bulb';
         this._colorEye = this._settings.get_boolean('mouse-circle-color-eye');
-        this._size = this._settings.get_int('eye-size');
-        this._lineWidth = this._settings.get_double('eye-line-width');
-        this._margin = this._settings.get_double('eye-margin');
+        // Sizes are set in logical pixels, the panel is laid out in stage pixels
+        const scale = getScaleFactor();
+        this._size = this._settings.get_int('eye-size') * scale;
+        this._lineWidth = this._settings.get_double('eye-line-width') * scale;
+        this._margin = this._settings.get_double('eye-margin') * scale;
         this._interval = Math.max(1, this._settings.get_int('eye-repaint-interval'));
 
         // The eye is drawn inside a fixed box; the margin only adds space on
@@ -835,6 +840,11 @@ class EyeIndicator extends PanelMenu.Button {
 
     _startTimer() {
         this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._interval, () => {
+            // Nothing to draw while the panel is hidden, e.g. under a
+            // fullscreen window; the eye catches up once it is shown again
+            if (!this._area.mapped)
+                return GLib.SOURCE_CONTINUE;
+
             const [x, y] = global.get_pointer();
             if (this._lastX !== x || this._lastY !== y) {
                 this._lastX = x;
@@ -886,6 +896,10 @@ class EyeIndicator extends PanelMenu.Button {
             pupilRad = irisRad * 0.4;
             maxRad = eyeRad * Math.cos(Math.asin(irisRad / eyeRad)) - this._lineWidth;
         }
+        // No room for an eye at all: drawing with a zero radius
+        // would leave the Cairo context in an error state
+        if (!(eyeRad > 0))
+            return;
         // A thick outline on a small eye leaves no room to move
         maxRad = Math.max(0, maxRad);
 
