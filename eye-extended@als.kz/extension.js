@@ -633,6 +633,9 @@ class PointerTrail {
 
         const lineWidth = this._lineWidth * getScaleFactor();
         cr.setLineCap(Cairo.LineCap.ROUND);
+        // Segments are translucent and their round caps overlap: replace the
+        // pixels instead of blending them, or every joint shows up as a dot
+        cr.setOperator(Cairo.Operator.SOURCE);
         // Points are in stage coordinates, the area starts at its own origin
         cr.translate(-this._areaX, -this._areaY);
         for (let i = 1; i < this._points.length; i++) {
