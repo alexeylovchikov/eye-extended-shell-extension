@@ -85,6 +85,11 @@
       <default>"#f9f06b"</default>
       <summary>Mouse circle middle click color</summary>
     </key>
+    <key name="mouse-circle-color-eye" type="b">
+      <default>false</default>
+      <summary>Color the eye</summary>
+      <description>Draw the eye in the color of the mouse indicator while the indicator is on</description>
+    </key>
 
     <key name="water-ripple-enable" type="b">
       <default>true</default>

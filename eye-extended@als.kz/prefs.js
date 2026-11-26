@@ -121,7 +121,7 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
             icon_name: 'input-mouse-symbolic',
         });
         const group = new Adw.PreferencesGroup({
-            description: _('Click on the eye to turn it on'),
+            description: _('Turn it on from the menu of the eye'),
         });
         page.add(group);
 

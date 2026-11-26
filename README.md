@@ -32,9 +32,9 @@ and set its size, line thickness, margin and place in the panel.
 
 ### Mouse indicator
 
-Click the eye to turn the indicator on or off. A shape follows the cursor and changes
-color on left, right and middle clicks, so viewers can see what you click.
-While the indicator is on, the eye takes its color.
+Turn the indicator on or off with the **Mouse indicator** switch in the menu of the eye.
+A shape follows the cursor and changes color on left, right and middle clicks,
+so viewers can see what you click. If you like, the eye takes the color of the indicator while it is on.
 
 ![Mouse indicator around the cursor](assets/screenshot1.png)
 
@@ -43,7 +43,7 @@ While the indicator is on, the eye takes its color.
 Hold <kbd>Ctrl</kbd> and move the mouse to point at something on the screen.
 The trail can also be shown all the time, without <kbd>Ctrl</kbd>.
 It works anywhere, even when the mouse indicator is off, and can be turned
-on and off from the right-click menu of the eye.
+on and off from the menu of the eye.
 
 ![Pointer line drawn while Ctrl is held](assets/screenshot2.png)
 
@@ -87,7 +87,7 @@ To update, pull the latest changes and repeat steps 2 and 3.
 
 To open the settings, do one of the following:
 
-1. Click the eye with the right mouse button and choose **Settings**. The menu also has a **Pointer trail** switch.
+1. Click the eye and choose **Settings**. The menu also has the **Mouse indicator** and **Pointer trail** switches; the trail switch reminds you to hold <kbd>Ctrl</kbd> when the trail is set to appear only with it.
 2. Open the Extensions app and click the gear next to **Eye and Mouse Extended**.
 3. Run:
 
@@ -113,7 +113,8 @@ of the extension to their default values after a confirmation.
 
 ### Mouse indicator tab
 
-The indicator is turned on and off by clicking the eye with the left mouse button.
+The indicator is turned on and off with the **Mouse indicator** switch in the menu of the eye.
+It is off after you log in.
 
 | Setting | Default | Description |
 |---|---|---|
@@ -132,7 +133,7 @@ The indicator is turned on and off by clicking the eye with the left mouse butto
 
 | Setting | Default | Description |
 |---|---|---|
-| Enable | On | Draws the animation behind the pointer. The same switch is in the right-click menu of the eye. |
+| Enable | On | Draws the animation behind the pointer. The same switch is in the menu of the eye. |
 | Show | While Ctrl is held | **While Ctrl is held** draws the trail only when <kbd>Ctrl</kbd> is pressed, **Always** draws it whenever the mouse moves. |
 | Animation | Pointer line | **Water ripples**, **Pointer line**, **Comet tail** or **Sparkles**. |
 | Shape | 0 | 0 draws a plain ring or dot, 1–19 use the mouse indicator shapes. Not used by **Pointer line**. |

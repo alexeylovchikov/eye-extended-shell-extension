@@ -135,10 +135,6 @@ class MouseCircle {
         return this._color;
     }
 
-    toggle() {
-        this.setActive(!this._active);
-    }
-
     // Size of the shape on the stage
     get _pixelSize() {
         return this._size * getScaleFactor();
@@ -769,7 +765,12 @@ class EyeIndicator extends PanelMenu.Button {
             if (this._settings.get_boolean('water-ripple-enable') !== state)
                 this._settings.set_boolean('water-ripple-enable', state);
         });
+        this._circleItem = new PopupMenu.PopupSwitchMenuItem(_('Mouse indicator'),
+            this._circle.active);
+        this._circleItem.connect('toggled', (item, state) => this._circle.setActive(state));
+        this.menu.addMenuItem(this._circleItem);
         this.menu.addMenuItem(this._trailItem);
+        this._syncTrailLabel();
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         const settingsItem = new PopupMenu.PopupMenuItem(_('Settings'));
@@ -784,8 +785,10 @@ class EyeIndicator extends PanelMenu.Button {
             'changed::eye-size', () => this._loadSettings(),
             'changed::eye-line-width', () => this._loadSettings(),
             'changed::eye-margin', () => this._loadSettings(),
+            'changed::mouse-circle-color-eye', () => this._loadSettings(),
             'changed::water-ripple-enable', () => this._trailItem.setToggleState(
                 this._settings.get_boolean('water-ripple-enable')),
+            'changed::water-ripple-trigger', () => this._syncTrailLabel(),
             'changed::eye-repaint-interval', () => {
                 this._loadSettings();
                 this._stopTimer();
@@ -802,23 +805,22 @@ class EyeIndicator extends PanelMenu.Button {
         super.destroy();
     }
 
-    queueRepaint() {
-        this._area.queue_repaint();
+    // Tell in the menu that the trail needs Ctrl, when it is set up that way
+    _syncTrailLabel() {
+        this._trailItem.label.text = this._settings.get_string('water-ripple-trigger') === 'always'
+            ? _('Pointer trail')
+            : _('Pointer trail (hold Ctrl)');
     }
 
-    // Left click toggles the mouse indicator, other buttons open the menu
-    vfunc_event(event) {
-        if (event.type() === Clutter.EventType.BUTTON_PRESS &&
-            event.get_button() === Clutter.BUTTON_PRIMARY) {
-            this.menu.close();
-            this._circle.toggle();
-            return Clutter.EVENT_STOP;
-        }
-        return super.vfunc_event(event);
+    // The mouse indicator was turned on or off, or changed its color
+    circleChanged() {
+        this._circleItem.setToggleState(this._circle.active);
+        this._area.queue_repaint();
     }
 
     _loadSettings() {
         this._mode = this._settings.get_string('eye-mode') === 'lids' ? 'lids' : 'bulb';
+        this._colorEye = this._settings.get_boolean('mouse-circle-color-eye');
         this._size = this._settings.get_int('eye-size');
         this._lineWidth = this._settings.get_double('eye-line-width');
         this._margin = this._settings.get_double('eye-margin');
@@ -896,7 +898,7 @@ class EyeIndicator extends PanelMenu.Button {
 
         const cr = area.get_context();
 
-        const color = (this._circle.active && parseColor(this._circle.color)) ||
+        const color = (this._colorEye && this._circle.active && parseColor(this._circle.color)) ||
             area.get_theme_node().get_foreground_color();
         setSourceColor(cr, color);
 
@@ -949,7 +951,7 @@ export default class EyeExtendedExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
         this._circle = new MouseCircle(this, this._settings,
-            () => this._indicator?.queueRepaint());
+            () => this._indicator?.circleChanged());
         this._trail = new PointerTrail(this, this._settings);
 
         this._addIndicator();
