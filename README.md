@@ -22,7 +22,7 @@ Made for screen recordings, presentations, screen sharing and large monitors.
 
 </div>
 
-![Demo: the eye follows the cursor, the mouse indicator highlights clicks, and a fading pointer line follows the cursor while Ctrl is held](assets/video1.gif)
+![Demo: the mouse indicator is turned on from the menu of the eye, its shape, size and colors are changed in the settings, and clicks are highlighted](assets/promo_mouse_indicator.gif)
 
 ## Features
 
@@ -58,10 +58,9 @@ on and off from the menu of the eye.
 | Comet tail | A tail of dots that shrink and disappear |
 | Sparkles | Pieces scatter around the cursor and shrink |
 
-The trail settings in action: switching between **While Ctrl is held** and **Always**,
-and between the animations.
+The trail in action: a pointer line, then water ripples and sparkles with a ring shape.
 
-![Demo: the pointer trail is turned on in the settings, switched from While Ctrl is held to Always, and changed from a pointer line to water ripples with a gear shape](assets/video3.gif)
+![Demo: the pointer trail is turned on in the settings and the animation is switched from a pointer line to water ripples and to sparkles](assets/promo_pointer_tail.gif)
 
 ### Cat
 
@@ -74,6 +73,8 @@ switch in the menu of the eye.
 - Shake the cursor next to the cat, or throw it, and it runs away, sulks and avoids the cursor for a minute.
 
 Only the body of the cat takes clicks; clicks next to it reach the window underneath.
+
+![Demo: the cat is turned on in the settings, runs after the cursor, sits down next to it and grooms itself](assets/promo_cat.gif)
 
 ## Installation
 
@@ -173,8 +174,8 @@ It is off after you log in.
 | Setting | Default | Description |
 |---|---|---|
 | Enable | Off | Shows the cat. The same switch is in the menu of the eye. |
-| Size | 128 | Size of the cat in pixels, from 48 to 192. Its speed grows with it. |
-| Distance to the cursor | 60 | How far from the cursor the cat stops and sits down, in pixels, from 0 to 500. With a small value the cursor ends up on the cat, and clicks go to the cat instead of the window. |
+| Size | 190 | Size of the cat in pixels, from 48 to 192. Its speed grows with it. |
+| Distance to the cursor | 150 | How far from the cursor the cat stops and sits down, in pixels, from 0 to 500. With a small value the cursor ends up on the cat, and clicks go to the cat instead of the window. |
 
 ### Settings from the command line
 

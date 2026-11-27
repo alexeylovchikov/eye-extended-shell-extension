@@ -171,13 +171,13 @@
     </key>
     <key name="cat-size" type="i">
       <range min="48" max="192"/>
-      <default>128</default>
+      <default>190</default>
       <summary>Cat size</summary>
       <description>Size of the cat in pixels</description>
     </key>
     <key name="cat-stop-distance" type="i">
       <range min="0" max="500"/>
-      <default>60</default>
+      <default>150</default>
       <summary>Cat stop distance</summary>
       <description>Distance from the pointer, in pixels, at which the cat stops and sits down</description>
     </key>
