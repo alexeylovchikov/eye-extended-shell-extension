@@ -77,6 +77,86 @@ function getScaleFactor() {
     return St.ThemeContext.get_for_stage(global.stage).scale_factor;
 }
 
+const ANIMATION_INTERVAL = 16;
+const EASE_OUT_QUAD = t => t * (2 - t);
+const EASE_IN_QUAD = t => t * t;
+const EASE_OUT_CUBIC = t => 1 - (1 - t) ** 3;
+
+// Animates click flashes and pieces of the pointer trail.
+// GNOME turns animations off in remote (RDP) sessions and for reduced motion.
+// Both actor.ease() and Clutter's own transitions then jump straight to the
+// end, so a flash would be gone before it is seen. These effects are what the
+// extension is for, so the properties are stepped here on a timer instead.
+class Animator {
+    // onIdle is called when the last animation has finished
+    constructor(onIdle = null) {
+        this._onIdle = onIdle;
+        this._items = new Map();
+        this._timeoutId = 0;
+    }
+
+    get size() {
+        return this._items.size;
+    }
+
+    // Moves the properties of the actor to the given values. onDone is called
+    // when the animation ends or is cancelled; it has to destroy the actor.
+    add(actor, props, duration, easing, onDone) {
+        const from = {};
+        for (const name in props)
+            from[name] = actor[name];
+        this._items.set(actor, {
+            from,
+            to: props,
+            start: GLib.get_monotonic_time() / 1000,
+            duration,
+            easing,
+            onDone,
+        });
+
+        if (!this._timeoutId) {
+            this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, ANIMATION_INTERVAL,
+                () => this._tick());
+        }
+    }
+
+    _tick() {
+        const now = GLib.get_monotonic_time() / 1000;
+        for (const [actor, item] of this._items) {
+            const progress = (now - item.start) / item.duration;
+            if (progress >= 1) {
+                this._items.delete(actor);
+                item.onDone();
+                continue;
+            }
+
+            const k = item.easing(progress);
+            for (const name in item.to) {
+                const value = item.from[name] + (item.to[name] - item.from[name]) * k;
+                actor[name] = name === 'opacity' ? Math.round(value) : value;
+            }
+        }
+
+        if (this._items.size)
+            return GLib.SOURCE_CONTINUE;
+
+        this._timeoutId = 0;
+        this._onIdle?.();
+        return GLib.SOURCE_REMOVE;
+    }
+
+    // Cancels everything that is still running
+    clear() {
+        if (this._timeoutId) {
+            GLib.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
+        for (const item of this._items.values())
+            item.onDone();
+        this._items.clear();
+    }
+}
+
 function setSourceColor(cr, color) {
     cr.setSourceRGBA(color.red / 255, color.green / 255, color.blue / 255, color.alpha / 255);
 }
@@ -121,7 +201,11 @@ class MouseCircle {
         this._pointer = null;
         this._timeoutId = 0;
         this._buttons = 0;
-        this._animations = new Set();
+        // After the last click flash the indicator gets its own color back
+        this._animations = new Animator(() => {
+            if (this._pointer)
+                this._pointer.gicon = this._defaultIcon;
+        });
 
         this._loadSettings();
         this._settings.connectObject('changed', (s, key) => {
@@ -160,6 +244,7 @@ class MouseCircle {
             this._startTimer();
         } else {
             this._stopTimer();
+            this._animations.clear();
             this._pointer?.destroy();
             this._pointer = null;
         }
@@ -173,10 +258,6 @@ class MouseCircle {
         this._iconSerial++;
         this._stopTimer();
         this.setActive(false);
-        for (const actor of this._animations) {
-            actor.remove_all_transitions();
-            actor.destroy();
-        }
         this._animations.clear();
     }
 
@@ -324,24 +405,16 @@ class MouseCircle {
             gicon: click.icon,
         });
         Main.uiGroup.add_child(actor);
-        this._animations.add(actor);
 
-        actor.ease({
+        // The flash is destroyed when it has faded away, when the indicator
+        // is turned off and when the extension is disabled
+        this._animations.add(actor, {
             x: x - pixelSize * scale / 2,
             y: y - pixelSize * scale / 2,
             scale_x: scale,
             scale_y: scale,
             opacity: 0,
-            duration: CLICK_ANIMATION_DURATION,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => {
-                if (!this._animations.delete(actor))
-                    return;
-                actor.destroy();
-                if (this._pointer)
-                    this._pointer.gicon = this._defaultIcon;
-            },
-        });
+        }, CLICK_ANIMATION_DURATION, EASE_OUT_QUAD, () => actor.destroy());
     }
 }
 
@@ -423,7 +496,7 @@ class PointerTrail {
         this._extension = extension;
         this._settings = settings;
         this._timeoutId = 0;
-        this._actors = new Set();
+        this._actors = new Animator();
         this._points = [];
         this._area = null;
         this._nextRepaint = 0;
@@ -498,10 +571,6 @@ class PointerTrail {
     }
 
     _clear() {
-        for (const actor of this._actors) {
-            actor.remove_all_transitions();
-            actor.destroy();
-        }
         this._actors.clear();
         this._points = [];
         this._destroyArea();
@@ -574,21 +643,13 @@ class PointerTrail {
             actor = new St.Widget({...params, style: `border: ${this._lineWidth}px solid ${this._color}; ${radius}`});
 
         Main.uiGroup.add_child(actor);
-        this._actors.add(actor);
         return actor;
     }
 
-    _fade(actor, props, mode = Clutter.AnimationMode.EASE_OUT_CUBIC) {
-        actor.ease({
-            ...props,
-            opacity: 0,
-            duration: this._duration,
-            mode,
-            onComplete: () => {
-                if (this._actors.delete(actor))
-                    actor.destroy();
-            },
-        });
+    // Fades the piece away while it changes as given, then removes it
+    _fade(actor, props, easing = EASE_OUT_CUBIC) {
+        this._actors.add(actor, {...props, opacity: 0}, this._duration, easing,
+            () => actor.destroy());
     }
 
     _spawnRipple(x, y) {
@@ -601,7 +662,7 @@ class PointerTrail {
     _spawnComet(x, y) {
         const actor = this._addActor(x, y, this._size, true);
         if (actor)
-            this._fade(actor, {scale_x: 0, scale_y: 0}, Clutter.AnimationMode.EASE_IN_QUAD);
+            this._fade(actor, {scale_x: 0, scale_y: 0}, EASE_IN_QUAD);
     }
 
     // Pieces that scatter around the pointer and shrink
@@ -618,7 +679,7 @@ class PointerTrail {
                 scale_x: 0.3,
                 scale_y: 0.3,
                 rotation_angle_z: (Math.random() - 0.5) * 360,
-            }, Clutter.AnimationMode.EASE_OUT_QUAD);
+            }, EASE_OUT_QUAD);
         }
     }
 
