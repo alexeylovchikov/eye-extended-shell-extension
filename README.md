@@ -71,6 +71,7 @@ switch in the menu of the eye.
 - Click the cat and it swipes a paw, tumbles, rolls over or jumps.
 - Hold the left button on the cat to pick it up by the scruff, carry it and throw it.
 - Shake the cursor next to the cat, or throw it, and it runs away, sulks and avoids the cursor for a minute.
+- Click the sad cat to pet it, and it stops avoiding the cursor.
 
 Only the body of the cat takes clicks; clicks next to it reach the window underneath.
 

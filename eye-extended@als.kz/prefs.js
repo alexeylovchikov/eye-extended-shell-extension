@@ -297,6 +297,7 @@ export default class EyeExtendedPreferences extends ExtensionPreferences {
             [_('Click the cat'), _('It swipes a paw, tumbles, rolls over or jumps')],
             [_('Hold the left button on the cat'), _('Pick it up by the scruff, carry it and throw it')],
             [_('Shake the cursor next to the cat'), _('It runs away, sulks and avoids the cursor for a minute')],
+            [_('Click the sad cat'), _('Pet it, and it stops avoiding the cursor')],
         ])
             playGroup.add(new Adw.ActionRow({title, subtitle}));
 

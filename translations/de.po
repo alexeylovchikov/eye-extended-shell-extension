@@ -395,3 +395,10 @@ msgstr "Den Mauszeiger neben der Katze schütteln"
 #: eye-extended@als.kz/prefs.js:301
 msgid "It runs away, sulks and avoids the cursor for a minute"
 msgstr "Sie läuft weg, schmollt und meidet den Mauszeiger eine Minute lang"
+
+
+msgid "Click the sad cat"
+msgstr "Klicken Sie auf die traurige Katze"
+
+msgid "Pet it, and it stops avoiding the cursor"
+msgstr "Streicheln Sie sie, dann meidet sie den Mauszeiger nicht mehr"

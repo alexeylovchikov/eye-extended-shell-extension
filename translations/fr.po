@@ -395,3 +395,10 @@ msgstr "Secouez le curseur près du chat"
 #: eye-extended@als.kz/prefs.js:301
 msgid "It runs away, sulks and avoids the cursor for a minute"
 msgstr "Il s’enfuit, boude et évite le curseur pendant une minute"
+
+
+msgid "Click the sad cat"
+msgstr "Cliquez sur le chat triste"
+
+msgid "Pet it, and it stops avoiding the cursor"
+msgstr "Caressez-le, et il cesse d’éviter le curseur"

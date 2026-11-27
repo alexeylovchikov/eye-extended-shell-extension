@@ -42,6 +42,7 @@ export const SPRITES = {
     sleep: 2,
     sad: 2,
     held: 2,
+    pet: 8,
 };
 for (const [, name] of DIRECTIONS)
     SPRITES[name] = 4;
@@ -65,6 +66,9 @@ const SHAKE_WINDOW = 1.1;
 const SHAKE_STROKES = 4;
 const FLEE_SECONDS = 0.65;
 const SAD_SECONDS = 2.5;
+// Petting the sad cat: frames 2-4 are shown twice, so the hand strokes it twice
+const PET_FRAME_SECONDS = 0.18;
+const PET_FRAME_ORDER = [0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 7];
 const AVOID_SECONDS = 60;
 const AVOID_DISTANCE = 175;
 const FLEE_SPEED = 440;
@@ -128,6 +132,7 @@ export class CatBrain {
         this._reactionTime = 0;
         this._lastReaction = '';
         this._avoidTime = 0;
+        this._petTime = 0;
         this._escapeAngle = null;
         this._lastEscapeAngle = null;
         this._pressing = false;
@@ -298,6 +303,15 @@ export class CatBrain {
             this._updateThrow(dt);
             return;
         }
+        if (this.state === 'pet') {
+            this._petTime += dt;
+            const frame = Math.floor(this._petTime / PET_FRAME_SECONDS);
+            if (frame < PET_FRAME_ORDER.length) {
+                this._show('pet', PET_FRAME_ORDER[frame]);
+                return;
+            }
+            this.state = 'run';
+        }
 
         const dx = cursor.x - this.x;
         const dy = cursor.y - this.y;
@@ -385,7 +399,7 @@ export class CatBrain {
 
     // The left mouse button went down on the cat
     press(cursor) {
-        if (this.state === 'thrown' || this.state === 'landed')
+        if (this.state === 'thrown' || this.state === 'landed' || this.state === 'pet')
             return;
         this._pressing = true;
         this._pressTime = 0;
@@ -417,9 +431,20 @@ export class CatBrain {
             return;
         }
 
-        // A short click starts a reaction
-        if (this.state === 'avoid')
+        // A short click on the sad cat pets it and makes up the quarrel
+        if (this.state === 'avoid') {
+            if (this.sprite === 'sad') {
+                this.state = 'pet';
+                this._petTime = 0;
+                this._avoidTime = 0;
+                this._escapeAngle = null;
+                this._resetShake(null);
+                this._show('pet', 0);
+            }
             return;
+        }
+
+        // A short click starts a reaction
         if (this.state === 'reaction') {
             const duration = REACTIONS[this._reaction].reduce((sum, value) => sum + value, 0);
             if (this._reactionTime < duration)

@@ -395,3 +395,10 @@ msgstr "Потрясите курсором рядом с кошкой"
 #: eye-extended@als.kz/prefs.js:301
 msgid "It runs away, sulks and avoids the cursor for a minute"
 msgstr "Она убегает, обижается и минуту избегает курсора"
+
+
+msgid "Click the sad cat"
+msgstr "Щёлкните по грустной кошке"
+
+msgid "Pet it, and it stops avoiding the cursor"
+msgstr "Погладьте её, и она перестанет избегать курсора"
